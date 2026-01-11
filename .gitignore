@@ -1,8 +1,34 @@
+# dependencies
 node_modules
+
+# next
 .next
-.env
-.env.*
+out
+
+# env
+.env*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / editor
 .DS_Store
-dev.db
-dev.db.*
-.vercel
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+.vscode
+.idea
+
+# Cursor / local tools
+.cursor
+.codex
+.ngrok
+.cache
+
+# archives / temp
+*.tar.gz
