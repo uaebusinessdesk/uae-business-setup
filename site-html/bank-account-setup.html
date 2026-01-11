@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Account Setup Support - UAE Business Desk</title>
+    <meta name="description" content="UAE local business accounts and international business accounts — documentation preparation and application facilitation. We prepare bank-ready files; banks and providers make approval decisions.">
+    <link rel="canonical" href="https://www.uaebusinessdesk.com/bank-account-setup.html">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/styles.css">
+    <style>
+        /* Premium Bank Account Setup Page Styles */
+        .mainland-hero {
+            background: linear-gradient(135deg, #0b2a4a 0%, #1e3a5f 50%, #0b2a4a 100%);
+            background-image: url('./assets/bank-account-hero-bg.jpg');
+            background-size: cover;
+            background-position: center 44%;
+            background-blend-mode: overlay;
+            padding: 154px 0 132px;
+            text-align: left;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .mainland-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(11, 42, 74, 0.85) 0%, rgba(30, 58, 95, 0.75) 50%, rgba(11, 42, 74, 0.85) 100%);
+            z-index: 1;
+        }
+        .mainland-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 161, 74, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+        .mainland-hero .content-wrapper {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+            max-width: 900px;
+        }
+        .mainland-hero h1 {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: white;
+            line-height: 1.1;
+            text-align: left;
+            letter-spacing: -0.02em;
+            font-family: var(--font-family-headings);
+        }
+        .mainland-hero p {
+            font-size: 22px;
+            margin-bottom: 32px;
+            color: rgba(255, 255, 255, 0.95);
+            max-width: 800px;
+            text-align: left;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        .mainland-hero p:last-of-type {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 16px;
+            margin-bottom: 40px;
+        }
+        .mainland-hero .btn {
+            display: inline-block;
+            padding: 18px 48px;
+            background: linear-gradient(135deg, #c9a14a 0%, #d4b05a 100%);
+            color: #0b2a4a;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 17px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(201, 161, 74, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .mainland-hero .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .mainland-hero .btn:hover {
+            background: linear-gradient(135deg, #d4b05a 0%, #c9a14a 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 161, 74, 0.4);
+        }
+        .mainland-hero .btn:hover::before {
+            left: 100%;
+        }
+        .mainland-content {
+            padding: 0;
+            background: #ffffff;
+        }
+        .mainland-section {
+            padding: calc(var(--space-4xl) * 0.161) var(--container-padding);
+            margin-bottom: 0;
+            background: #ffffff;
+        }
+        @media (min-width: 1024px) {
+            .mainland-section {
+                padding-top: calc(var(--space-4xl) * 0.161);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .mainland-intro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+        .mainland-intro-text h1 {
+            margin-bottom: 24px;
+        }
+        .mainland-intro-image {
+            width: 100%;
+            height: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            box-shadow: 0 20px 60px rgba(11, 42, 74, 0.1);
+            transition: transform 0.4s ease;
+        }
+        .mainland-intro-image:hover {
+            transform: translateY(-5px);
+        }
+        .mainland-intro-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .mainland-section h1,
+        .legal-structure-section h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #0b2a4a;
+            margin-bottom: var(--space-lg);
+            margin-top: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            text-align: left;
+            font-family: var(--font-family-headings);
+        }
+        .mainland-section h2 {
+            font-size: 2.75rem;
+            font-weight: 700;
+            color: #0b2a4a;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            font-family: var(--font-family-headings);
+        }
+        @media (min-width: 1024px) {
+            .mainland-section h2 {
+                font-size: 3.25rem;
+                margin-bottom: 28px;
+            }
+        }
+        .mainland-section h3 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 16px;
+            margin-top: 0;
+            letter-spacing: -0.01em;
+            line-height: 1.3;
+        }
+        .mainland-section p {
+            font-size: 1.125rem;
+            line-height: 1.75;
+            color: #64748b;
+            margin-bottom: 20px;
+            max-width: 70ch;
+        }
+        .disclaimer-note p {
+            max-width: 100% !important;
+        }
+        @media (min-width: 1024px) {
+            .mainland-section p {
+                font-size: 1.25rem;
+                line-height: 1.8;
+            }
+        }
+        .mainland-section h1[style*="center"] + p {
+            text-align: center !important;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        .why-mainland-wrapper {
+            background-color: var(--color-gold-light);
+            padding: var(--space-3xl) var(--container-padding);
+            margin: 6px calc(-1 * var(--container-padding)) 0;
+        }
+        @media (min-width: 1024px) {
+            .why-mainland-wrapper {
+                padding: var(--space-4xl) var(--container-padding);
+                margin: 6px calc(-1 * var(--container-padding)) 0;
+            }
+        }
+        .why-mainland-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .why-mainland-header h3 {
+            text-align: center;
+        }
+        .why-mainland-header h2 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: #0b2a4a;
+            margin-bottom: var(--space-lg);
+            margin-top: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            text-align: center;
+            font-family: var(--font-family-headings);
+        }
+        @media (min-width: 1024px) {
+            .why-mainland-header h2 {
+                font-size: 3.2rem;
+            }
+        }
+        .why-mainland-header p {
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.125rem;
+            color: #64748b;
+        }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: stretch;
+            margin-top: 60px;
+        }
+        .benefits-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: none;
+            box-shadow: none;
+            transition: transform 0.4s ease;
+        }
+        .benefits-image:hover {
+            transform: translateY(-5px);
+        }
+        .benefits-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            filter: contrast(1.2) brightness(1.1);
+        }
+        .benefits-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .benefit-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+            padding: 32px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04);
+        }
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #c9a14a 0%, #d4b05a 100%);
+            border-radius: 0 4px 4px 0;
+            opacity: 0;
+        }
+        .benefit-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: var(--font-family-headings);
+        }
+        .benefit-card h4::before {
+            content: '✓';
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #c9a14a 0%, #d4b05a 100%);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(201, 161, 74, 0.3);
+        }
+        .benefit-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #64748b;
+            margin: 0;
+            padding-left: 0;
+        }
+        .legal-structure-section {
+            background-color: #ffffff;
+            padding: 70px 0 0 0;
+            margin: 0;
+            border-radius: 0;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+            position: relative;
+        }
+        .legal-structure-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(201, 161, 74, 0.2), transparent);
+        }
+        @media (min-width: 1024px) {
+            .legal-structure-section {
+                padding-top: 80px;
+                padding-bottom: 0;
+            }
+        }
+        .legal-structure-section .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--container-padding);
+        }
+        .legal-structure-section .content-wrapper > p {
+            text-align: center !important;
+        }
+        .legal-structure-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: stretch;
+            margin-top: 50px;
+        }
+        .legal-structure-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .legal-card {
+            background: #ffffff;
+            padding: 28px;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04);
+        }
+        .legal-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .legal-card h4::before {
+            content: '✓';
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #c9a14a 0%, #d4b05a 100%);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(201, 161, 74, 0.3);
+        }
+        .legal-card p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #64748b;
+            margin: 0;
+            padding-left: 0;
+        }
+        .legal-structure-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            box-shadow: 0 20px 60px rgba(11, 42, 74, 0.1);
+            transition: transform 0.4s ease;
+        }
+        .legal-structure-image:hover {
+            transform: translateY(-5px);
+        }
+        .legal-structure-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .license-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+        }
+        .license-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .license-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(201, 161, 74, 0.3);
+        }
+        .license-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #c9a14a, #a8853a);
+        }
+        .license-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(201, 161, 74, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        .license-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+        .license-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: var(--space-sm);
+        }
+        .license-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: var(--space-md);
+        }
+        .license-card a {
+            color: #c9a14a;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .process-section {
+            background: linear-gradient(135deg, rgba(11, 42, 74, 0.05) 0%, rgba(201, 161, 74, 0.08) 50%, rgba(11, 42, 74, 0.05) 100%);
+            padding: var(--space-4xl) 0;
+            margin: 0;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .process-section .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        @media (min-width: 1024px) {
+            .process-section {
+                padding-top: var(--space-4xl);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .process-step {
+            text-align: left;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .process-step:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(201, 161, 74, 0.3);
+        }
+        .process-number {
+            width: 60px;
+            height: 60px;
+            background: #c9a14a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+        }
+        .process-step h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: var(--space-sm);
+        }
+        .process-step p {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+        }
+        .cost-section-wrapper {
+            background: linear-gradient(
+                135deg,
+                rgba(11, 42, 74, 0.92) 0%,
+                rgba(11, 42, 74, 0.90) 50%,
+                rgba(201, 161, 74, 0.88) 100%
+            );
+            padding: var(--space-4xl) 0;
+            margin: 0;
+            width: 100%;
+            position: relative;
+        }
+        .cost-section-wrapper .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .cost-section-wrapper h1 {
+            color: #ffffff;
+        }
+        .cost-section-wrapper p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        @media (min-width: 1024px) {
+            .cost-section-wrapper {
+                padding-top: var(--space-4xl);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .cost-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            align-items: center;
+        }
+        .cost-info h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: var(--space-md);
+        }
+        .cost-info p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-xl);
+        }
+        .cost-note {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c9a14a;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .cost-note p {
+            font-size: 14px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        .cost-note strong {
+            color: #ffffff;
+        }
+        .disclaimer-section {
+            padding-top: 0 !important;
+            padding-bottom: var(--space-2xl);
+        }
+        .disclaimer-note {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c9a14a;
+            margin-top: 8px;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .disclaimer-note p {
+            font-size: 14px;
+            margin: 0;
+            color: #475569;
+            line-height: 1.4;
+            display: block;
+            word-spacing: normal;
+            letter-spacing: normal;
+            max-width: 100%;
+            width: 100%;
+        }
+        .disclaimer-note strong {
+            color: #0b2a4a;
+        }
+        .prescreen-disclaimer {
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .pricing-card {
+            background: #ffffff;
+            color: #0b2a4a;
+            padding: 30px 24px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            border: 1px solid #e2e8f0;
+        }
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: var(--space-md);
+        }
+        .pricing-amount {
+            font-size: 42px;
+            font-weight: 700;
+            color: #c9a14a;
+            margin-bottom: 20px;
+        }
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            text-align: left;
+        }
+        .pricing-features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: #475569;
+        }
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+        .pricing-card .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #c9a14a;
+            color: #0b2a4a;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            display: block;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+        .pricing-card .btn:hover {
+            background-color: #a8853a;
+        }
+        .why-choose-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            margin-bottom: 0;
+        }
+        .why-choose-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .why-choose-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(201, 161, 74, 0.3);
+        }
+        .why-choose-icon {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(201, 161, 74, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        .why-choose-icon svg {
+            width: 48px;
+            height: 48px;
+        }
+        .why-choose-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: var(--space-sm);
+        }
+        .why-choose-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+            text-align: left;
+        }
+        .mainland-faq {
+            margin-top: 40px;
+        }
+        .mainland-faq details {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        .mainland-faq summary {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0b2a4a;
+            cursor: pointer;
+            list-style: none;
+        }
+        .mainland-faq summary::-webkit-details-marker {
+            display: none;
+        }
+        .mainland-faq p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #475569;
+            margin-top: 15px;
+            margin-bottom: 0;
+        }
+        @media (max-width: 1024px) {
+            .mainland-hero h1 {
+                font-size: 42px;
+            }
+            .mainland-hero p {
+                font-size: 18px;
+            }
+            .mainland-intro-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .mainland-intro-image {
+                height: 350px;
+            }
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .benefits-image {
+                height: 350px;
+                order: 1;
+            }
+            .benefits-content {
+                order: 2;
+            }
+            .legal-structure-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            .legal-structure-image {
+                height: 350px;
+                order: 2;
+            }
+            .legal-structure-content {
+                order: 1;
+            }
+            .mainland-section h1 {
+                font-size: 2.5rem;
+            }
+            .mainland-section h2 {
+                font-size: 2rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .mainland-hero {
+                padding: 110px 0 88px;
+            }
+            .mainland-hero h1 {
+                font-size: 32px;
+            }
+            .mainland-hero p {
+                font-size: 16px;
+            }
+            .mainland-hero .btn {
+                padding: 16px 36px;
+                font-size: 16px;
+            }
+            .mainland-section {
+                padding: 60px var(--container-padding);
+            }
+            .mainland-section h1 {
+                font-size: 2rem;
+            }
+            .mainland-section h2 {
+                font-size: 1.75rem;
+            }
+            .benefit-card {
+                padding: 24px;
+            }
+            .legal-card {
+                padding: 24px;
+            }
+        }
+        /* Remove white background from Citibank logo */
+        .authority-logo-item img[alt="Citibank"] {
+            mix-blend-mode: multiply;
+            filter: contrast(1.3) brightness(1.05);
+        }
+        .authority-logo-item:hover img[alt="Citibank"] {
+            mix-blend-mode: multiply;
+            filter: contrast(1.4) brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header>
+        <nav class="nav">
+            <a href="index.html" class="brand">
+                <img src="./assets/header-logo.png" alt="UBD - UAE Business Desk" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <span style="display:none;">UBD</span>
+            </a>
+            <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="navLinks" class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                
+                <!-- Company Formation Dropdown -->
+                <li class="has-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                        Company Formation
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="mainland.html">Mainland Company Formation</a></li>
+                        <li><a href="freezone.html">Free Zone Company Formation</a></li>
+                        <li><a href="offshore.html">Offshore Company Formation</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="bank-account-setup.html">Bank Account Setup</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="mainland-hero">
+            <div class="content-wrapper">
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <ol class="breadcrumbs-list">
+                        <li class="breadcrumbs-item">
+                            <a href="index.html" class="breadcrumbs-link">Home</a>
+                        </li>
+                        <li class="breadcrumbs-item">
+                            <span class="breadcrumbs-current">Bank Account Setup</span>
+                        </li>
+                    </ol>
+                </nav>
+                <h1>Bank Account Setup Support</h1>
+                <p>UAE local business accounts and international business accounts — with documentation preparation and application facilitation.</p>
+                <p style="font-size: 1rem; margin-top: 20px; margin-bottom: 20px;">We review feasibility first. You proceed only if it makes sense.</p>
+                <a href="#consultation-form" class="btn">Request a Free Consultation</a>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <section class="mainland-content">
+            <div class="content-wrapper">
+                <div class="mainland-section">
+                    <div style="background-color: #ffffff; padding: var(--space-4xl) 0 0 0;">
+                    <div class="mainland-intro-grid">
+                        <div class="mainland-intro-text">
+                                <h1>What This Service Covers</h1>
+                                <p>Opening a business account requires structured documentation and meeting eligibility checks set by banks or account providers.</p>
+                                <p>We support you by preparing bank-ready documentation and facilitating submissions so your application is complete and consistent. Approval decisions are made independently by banks or account providers.</p>
+                        </div>
+                        <div class="mainland-intro-image">
+                                <img src="./assets/bank-account-intro.jpg" alt="UAE Bank Account Setup Support" onerror="this.style.display='none';">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="why-mainland-wrapper">
+                    <div class="why-mainland-header">
+                            <h2 style="text-align: center;">Two Options We Support</h2>
+                    </div>
+                    
+                    <div class="benefits-grid">
+                        <div class="benefits-image">
+                                <img src="./assets/bank-account-benefits.jpg" alt="Bank Account Setup Options" onerror="this.style.display='none';">
+                        </div>
+                        <div class="benefits-content">
+                            <div class="benefit-card">
+                                    <h4>UAE Business Bank Accounts (Local)</h4>
+                                    <p>For companies that need a UAE-based business account with local banking access.</p>
+                                    <p style="margin-top: 8px; font-size: 0.9375rem; color: #64748b;"><strong>Important:</strong> UAE local business bank account support begins only after company formation is completed, since banks require final company documents.</p>
+                            </div>
+                            <div class="benefit-card">
+                                    <h4>International Business Accounts (Multi-currency / Virtual)</h4>
+                                    <p>For businesses that need international collection accounts and multi-currency account capabilities for cross-border operations.</p>
+                                    <p style="margin-top: 8px; font-size: 0.9375rem; color: #64748b;">Support for international business accounts designed for cross-border collections and payments in multiple currencies.</p>
+                                    <p style="margin-top: 8px; font-size: 0.9375rem; color: #64748b;">We support documentation and onboarding requirements based on eligibility review and the provider's criteria.</p>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Who This Service Is For -->
+        <div class="why-mainland-wrapper">
+            <div class="content-wrapper">
+                <div class="why-mainland-header">
+                    <h2 style="text-align: center;">Who This Service Is For</h2>
+                    <p style="text-align: center; max-width: 800px; margin-left: auto; margin-right: auto;">This service is suitable for businesses that want documentation done properly before submitting:</p>
+                </div>
+                
+                <div class="benefits-grid" style="margin-top: 40px;">
+                    <div class="benefits-content">
+                            <div class="benefit-card">
+                            <h4>Newly Incorporated Companies</h4>
+                            <p>Businesses that have completed UAE company formation and now need a UAE local bank account.</p>
+                            </div>
+                            <div class="benefit-card">
+                            <h4>Existing Businesses</h4>
+                            <p>Companies opening additional accounts or switching providers.</p>
+                            </div>
+                        <div class="benefit-card">
+                            <h4>International Businesses</h4>
+                            <p>Businesses that need international account capabilities for cross-border collections and payments.</p>
+                        </div>
+                        <div class="benefit-card">
+                            <h4>Time-Conscious Clients</h4>
+                            <p>Clients who want documentation compiled correctly to avoid delays and back-and-forth.</p>
+                    </div>
+                </div>
+                    <div class="benefits-image">
+                        <img src="./assets/bank-account-service.jpg" alt="Bank Account Setup Benefits" onerror="this.style.display='none';">
+            </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="legal-structure-section">
+            <div class="content-wrapper">
+                <h1 style="text-align: center; margin-bottom: 20px;">How We Support Account Setup</h1>
+                <p style="text-align: center !important; margin-bottom: 30px; max-width: 100%;">Our support focuses on documentation readiness and coordination — not account decisions.</p>
+                <div class="legal-structure-grid">
+                    <div class="legal-structure-content">
+                        <div class="legal-card">
+                            <h4>Preparing bank-ready documentation packages</h4>
+                        </div>
+                        <div class="legal-card">
+                            <h4>Organising shareholder and company information</h4>
+                        </div>
+                        <div class="legal-card">
+                            <h4>Completing application forms accurately</h4>
+                        </div>
+                        <div class="legal-card">
+                            <h4>Facilitating submission and follow-up communication</h4>
+                        </div>
+                    </div>
+                    <div class="legal-structure-image">
+                        <img src="./assets/bank-account-included.jpg" alt="Bank Account Setup Inclusions" onerror="this.style.display='none';">
+                    </div>
+                </div>
+                <p style="margin-top: 30px; font-style: italic; white-space: nowrap;">All approvals, compliance checks, and account decisions are made solely by banks or account providers.</p>
+            </div>
+        </div>
+
+        <!-- Financial Institutions We Work With -->
+        <section class="anywhere-section" style="margin-bottom: var(--space-4xl);">
+            <div class="content-wrapper">
+                <div class="authorities-wrapper">
+                    <div class="anywhere-content">
+                        <h2>Financial Institutions We Work With</h2>
+                        <div class="authority-logos-scroll">
+                            <div class="authority-logos-track">
+                                <!-- First set of 16 logos -->
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/ADCB.png" alt="ADCB">
+                            </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Al%20Hilal.png" alt="Al Hilal Bank">
+                        </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Barclays.png" alt="Barclays">
+                            </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/BOC.png" alt="BOC">
+                        </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/CIti.png" alt="Citibank">
+                            </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/DBS.png" alt="DBS">
+                        </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/DIB.png" alt="DIB">
+                    </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Deutsche.png" alt="Deutsche Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/EIB.png" alt="Emirates Islamic Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/EmiratesNBD.png?v=2" alt="Emirates NBD">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/FAB.png" alt="First Abu Dhabi Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/HSBC%20Bank.png?v=2" alt="HSBC Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/JPM.png" alt="JPMorgan">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Mashreq.png" alt="Mashreq">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/RAK.png" alt="RAK Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/WIO.png" alt="WIO">
+                                </div>
+                                <!-- Duplicate set for seamless scroll -->
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/ADCB.png" alt="ADCB">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Al%20Hilal.png" alt="Al Hilal Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Barclays.png" alt="Barclays">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/BOC.png" alt="BOC">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/CIti.png" alt="Citibank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/DBS.png" alt="DBS">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/DIB.png" alt="DIB">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Deutsche.png" alt="Deutsche Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/EIB.png" alt="Emirates Islamic Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/EmiratesNBD.png?v=2" alt="Emirates NBD">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/FAB.png" alt="First Abu Dhabi Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/HSBC%20Bank.png?v=2" alt="HSBC Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/JPM.png" alt="JPMorgan">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/Mashreq.png" alt="Mashreq">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/RAK.png" alt="RAK Bank">
+                                </div>
+                                <div class="authority-logo-item">
+                                    <img src="./assets/Bank%20logos/WIO.png" alt="WIO">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Consultation Form Section -->
+        <section class="section" id="consultation-form" style="background-color: var(--color-gold-light); padding: 100px 0 80px 0;">
+            <div class="content-wrapper">
+                <div class="ubd-form">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <div class="form-header-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M8 10H16M8 14H16M6 20H18C19.1046 20 20 19.1046 20 18V6C20 4.89543 19.1046 4 18 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 4V2M16 4V2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <h3>Bank Account Setup - Feasibility Prescreen</h3>
+                            <p class="form-reassurance">Complete this 2-minute business feasibility prescreen. We'll review and get back to you.</p>
+                        </div>
+                        <form class="form ubd-consultation-form" action="#" method="POST" autocomplete="on">
+                            <div class="ubd-form-grid">
+                                <!-- Contact Information Section -->
+                                <div class="form-section-divider">
+                                    <span class="form-section-title">Contact Information</span>
+                                </div>
+                                
+                                <div class="form-group form-group-with-icon">
+                                    <label for="ubd-fullname">Full Name *</label>
+                                    <div class="input-wrapper">
+                                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <input type="text" id="ubd-fullname" name="fullName" placeholder="John Smith" autocomplete="name" required>
+                    </div>
+                    </div>
+                                <div class="form-group form-group-with-icon">
+                                    <label for="ubd-whatsapp">WhatsApp Number *</label>
+                                    <div class="input-wrapper">
+                                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7292C21.7209 20.9842 21.5573 21.2131 21.3524 21.4019C21.1475 21.5907 20.906 21.735 20.6441 21.8251C20.3821 21.9152 20.1055 21.9492 19.83 21.925C16.743 21.5857 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.19 12.85C3.49997 10.2412 2.44824 7.27099 2.115 4.18C2.09083 3.90447 2.12484 3.62793 2.21495 3.36598C2.30506 3.10403 2.44932 2.86252 2.63812 2.65764C2.82693 2.45276 3.05585 2.28915 3.31085 2.17755C3.56585 2.06596 3.84152 2.00895 4.12 2.01H7.12C7.68147 1.99422 8.22772 2.20279 8.64118 2.59281C9.05464 2.98284 9.30245 3.52405 9.33 4.09C9.39497 5.118 9.58039 6.136 9.88 7.12C10.0267 7.67343 10.0005 8.25894 9.80506 8.8003C9.60964 9.34166 9.25416 9.81351 8.79 10.15L7.09 11.85C9.51437 14.8337 12.6663 17.4856 15.65 19.91L17.35 18.21C17.6865 17.7458 18.1583 17.3904 18.6997 17.1949C19.2411 16.9995 19.8266 16.9733 20.38 17.12C21.364 17.4196 22.382 17.605 23.41 17.67C23.9759 17.6976 24.5171 17.9454 24.9072 18.3589C25.2972 18.7723 25.5058 19.3186 25.49 19.88L22.49 19.88Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <input type="tel" id="ubd-whatsapp" name="whatsapp" placeholder="+971 50 123 4567" pattern="^\+?[0-9\s\-\(\)]+$" autocomplete="tel-national" required>
+                    </div>
+                    </div>
+                                <div class="form-group form-group-with-icon ubd-form-full-width">
+                                    <label for="ubd-email">Email *</label>
+                                    <div class="input-wrapper">
+                                        <svg class="input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                            <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <input type="email" id="ubd-email" name="email" placeholder="john.smith@example.com" autocomplete="email" required>
+                    </div>
+                </div>
+                            <div class="form-group" style="display: none;">
+                                <label for="serviceRequired">What do you need help with? *</label>
+                                <select id="serviceRequired" name="helpWith" autocomplete="off" required>
+                                    <option value="bank" selected>Bank Account Setup</option>
+                                </select>
+            </div>
+
+                            <!-- Bank Account Prescreen Section -->
+                            <div class="form-section-divider">
+                                <span class="form-section-title">Business Snapshot</span>
+        </div>
+
+                            <div class="form-group">
+                                <label for="ubd-uae-setup-type">UAE setup type *</label>
+                                <select id="ubd-uae-setup-type" name="uaeSetupType" autocomplete="off" required>
+                                    <option value="">Select</option>
+                                    <option value="MAINLAND">Mainland</option>
+                                    <option value="FREE_ZONE">Free Zone</option>
+                                    <option value="OFFSHORE">Offshore</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ubd-primary-activity-category">Primary business activity *</label>
+                                <select id="ubd-primary-activity-category" name="primaryActivityCategory" autocomplete="off" required>
+                                    <option value="">Select</option>
+                                    <option value="GENERAL_TRADING">General Trading</option>
+                                    <option value="TRADING_SPECIFIC_GOODS">Trading (specific goods)</option>
+                                    <option value="SERVICES_CONSULTANCY">Services / Consultancy</option>
+                                    <option value="IT_SOFTWARE">IT / Software</option>
+                                    <option value="MARKETING_MEDIA">Marketing / Media</option>
+                                    <option value="ECOMMERCE">E-commerce</option>
+                                    <option value="LOGISTICS_SHIPPING">Logistics / Shipping</option>
+                                    <option value="MANUFACTURING">Manufacturing</option>
+                                    <option value="REAL_ESTATE_RELATED">Real Estate related</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group ubd-form-full-width" id="primaryActivityDetailsGroup" style="display: none;">
+                                <label for="ubd-primary-activity-details">Activity details *</label>
+                                <input type="text" id="ubd-primary-activity-details" name="primaryActivityDetails" placeholder="e.g., electronics, textiles, foodstuff" autocomplete="off">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Is the business owner a UAE resident? *</label>
+                                <div class="inline-radio-group">
+                                    <label>
+                                        <input type="radio" name="ownerUaeResident" value="yes" required>
+                                        <span>Yes</span>
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="ownerUaeResident" value="no" required>
+                                        <span>No</span>
+                                    </label>
+                        </div>
+                    </div>
+                            <div class="form-group">
+                                <label for="ubd-ubo-nationality">UBO's Nationality *</label>
+                                <input type="text" id="ubd-ubo-nationality" name="uboNationality" placeholder="e.g., Indian, British, Emirati" autocomplete="country" list="nationality-list" required>
+                                <datalist id="nationality-list">
+                                    <option value="Indian">
+                                    <option value="British">
+                                    <option value="Emirati">
+                                    <option value="Pakistani">
+                                    <option value="Bangladeshi">
+                                    <option value="Filipino">
+                                    <option value="Egyptian">
+                                    <option value="Lebanese">
+                                    <option value="Jordanian">
+                                    <option value="American">
+                                    <option value="Canadian">
+                                    <option value="Australian">
+                                </datalist>
+                                <small style="display: block; margin-top: 4px; font-size: 0.75rem; color: var(--color-text-muted);">UBO (Ultimate Beneficial Owner) is the person who owns majority control of the company (typically 25% or more ownership or significant decision-making authority).</small>
+                            </div>
+
+                            <div class="form-section-divider">
+                                <span class="form-section-title">Expected Account Use</span>
+                    </div>
+
+                            <div class="form-group ubd-form-full-width">
+                                <label for="ubd-expected-monthly-turnover">Expected monthly account turnover (AED) *</label>
+                                <select id="ubd-expected-monthly-turnover" name="expectedMonthlyTurnoverAed" autocomplete="off" required>
+                                    <option value="">Select</option>
+                                    <option value="UNDER_100K">Under 100,000</option>
+                                    <option value="100K_500K">100,000 – 500,000</option>
+                                    <option value="500K_2M">500,000 – 2,000,000</option>
+                                    <option value="OVER_2M">Over 2,000,000</option>
+                                </select>
+                </div>
+
+                            <div class="form-group ubd-form-full-width">
+                                <label for="ubd-payment-geographies">Main countries/regions you will send/receive payments to/from *</label>
+                                <div class="payment-geographies-grid">
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="UAE">
+                                        <span>UAE</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="GCC">
+                                        <span>GCC</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="UK">
+                                        <span>UK</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="EUROPE">
+                                        <span>Europe</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="USA_CANADA">
+                                        <span>USA / Canada</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="ASIA">
+                                        <span>Asia</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="AFRICA">
+                                        <span>Africa</span>
+                                    </label>
+                                    <label class="payment-geography-option">
+                                        <input type="checkbox" name="paymentGeographies" value="OTHER">
+                                        <span>Other</span>
+                                    </label>
+            </div>
+                                <small style="display: block; margin-top: 8px; font-size: 0.75rem; color: var(--color-text-muted);">Select all that apply</small>
+        </div>
+
+                            <div class="form-group ubd-form-full-width" id="paymentGeographiesOtherGroup" style="display: none;">
+                                <label for="ubd-payment-geographies-other">Other geographies *</label>
+                                <input type="text" id="ubd-payment-geographies-other" name="paymentGeographiesOther" placeholder="Specify other countries/regions" autocomplete="off">
+                            </div>
+
+                            <div class="form-section-divider">
+                                <span class="form-section-title">Compliance Flags</span>
+                            </div>
+
+                            <div class="form-group ubd-form-full-width">
+                                <div class="compliance-flags-container">
+                                    <div class="compliance-flag-row">
+                                        <label class="compliance-flag-label">Crypto / digital assets involved? *</label>
+                                        <div class="compliance-flag-controls">
+                                            <div class="inline-radio-group" style="margin-top: 0;">
+                                                <label>
+                                                    <input type="radio" name="involvesCrypto" value="yes" required>
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="involvesCrypto" value="no" required>
+                                                    <span>No</span>
+                                                </label>
+                        </div>
+                            </div>
+                        </div>
+
+                                    <div class="compliance-flag-row">
+                                        <label class="compliance-flag-label">Cash-intensive business? *</label>
+                                        <div class="compliance-flag-controls">
+                                            <div class="inline-radio-group" style="margin-top: 0;">
+                                                <label>
+                                                    <input type="radio" name="cashIntensive" value="yes" required>
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="cashIntensive" value="no" required>
+                                                    <span>No</span>
+                                                </label>
+                            </div>
+                        </div>
+                            </div>
+
+                                    <div class="compliance-flag-row">
+                                        <label class="compliance-flag-label">Any sanctioned / high-risk countries expected? *</label>
+                                        <div class="compliance-flag-controls">
+                                            <div class="inline-radio-group" style="margin-top: 0;">
+                                                <label>
+                                                    <input type="radio" name="sanctionedHighRiskCountries" value="yes" required>
+                                                    <span>Yes</span>
+                                                </label>
+                                                <label>
+                                                    <input type="radio" name="sanctionedHighRiskCountries" value="no" required>
+                                                    <span>No</span>
+                                                </label>
+                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                            <div class="form-section-divider">
+                                <span class="form-section-title">Readiness</span>
+                    </div>
+
+                            <div class="form-group ubd-form-full-width">
+                                <label for="ubd-kyc-docs-ready">Can you provide standard KYC documents if the case is feasible? *</label>
+                                <select id="ubd-kyc-docs-ready" name="kycDocsReady" autocomplete="off" required>
+                                    <option value="">Select</option>
+                                    <option value="YES">Yes</option>
+                                    <option value="NOT_YET">Not yet</option>
+                                </select>
+                            </div>
+
+                                <div class="form-group ubd-form-full-width">
+                                    <label for="ubd-notes">Notes</label>
+                                    <textarea id="ubd-notes" name="notes" rows="3" placeholder="Any additional information..." autocomplete="off"></textarea>
+                                </div>
+                                <div class="form-group ubd-form-full-width form-submit-section">
+                                    <!-- Privacy Policy Checkbox -->
+                                    <div class="privacy-checkbox-group">
+                                        <label class="privacy-checkbox-label">
+                                            <input type="checkbox" name="privacyAccepted" required>
+                                            <span class="privacy-checkbox-custom"></span>
+                                            <span class="privacy-checkbox-text">I agree to the <a href="privacy.html" target="_blank">Privacy Policy</a> *</span>
+                                        </label>
+                                    </div>
+                                    
+                                    <button type="submit" class="submit-button">
+                                        <span class="button-text">Submit Prescreen Request</span>
+                                        <svg class="button-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </button>
+                                    
+                                    <p class="prescreen-disclaimer" style="margin-top: 16px; font-size: 0.875rem; color: #64748b; line-height: 1.5; text-align: left; max-width: 100%;">
+                                        This is a preliminary eligibility check only. Submission does not guarantee account approval. If feasible, we will contact you to arrange a call or request additional details.
+                                    </p>
+                                </div>
+                            </div>
+                        </form>
+                        <p class="form-disclaimer">Approvals and timelines depend on third parties. We provide documentation and facilitation support.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section" style="background: #ffffff; padding: 50px 0 60px 0;">
+            <div class="content-wrapper">
+                <div class="faq-content" style="max-width: 900px; margin: 0 auto;">
+                    <h2 style="text-align: center; font-size: 3rem; font-weight: 700; color: #0b2a4a; margin-bottom: 60px; font-family: var(--font-family-headings); letter-spacing: -0.02em;">Frequently Asked Questions</h2>
+                    <div class="faq">
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">Do you support both UAE and international business accounts?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">Yes. We support UAE local business bank account applications and international business accounts, subject to eligibility review and documentation requirements.</p>
+                        </details>
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">When can UAE local business account setup begin?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">Only after company formation is completed and final company documents are available.</p>
+                        </details>
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">Do you guarantee approvals?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">No. Banks and account providers make independent decisions based on eligibility and compliance.</p>
+                        </details>
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">Can I apply if I don't have a UAE company yet?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">UAE local bank accounts require a completed UAE company. International accounts may be possible depending on eligibility.</p>
+                        </details>
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">How long does it take?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">Timelines depend on review cycles and compliance checks by banks/providers. We aim to prepare documentation promptly once eligibility is confirmed.</p>
+                        </details>
+                        <details style="background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%); padding: 20px 24px; border-radius: 12px; margin-bottom: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 2px 8px rgba(11, 42, 74, 0.04); transition: all 0.3s ease;">
+                            <summary style="font-size: 1.0625rem; font-weight: 600; color: #0b2a4a; cursor: pointer; list-style: none; padding-right: 24px; position: relative;">Can companies located outside the UAE open accounts?</summary>
+                            <p style="font-size: 0.9375rem; line-height: 1.6; color: #64748b; margin-top: 12px; margin-bottom: 0;">Yes. We support documentation preparation and application facilitation for international business accounts for companies located outside the UAE. Initial review is conducted first to determine eligibility based on the account provider's requirements.</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Company Info Column -->
+                <div class="footer-column">
+                    <a href="index.html" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; text-decoration: none; color: inherit;">
+                        <img src="./assets/header-logo.png" alt="UAE Business Desk" class="footer-logo" style="height: 40px; width: auto; display: block;" onerror="this.style.display='none';">
+                        <span style="font-size: 40px; font-weight: 700; color: rgba(255, 255, 255, 0.95); font-family: var(--font-family-headings); letter-spacing: 0.05em; line-height: 1;">UBD</span>
+                    </a>
+                    <p class="footer-description" style="font-style: italic; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px;">Clarity before commitment</p>
+                    <p class="footer-description">Documentation preparation and application facilitation services.</p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/uaebusinessdesk" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Company Formation Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company Formation</h4>
+                    <ul class="footer-links">
+                        <li><a href="mainland.html">Mainland Company Formation</a></li>
+                        <li><a href="freezone.html">Free Zone Company Formation</a></li>
+                        <li><a href="offshore.html">Offshore Company Formation</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="bank-account-setup.html">Bank Account Setup</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                        <li><a href="disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Contact Us</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Business Center, Sharjah Publishing City, Sharjah, United Arab Emirates</span>
+                        </li>
+                        <li>
+                            <button id="requestCallbackBtn" style="display: inline-flex; align-items: center; gap: 8px; background: none; border: none; color: rgba(255, 255, 255, 0.8); cursor: pointer; font-size: 0.875rem; font-family: inherit; padding: 0; text-align: left; width: 100%;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7292C21.7209 20.9842 21.5573 21.2131 21.3524 21.4019C21.1475 21.5907 20.906 21.735 20.6441 21.8251C20.3821 21.9152 20.1055 21.9492 19.83 21.925C16.743 21.5857 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.19 12.85C3.49997 10.2412 2.44824 7.27099 2.115 4.18C2.09083 3.90447 2.12484 3.62793 2.21495 3.36598C2.30506 3.10403 2.44932 2.86252 2.63812 2.65764C2.82693 2.45276 3.05585 2.28915 3.31085 2.17755C3.56585 2.06596 3.84152 2.00895 4.12 2.01H7.12C7.68147 1.99422 8.22772 2.20279 8.64118 2.59281C9.05464 2.98284 9.30245 3.52405 9.33 4.09C9.39497 5.118 9.58039 6.136 9.88 7.12C10.0267 7.67343 10.0005 8.25894 9.80506 8.8003C9.60964 9.34166 9.25416 9.81351 8.79 10.15L7.09 11.85C9.51437 14.8337 12.6663 17.4856 15.65 19.91L17.35 18.21C17.6865 17.7458 18.1583 17.3904 18.6997 17.1949C19.2411 16.9995 19.8266 16.9733 20.38 17.12C21.364 17.4196 22.382 17.605 23.41 17.67C23.9759 17.6976 24.5171 17.9454 24.9072 18.3589C25.2972 18.7723 25.5058 19.3186 25.49 19.88L22.49 19.88Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                                <span>Request a Call Back</span>
+                            </button>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>support@uaebusinessdesk.com</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Office Hours: Sunday to Thursday, 9:00 AM – 6:00 PM (UAE Time)</span>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 18px;">
+                        <a href="#" data-whatsapp="true" class="whatsapp-footer-cta" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: rgba(37, 211, 102, 0.12); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; text-decoration: none; transition: all 0.25s ease; cursor: pointer; outline: none;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" fill="#25D366"/>
+                            </svg>
+                            <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em;">WhatsApp</span>
+                        </a>
+                    </div>
+                    <style>
+                        .whatsapp-footer-cta:hover {
+                            background-color: rgba(37, 211, 102, 0.2) !important;
+                            border-color: rgba(37, 211, 102, 0.5) !important;
+                            transform: translateY(-1px);
+                        }
+                        .whatsapp-footer-cta:active {
+                            transform: translateY(0);
+                            background-color: rgba(37, 211, 102, 0.15) !important;
+                        }
+                        .whatsapp-footer-cta:focus {
+                            outline: 1px solid rgba(37, 211, 102, 0.5);
+                            outline-offset: 2px;
+                        }
+                        @media (max-width: 640px) {
+                            .whatsapp-footer-cta {
+                                padding: 7px 14px;
+                                gap: 7px;
+                            }
+                            .whatsapp-footer-cta span {
+                                font-size: 0.8125rem;
+                            }
+                            .whatsapp-footer-cta svg {
+                                width: 16px;
+                                height: 16px;
+                            }
+                        }
+                    </style>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">&copy; 2024 UAE Business Desk. All rights reserved.</p>
+                    <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-top: 8px; margin-bottom: 0;">UBD is a service offering of Capo Fin FZE, UAE.</p>
+                    </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsent" class="cookie-consent">
+        <div class="cookie-consent-content">
+            <div class="cookie-consent-text">
+                <p>We use cookies to enhance your browsing experience and analyze site traffic. By clicking "Accept", you consent to our use of cookies. <a href="privacy.html" target="_blank">Learn more</a></p>
+            </div>
+            <div class="cookie-consent-buttons">
+                <button class="cookie-consent-btn cookie-consent-btn-accept" onclick="acceptCookies()">Accept</button>
+                <button class="cookie-consent-btn cookie-consent-btn-decline" onclick="declineCookies()">Decline</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Callback Request Modal -->
+    <div id="callbackModal" class="callback-modal" style="display: none;">
+        <div class="callback-modal-overlay"></div>
+        <div class="callback-modal-content">
+            <button class="callback-modal-close" id="callbackModalClose" aria-label="Close modal">&times;</button>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.5rem; color: var(--color-navy);">Request a Call Back</h3>
+            <p style="margin: 0 0 24px 0; color: var(--color-text-muted); font-size: 0.95rem;">Enter your mobile number and we'll call you back at your convenience.</p>
+            <form id="callbackForm" style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="callbackPhone" style="font-size: 0.875rem; font-weight: 600; color: var(--color-navy);">Mobile Number *</label>
+                    <input type="tel" id="callbackPhone" name="phone" placeholder="+971 50 123 4567" required style="padding: 12px 16px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;">
+                    <small style="font-size: 0.75rem; color: var(--color-text-muted);">Include country code (e.g., +971)</small>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="callbackName" style="font-size: 0.875rem; font-weight: 600; color: var(--color-navy);">Your Name *</label>
+                    <input type="text" id="callbackName" name="name" placeholder="John Smith" required style="padding: 12px 16px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;">
+                </div>
+                <div id="callbackMessage" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.875rem; margin-top: 8px;"></div>
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <button type="submit" id="callbackSubmitBtn" style="flex: 1; padding: 14px 24px; background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%); color: var(--color-navy); border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Send Request</button>
+                    <button type="button" id="callbackCancelBtn" style="padding: 14px 24px; background: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./assets/site.js"></script>
+</body>
+</html>

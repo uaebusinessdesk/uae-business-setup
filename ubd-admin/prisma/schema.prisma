@@ -1,0 +1,307 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Lead {
+  id                            String                   @id @default(uuid())
+  createdAt                     DateTime                 @default(now())
+  updatedAt                     DateTime                 @updatedAt
+  fullName                      String
+  whatsapp                      String
+  email                         String?
+  nationality                   String?
+  residenceCountry              String?
+  emirate                       String?
+  setupType                     String
+  activity                      String?
+  shareholdersCount             Int?
+  visasRequired                 Boolean?
+  visasCount                    Int?
+  timeline                      String?
+  notes                         String?
+  serviceDetails                String?
+  assignedAgent                 String                   @default("unassigned")
+  agentContactedAt              DateTime?
+  feasible                      Boolean?
+  quotedAmountAed               Int?
+  companyQuoteSentAt            DateTime?
+  quoteWhatsAppSentAt           DateTime?
+  quoteWhatsAppMessageId        String?
+  quoteViewedAt                 DateTime?
+  quoteApprovedAt               DateTime?
+  proceedConfirmedAt            DateTime?
+  quoteDeclinedAt               DateTime?
+  quoteDeclineReason            String?
+  quoteQuestionsAt              DateTime?
+  quoteQuestionsReason          String?
+  companyPaymentLink            String?
+  paymentLinkSentAt             DateTime?
+  internalNotes                 String?
+  approvalRequestedAt           DateTime?
+  approved                      Boolean?
+  paymentReceivedAt             DateTime?
+  companyCompletedAt            DateTime?
+  paymentReminderSentAt         DateTime?
+  paymentReminderCount          Int                      @default(0)
+  declinedAt                    DateTime?
+  declineReason                 String?
+  declineStage                  String?
+  hasBankProject                Boolean                  @default(false)
+  bankQuotedAmountAed           Int?
+  bankQuoteSentAt               DateTime?
+  bankQuoteViewedAt             DateTime?
+  bankQuoteApprovedAt           DateTime?
+  bankProceedConfirmedAt        DateTime?
+  bankQuoteDeclinedAt           DateTime?
+  bankQuoteDeclineReason        String?
+  bankQuoteQuestionsAt          DateTime?
+  bankQuoteQuestionsReason       String?
+  bankPaymentLink               String?
+  bankApprovalRequestedAt       DateTime?
+  bankApproved                  Boolean?
+  bankInvoiceNumber             String?
+  bankInvoiceVersion            Int?                     @default(1)
+  bankInvoiceAmountAed          Int?
+  bankInvoicePaymentLink        String?
+  bankInvoiceHtml               String?
+  bankInvoiceSentAt             DateTime?
+  bankPaymentReceivedAt         DateTime?
+  bankCompletedAt               DateTime?
+  bankPaymentReminderSentAt     DateTime?
+  bankPaymentReminderCount      Int                      @default(0)
+  bankDeclinedAt                DateTime?
+  bankDeclineReason             String?
+  bankDeclineStage              String?
+  bankAfterCompany              Boolean                  @default(false)
+  bankDealActive                Boolean                  @default(false)
+  bankDealAgentContactedAt      DateTime?
+  bankDealFeasible              Boolean?
+  bankDealQuotedAmountAed       Int?
+  bankDealQuoteSentAt           DateTime?
+  bankDealQuoteViewedAt         DateTime?
+  bankDealQuoteApprovedAt       DateTime?
+  bankDealProceedConfirmedAt    DateTime?
+  bankDealQuoteDeclinedAt       DateTime?
+  bankDealQuoteDeclineReason    String?
+  bankDealPaymentLink           String?
+  bankDealInvoiceNumber         String?
+  bankDealInvoiceVersion        Int?                     @default(1)
+  bankDealInvoiceAmountAed      Int?
+  bankDealInvoicePaymentLink    String?
+  bankDealInvoiceHtml           String?
+  bankDealInvoiceSentAt         DateTime?
+  bankDealInvoiceViewedAt       DateTime?
+  bankDealPaymentReceivedAt     DateTime?
+  bankDealPaymentReminderSentAt DateTime?
+  bankDealPaymentReminderCount  Int                      @default(0)
+  bankDealCompletedAt           DateTime?
+  bankDealDeclinedAt            DateTime?
+  bankDealDeclineReason         String?
+  googleReviewRequestedAt       DateTime?
+  lastResetAt                   DateTime?
+  lastResetReason               String?
+  resetCount                    Int                      @default(0)
+  assignedTo                    String                   @default("unassigned")
+  sentToAgentAt                 DateTime?
+  estimatedCostMinAed           Int?
+  estimatedCostMaxAed           Int?
+  estimatedTimelineText         String?
+  riskNotes                     String?
+  invoiceStatus                 String                   @default("not_sent")
+  invoiceAmountAed              Int?
+  invoiceSentAt                 DateTime?
+  paidAt                        DateTime?
+  stage                         String                   @default("new")
+  dropReason                    String?
+  companyStage                  String                   @default("new")
+  companyFeasible               Boolean                  @default(false)
+  companyAssignedTo             String                   @default("unassigned")
+  companyCostMinAed             Int?
+  companyCostMaxAed             Int?
+  companyInvoiceStatus          String                   @default("not_sent")
+  companyInvoiceAmountAed       Int?
+  companyInvoiceNumber          String?
+  companyInvoiceLink            String?
+  companyInvoiceVersion         Int?                     @default(1)
+  companyInvoicePaymentLink     String?
+  companyInvoiceHtml            String?
+  companyInvoicePdfPath         String?
+  companyZiinaCode              String?
+  companyInvoiceSentAt          DateTime?
+  companyPaidAt                 DateTime?
+  needsBankAccount              Boolean                  @default(false)
+  bankStage                     String                   @default("queued")
+  bankInvoiceStatus             String                   @default("not_sent")
+  bankReadyAt                   DateTime?
+  bankInvoiceLink               String?
+  bankPaidAt                    DateTime?
+  companyInvoiceViewedAt        DateTime?
+  bankInvoiceViewedAt           DateTime?
+  bankInvoiceRevisions          BankInvoiceRevision[]
+  invoiceRevisions              CompanyInvoiceRevision[]
+  activities                    LeadActivity[]
+  agentAssignments              LeadAgent[]
+
+  @@index([assignedAgent])
+  @@index([feasible])
+  @@index([approved])
+  @@index([hasBankProject])
+  @@index([createdAt])
+  @@index([stage])
+  @@index([assignedTo])
+  @@index([invoiceStatus])
+  @@index([companyStage])
+  @@index([bankStage])
+  @@index([needsBankAccount])
+  @@index([companyAssignedTo])
+  @@index([companyInvoiceSentAt])
+  @@index([bankInvoiceSentAt])
+  @@index([bankDealActive])
+  @@index([bankDealInvoiceSentAt])
+}
+
+model LeadActivity {
+  id        String   @id @default(cuid())
+  leadId    String
+  action    String
+  message   String?
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+model WhatsAppSession {
+  id            String   @id @default(cuid())
+  phone         String   @unique
+  step          String   @default("SERVICE")
+  data          String?
+  isComplete    Boolean  @default(false)
+  lastMessageAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([updatedAt])
+}
+
+model CronRun {
+  id        String   @id @default(uuid())
+  type      String
+  ranAt     DateTime @default(now())
+  processed Int?
+  sent      Int?
+  skipped   Int?
+  createdAt DateTime @default(now())
+
+  @@index([type, ranAt])
+}
+
+model CompanyInvoiceRevision {
+  id            String   @id @default(uuid())
+  leadId        String
+  version       Int
+  invoiceNumber String?
+  amountAed     Int
+  paymentLink   String
+  html          String
+  sentAt        DateTime @default(now())
+  createdAt     DateTime @default(now())
+  lead          Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, version])
+  @@index([leadId])
+}
+
+model BankInvoiceRevision {
+  id            String   @id @default(uuid())
+  leadId        String
+  version       Int
+  invoiceNumber String?
+  amountAed     Int
+  paymentLink   String
+  html          String
+  sentAt        DateTime @default(now())
+  createdAt     DateTime @default(now())
+  lead          Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, version])
+  @@index([leadId])
+}
+
+model CallbackRequest {
+  id        String    @id @default(uuid())
+  name      String
+  phone     String
+  createdAt DateTime  @default(now())
+  calledAt  DateTime?
+  notes     String?
+
+  @@index([createdAt])
+  @@index([calledAt])
+}
+
+model Agent {
+  id               String         @id @default(uuid())
+  name             String
+  organizationName String         @default("Unknown Organization")
+  whatsappNumber   String
+  email            String?
+  isActive         Boolean        @default(true)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  services         AgentService[]
+  leadAssignments  LeadAgent[]
+}
+
+model ServiceType {
+  id        String         @id @default(uuid())
+  name      String         @unique
+  slug      String         @unique
+  createdAt DateTime       @default(now())
+  agents    AgentService[]
+}
+
+model AgentService {
+  id            String      @id @default(uuid())
+  agentId       String
+  serviceTypeId String
+  createdAt     DateTime    @default(now())
+  serviceType   ServiceType @relation(fields: [serviceTypeId], references: [id], onDelete: Cascade)
+  agent         Agent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, serviceTypeId])
+  @@index([agentId])
+  @@index([serviceTypeId])
+}
+
+model LeadAgent {
+  id               String    @id @default(uuid())
+  leadId           String
+  agentId          String
+  isPrimary        Boolean   @default(false)
+  order            Int       @default(0)
+  status           String    @default("assigned")
+  serviceType      String?
+  bankName         String?
+  isCurrent        Boolean   @default(false)
+  assignedAt       DateTime  @default(now())
+  contactedAt      DateTime?
+  acceptedAt       DateTime?
+  startedWorkingAt DateTime?
+  completedAt      DateTime?
+  declinedAt       DateTime?
+  notes            String?
+  agent            Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  lead             Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, agentId])
+  @@index([leadId])
+  @@index([agentId])
+  @@index([leadId, order])
+  @@index([leadId, serviceType])
+}

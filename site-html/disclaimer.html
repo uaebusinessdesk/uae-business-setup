@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disclaimer - UAE Business Desk</title>
+    <meta name="description" content="Disclaimer and terms of service for UAE Business Desk. We provide documentation preparation and application facilitation services only.">
+    <link rel="canonical" href="https://www.uaebusinessdesk.com/disclaimer.html">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/styles.css">
+    <style>
+        /* Simple Legal Page Styles */
+        .legal-page-hero {
+            background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-dark) 50%, var(--color-navy) 100%);
+            padding: 120px 0 100px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .legal-page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(201, 161, 74, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(201, 161, 74, 0.06) 0%, transparent 50%),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(201, 161, 74, 0.02) 3px,
+                    rgba(201, 161, 74, 0.02) 6px
+                );
+            pointer-events: none;
+        }
+        .legal-page-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(201, 161, 74, 0.3) 20%,
+                rgba(201, 161, 74, 0.5) 50%,
+                rgba(201, 161, 74, 0.3) 80%,
+                transparent
+            );
+        }
+        .legal-page-hero .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        .legal-page-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-xl);
+            color: white;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: inline-block;
+        }
+        .legal-page-hero h1::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--color-gold), transparent);
+            border-radius: 2px;
+        }
+        .legal-page-hero p {
+            font-size: 1.375rem;
+            color: rgba(255, 255, 255, 0.95);
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 400;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+        }
+        .legal-content {
+            max-width: var(--container-max-width, 1280px);
+            margin: 0 auto;
+            padding: var(--space-4xl) var(--container-padding);
+            width: 100%;
+        }
+        .legal-section {
+            margin-bottom: var(--space-3xl);
+        }
+        .legal-section h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--color-navy);
+            margin-bottom: var(--space-md);
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid var(--color-gold);
+        }
+        .legal-section p {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--color-text-light);
+            margin-bottom: var(--space-md);
+            width: 100%;
+            max-width: 100%;
+        }
+        .legal-section ul {
+            margin-left: var(--space-lg);
+            margin-bottom: var(--space-md);
+            width: 100%;
+            max-width: 100%;
+        }
+        .legal-section li {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--color-text-light);
+            margin-bottom: var(--space-sm);
+        }
+        .legal-cta {
+            background-color: var(--color-bg-light);
+            padding: var(--space-xl);
+            border-radius: 8px;
+            border-left: 4px solid var(--color-gold);
+            margin-top: var(--space-2xl);
+            width: 100%;
+            max-width: 100%;
+        }
+        .legal-cta p {
+            margin-bottom: var(--space-sm);
+        }
+        .legal-cta .btn {
+            background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%);
+            color: var(--color-navy);
+            padding: 14px 32px;
+            font-weight: 600;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        .legal-cta .btn:hover {
+            background: linear-gradient(135deg, var(--color-gold-dark) 0%, var(--color-gold) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 161, 74, 0.3);
+        }
+        @media (max-width: 768px) {
+            .legal-page-hero {
+                padding: 80px 0 60px;
+            }
+            .legal-page-hero h1 {
+                font-size: 2.25rem;
+            }
+            .legal-page-hero h1::after {
+                width: 60px;
+                height: 3px;
+            }
+            .legal-page-hero p {
+                font-size: 1.125rem;
+            }
+            .legal-content {
+                padding: var(--space-2xl) var(--container-padding);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Navigation -->
+    <header>
+        <nav class="nav">
+            <a href="index.html" class="brand">
+                <img src="./assets/header-logo.png" alt="UBD - UAE Business Desk" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                <span style="display:none;">UBD</span>
+            </a>
+            <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul id="navLinks" class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                
+                <!-- Company Formation Dropdown -->
+                <li class="has-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+                        Company Formation
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="mainland.html">Mainland Company Formation</a></li>
+                        <li><a href="freezone.html">Free Zone Company Formation</a></li>
+                        <li><a href="offshore.html">Offshore Company Formation</a></li>
+                    </ul>
+                </li>
+
+                <li><a href="bank-account-setup.html">Bank Account Setup</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="legal-page-hero">
+            <div class="content-wrapper">
+                <!-- Breadcrumbs -->
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <ol class="breadcrumbs-list">
+                        <li class="breadcrumbs-item">
+                            <a href="index.html" class="breadcrumbs-link">Home</a>
+                        </li>
+                        <li class="breadcrumbs-item">
+                            <span class="breadcrumbs-current">Disclaimer</span>
+                        </li>
+                    </ol>
+                </nav>
+                <h1>Disclaimer</h1>
+                <p>Important information about our services, limitations, and your responsibilities.</p>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="legal-content">
+            <div class="legal-section">
+                <h2>Scope of Services</h2>
+                <p>UAE Business Desk (UBD) provides documentation preparation and application facilitation services for UAE company incorporation and bank account setup.</p>
+                <p>We prepare required documents, complete application forms, coordinate submissions, and facilitate communication with relevant authorities and banks. We do not provide legal, financial, or tax advice.</p>
+            </div>
+
+            <div class="legal-section">
+                <h2>No Guarantees</h2>
+                <p><strong>Outcomes:</strong> We do not guarantee company registration approvals, bank account approvals, or any specific outcomes. Approval decisions are made solely by relevant authorities and banks.</p>
+                <p><strong>Timelines:</strong> We do not guarantee specific processing timelines. All timelines provided are indicative estimates only, not commitments. Actual timelines depend on authority and bank processing schedules.</p>
+                <p><strong>Service Completion:</strong> Our services are considered complete upon delivery of prepared documentation and submission facilitation, regardless of approval outcomes.</p>
+            </div>
+
+            <div class="legal-section">
+                <h2>Third-Party Decisions</h2>
+                <p>Outcomes depend on relevant authorities and institutions:</p>
+                <ul>
+                    <li><strong>Authority Decisions:</strong> Company registration approvals are made by UAE authorities (local economic departments, free zone authorities, offshore registrars) based on their policies, procedures, and client eligibility assessments.</li>
+                    <li><strong>Bank Decisions:</strong> Bank account approval decisions are made solely by banks based on their internal policies, compliance requirements, and client eligibility assessments. We have no influence over bank decisions.</li>
+                    <li><strong>No Influence:</strong> We have no control over, and cannot influence, the decisions, policies, or processing schedules of authorities or banks. These factors are outside our control.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section">
+                <h2>No Legal or Financial Advice</h2>
+                <p>We provide documentation and facilitation services only:</p>
+                <ul>
+                    <li><strong>Not Legal Advisors:</strong> We do not provide legal advice, legal opinions, or legal representation. For legal matters, consult qualified legal professionals.</li>
+                    <li><strong>Not Financial Advisors:</strong> We do not provide financial advice, investment advice, or tax advice. For financial and tax matters, consult qualified financial and tax professionals.</li>
+                    <li><strong>Documentation Only:</strong> Our services are limited to preparing documentation and facilitating applications in accordance with your instructions and applicable requirements.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section">
+                <h2>Limitation of Use</h2>
+                <p>Website information is general in nature:</p>
+                <ul>
+                    <li><strong>General Information:</strong> Information on this website is provided for general informational purposes only. It is not tailored to your specific circumstances or requirements.</li>
+                    <li><strong>Case-Specific Guidance:</strong> For case-specific guidance, pricing, and service details, please contact us directly. We provide tailored information during consultation.</li>
+                    <li><strong>Accuracy:</strong> While we strive to keep information accurate and current, regulations and requirements may change. We are not responsible for reliance on general website information.</li>
+                </ul>
+            </div>
+
+            <div class="legal-section">
+                <h2>About UBD</h2>
+                <p>UBD operates as a specialised business setup and account facilitation service under Capo Fin FZE, a UAE-registered company based in Sharjah Publishing City.</p>
+                <p>Through UBD, Capo Fin FZE provides documentation preparation and application facilitation support for UAE company formation and business account setup, including local and international account requirements. Each request is reviewed on a feasibility-first basis to ensure clarity before proceeding.</p>
+                <p>UBD does not act as a licensing authority, bank, or regulator. All approvals and decisions are made independently by UAE authorities, free zone registrars, banks, or account providers based on their respective policies and eligibility criteria.</p>
+            </div>
+
+            <div class="legal-cta">
+                <p><strong>Questions About Our Services?</strong></p>
+                <p>Contact us for case-specific guidance, pricing, and detailed service information.</p>
+                <p><a href="contact.html" class="btn">Contact Us</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-grid">
+                <!-- Company Info Column -->
+                <div class="footer-column">
+                    <a href="index.html" style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px; text-decoration: none; color: inherit;">
+                        <img src="./assets/header-logo.png" alt="UAE Business Desk" class="footer-logo" style="height: 40px; width: auto; display: block;" onerror="this.style.display='none';">
+                        <span style="font-size: 40px; font-weight: 700; color: rgba(255, 255, 255, 0.95); font-family: var(--font-family-headings); letter-spacing: 0.05em; line-height: 1;">UBD</span>
+                    </a>
+                    <p class="footer-description" style="font-style: italic; color: rgba(255, 255, 255, 0.9); margin-bottom: 12px;">Clarity before commitment</p>
+                    <p class="footer-description">Documentation preparation and application facilitation services.</p>
+                    <div class="footer-social">
+                        <a href="https://www.facebook.com/uaebusinessdesk" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="2" y="9" width="4" height="12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="4" cy="4" r="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Company Formation Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company Formation</h4>
+                    <ul class="footer-links">
+                        <li><a href="mainland.html">Mainland Company Formation</a></li>
+                        <li><a href="freezone.html">Free Zone Company Formation</a></li>
+                        <li><a href="offshore.html">Offshore Company Formation</a></li>
+                    </ul>
+                </div>
+
+                <!-- Services Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Services</h4>
+                    <ul class="footer-links">
+                        <li><a href="bank-account-setup.html">Bank Account Setup</a></li>
+                    </ul>
+                </div>
+
+                <!-- Company Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Legal</h4>
+                    <ul class="footer-links">
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms & Conditions</a></li>
+                        <li><a href="disclaimer.html">Disclaimer</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="footer-column">
+                    <h4 class="footer-heading">Contact Us</h4>
+                    <ul class="footer-contact">
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M21 10C21 17 12 23 12 23C12 23 3 17 3 10C3 7.61305 3.94821 5.32387 5.63604 3.63604C7.32387 1.94821 9.61305 1 12 1C14.3869 1 16.6761 1.94821 18.364 3.63604C20.0518 5.32387 21 7.61305 21 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Business Center, Sharjah Publishing City, Sharjah, United Arab Emirates</span>
+                        </li>
+                        <li>
+                            <button id="requestCallbackBtn" style="display: inline-flex; align-items: center; gap: 8px; background: none; border: none; color: rgba(255, 255, 255, 0.8); cursor: pointer; font-size: 0.875rem; font-family: inherit; padding: 0; text-align: left; width: 100%;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7292C21.7209 20.9842 21.5573 21.2131 21.3524 21.4019C21.1475 21.5907 20.906 21.735 20.6441 21.8251C20.3821 21.9152 20.1055 21.9492 19.83 21.925C16.743 21.5857 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.19 12.85C3.49997 10.2412 2.44824 7.27099 2.115 4.18C2.09083 3.90447 2.12484 3.62793 2.21495 3.36598C2.30506 3.10403 2.44932 2.86252 2.63812 2.65764C2.82693 2.45276 3.05585 2.28915 3.31085 2.17755C3.56585 2.06596 3.84152 2.00895 4.12 2.01H7.12C7.68147 1.99422 8.22772 2.20279 8.64118 2.59281C9.05464 2.98284 9.30245 3.52405 9.33 4.09C9.39497 5.118 9.58039 6.136 9.88 7.12C10.0267 7.67343 10.0005 8.25894 9.80506 8.8003C9.60964 9.34166 9.25416 9.81351 8.79 10.15L7.09 11.85C9.51437 14.8337 12.6663 17.4856 15.65 19.91L17.35 18.21C17.6865 17.7458 18.1583 17.3904 18.6997 17.1949C19.2411 16.9995 19.8266 16.9733 20.38 17.12C21.364 17.4196 22.382 17.605 23.41 17.67C23.9759 17.6976 24.5171 17.9454 24.9072 18.3589C25.2972 18.7723 25.5058 19.3186 25.49 19.88L22.49 19.88Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Request a Call Back</span>
+                            </button>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 4H20C21.1 4 22 4.9 22 6V18C22 19.1 21.1 20 20 20H4C2.9 20 2 19.1 2 18V6C2 4.9 2.9 4 4 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>support@uaebusinessdesk.com</span>
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Office Hours: Sunday to Thursday, 9:00 AM – 6:00 PM (UAE Time)</span>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 18px;">
+                        <a href="#" data-whatsapp="true" class="whatsapp-footer-cta" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: rgba(37, 211, 102, 0.12); border: 1px solid rgba(37, 211, 102, 0.3); border-radius: 8px; text-decoration: none; transition: all 0.25s ease; cursor: pointer; outline: none;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" fill="#25D366"/>
+                            </svg>
+                            <span style="color: rgba(255, 255, 255, 0.9); font-size: 0.875rem; font-weight: 500; letter-spacing: 0.01em;">WhatsApp</span>
+                        </a>
+                    </div>
+                    <style>
+                        .whatsapp-footer-cta:hover {
+                            background-color: rgba(37, 211, 102, 0.2) !important;
+                            border-color: rgba(37, 211, 102, 0.5) !important;
+                            transform: translateY(-1px);
+                        }
+                        .whatsapp-footer-cta:active {
+                            transform: translateY(0);
+                            background-color: rgba(37, 211, 102, 0.15) !important;
+                        }
+                        .whatsapp-footer-cta:focus {
+                            outline: 1px solid rgba(37, 211, 102, 0.5);
+                            outline-offset: 2px;
+                        }
+                        @media (max-width: 640px) {
+                            .whatsapp-footer-cta {
+                                padding: 7px 14px;
+                                gap: 7px;
+                            }
+                            .whatsapp-footer-cta span {
+                                font-size: 0.8125rem;
+                            }
+                            .whatsapp-footer-cta svg {
+                                width: 16px;
+                                height: 16px;
+                            }
+                        }
+                    </style>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="footer-copyright">&copy; 2024 UAE Business Desk. All rights reserved.</p>
+                    <p style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.7); margin-top: 8px; margin-bottom: 0;">UBD is a service offering of Capo Fin FZE, UAE.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Callback Request Modal -->
+    <div id="callbackModal" class="callback-modal" style="display: none;">
+        <div class="callback-modal-overlay"></div>
+        <div class="callback-modal-content">
+            <button class="callback-modal-close" id="callbackModalClose" aria-label="Close modal">&times;</button>
+            <h3 style="margin: 0 0 8px 0; font-size: 1.5rem; color: var(--color-navy);">Request a Call Back</h3>
+            <p style="margin: 0 0 24px 0; color: var(--color-text-muted); font-size: 0.95rem;">Enter your mobile number and we'll call you back at your convenience.</p>
+            <form id="callbackForm" style="display: flex; flex-direction: column; gap: 16px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="callbackPhone" style="font-size: 0.875rem; font-weight: 600; color: var(--color-navy);">Mobile Number *</label>
+                    <input type="tel" id="callbackPhone" name="phone" placeholder="+971 50 123 4567" required style="padding: 12px 16px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;">
+                    <small style="font-size: 0.75rem; color: var(--color-text-muted);">Include country code (e.g., +971)</small>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label for="callbackName" style="font-size: 0.875rem; font-weight: 600; color: var(--color-navy);">Your Name *</label>
+                    <input type="text" id="callbackName" name="name" placeholder="John Smith" required style="padding: 12px 16px; border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-family: inherit; transition: border-color 0.2s;">
+                </div>
+                <div id="callbackMessage" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.875rem; margin-top: 8px;"></div>
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <button type="submit" id="callbackSubmitBtn" style="flex: 1; padding: 14px 24px; background: linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%); color: var(--color-navy); border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Send Request</button>
+                    <button type="button" id="callbackCancelBtn" style="padding: 14px 24px; background: var(--color-bg); color: var(--color-text); border: 2px solid var(--color-border); border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="./assets/site.js"></script>
+</body>
+</html>

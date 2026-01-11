@@ -1,0 +1,14 @@
+{
+  "name": "uae-business-setup",
+  "version": "1.0.0",
+  "description": "UAE Business Desk - Static Website Server",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
+
