@@ -150,11 +150,16 @@ export async function sendPaymentReminderEmail(
     const invoiceViewUrl = `${baseUrl}/invoice/view?token=${invoiceToken}`;
 
     // Build and send reminder email
+    const customerName = typeof lead.fullName === 'string' ? lead.fullName : 'Valued Client';
+    const invoiceNum = typeof invoiceNumber === 'string' ? invoiceNumber : String(invoiceNumber || '');
+    const amount = typeof invoiceAmountAed === 'number' ? invoiceAmountAed : Number(invoiceAmountAed || 0);
+    const paymentLinkStr = typeof invoicePaymentLink === 'string' ? invoicePaymentLink : String(invoicePaymentLink || '');
+    
     const { subject, body, htmlBody } = buildPaymentReminderEmail({
-      customerName: (lead.fullName as string) || 'Valued Client',
-      invoiceNumber: invoiceNumber as string,
-      amountAed: invoiceAmountAed as number,
-      paymentLink: invoicePaymentLink as string,
+      customerName,
+      invoiceNumber: invoiceNum,
+      amountAed: amount,
+      paymentLink: paymentLinkStr,
       invoiceViewUrl: invoiceViewUrl,
     });
 
