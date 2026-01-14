@@ -268,7 +268,7 @@ export default function SEOInsightsClient({
           </button>
           {expandedSections.has(key) && (
             <div className="px-6 pb-6 border-t border-gray-200 pt-4 mt-4">
-              {key === 'metadata' && 'hasTitle' in data && (
+              {key === 'metadata' && 'hasTitle' in data && (data as any).hasTitle !== undefined && (
                 <div className="space-y-3 text-sm">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -329,7 +329,7 @@ export default function SEOInsightsClient({
                   </div>
                 </div>
               )}
-              {key === 'content' && (
+              {key === 'content' && 'hasH1' in data && (
                 <div className="space-y-3 text-sm">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
