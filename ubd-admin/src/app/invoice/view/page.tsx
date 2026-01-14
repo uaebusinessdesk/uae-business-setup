@@ -290,12 +290,12 @@ export default function InvoiceViewPage() {
             </div>
             <p className="text-white/90 italic text-sm mb-4 tracking-wide">{tagline}</p>
             <h1 className="text-3xl font-bold text-white mb-2">Invoice</h1>
-            {isRevised && (
+            {isRevised && invoice && (
               <p className="text-sm text-white/80 font-medium mt-2">
                 Revised Invoice (R{invoice.version})
               </p>
             )}
-            {invoice.number && (
+            {invoice?.number && (
               <p className="text-sm text-white/80 mt-2">Invoice #{invoice.number}</p>
             )}
           </div>
