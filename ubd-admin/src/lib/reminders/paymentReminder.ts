@@ -214,7 +214,7 @@ export async function sendPaymentReminderEmail(
       await notifyAdmin({
         event: 'payment_reminder_sent',
         leadId,
-        project,
+        project: project === 'bank-deal' ? 'bank' : project as 'bank' | 'company',
         subject: `[Payment Reminder] Lead ${lead.fullName} – ${invoiceNumber || amountStr} (Reminder #${newReminderCount})`,
         lines: [
           `Payment reminder sent to customer`,
