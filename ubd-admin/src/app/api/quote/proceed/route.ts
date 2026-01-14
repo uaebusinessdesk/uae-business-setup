@@ -144,11 +144,11 @@ export async function POST(req: NextRequest) {
             project: projectType,
             subject: `[Quote Approved] Lead ${fullName} – ${amountStr}`,
             lines: [
-              `${projectType === 'bank-deal' ? 'Bank Deal quote' : projectType === 'bank' ? 'Bank quote' : 'Company quote'} approved by customer`,
+              `${project === 'bank-deal' ? 'Bank Deal quote' : projectType === 'bank' ? 'Bank quote' : 'Company quote'} approved by customer`,
               `Lead: ${fullName}`,
               `Email: ${email}`,
               `Amount: ${amountStr}`,
-              `Project: ${projectType === 'bank-deal' ? 'Bank Deal' : projectType === 'bank' ? 'Bank' : 'Company'}`,
+              `Project: ${project === 'bank-deal' ? 'Bank Deal' : projectType === 'bank' ? 'Bank' : 'Company'}`,
               `Approved at: ${now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' })}`,
             ],
           });
