@@ -868,6 +868,12 @@ select {
     background-position: right 0.875rem center;
     padding-right: 2.25rem;
     height: 44px;
+    line-height: 1.4;
+}
+
+select option {
+    line-height: 1.4;
+    padding: 0.5rem 0.75rem;
 }
 
 .submit-button {
@@ -2453,6 +2459,7 @@ select {
     background-color: var(--color-navy);
     color: #ffffff;
     padding: var(--space-sm);
+    line-height: 1.4;
 }
 
 /* Ensure dropdown menus can overflow container */
@@ -3681,6 +3688,7 @@ main {
     overflow: visible !important;
     text-overflow: clip !important;
     white-space: normal !important;
+    line-height: 1.4;
 }
 
 .ubd-form-grid .form-group input:hover,
