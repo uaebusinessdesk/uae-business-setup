@@ -163,8 +163,9 @@ export async function sendPaymentReminderEmail(
       invoiceViewUrl: invoiceViewUrl,
     });
 
+    const leadEmail = typeof lead.email === 'string' ? lead.email : String(lead.email || '');
     await sendCustomerEmail({
-      to: lead.email,
+      to: leadEmail,
       subject,
       html: htmlBody || body.replace(/\n/g, '<br>'),
     }, 'reminder');
