@@ -287,7 +287,7 @@ export function buildCompanyQuoteEmail(lead: Lead, approvalUrl?: string, isRevis
     throw new Error('Lead quotedAmountAed is required to build quote email');
   }
   
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const normalizedSetupType = normalizeSetupType(lead.setupType);
   const isBankLead = normalizedSetupType === 'bank';
   const serviceLabel = toSetupTypeLabel(lead.setupType);
@@ -477,7 +477,7 @@ export function buildBankDealQuoteEmail(lead: Lead, approvalUrl?: string, isRevi
     throw new Error('Lead bankDealQuotedAmountAed is required to build Bank Deal quote email');
   }
   
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const serviceLabel = 'Bank Account Setup';
 
   const formattedAmount = (lead as any).bankDealQuotedAmountAed.toLocaleString('en-AE', {
@@ -719,7 +719,7 @@ export function buildBankQuoteEmail(lead: Lead, approvalUrl?: string, isRevisedQ
  * Build welcome email template
  */
 export function buildWelcomeEmail(lead: Lead): { subject: string; body: string; htmlBody?: string } {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const subject = `Welcome to UAE Business Desk`;
   const brandName = process.env.BRAND_NAME || 'UAE Business Desk';
   const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || 'support@uaebusinessdesk.com';
@@ -795,7 +795,7 @@ export function buildWelcomeEmail(lead: Lead): { subject: string; body: string; 
  * Please do not modify without careful review and approval.
  */
 export function buildCompanyInvoiceEmail(lead: Lead, paymentLink?: string, isRevisedInvoice?: boolean, invoiceViewUrl?: string): { subject: string; body: string; htmlBody?: string } {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const normalizedSetupType = normalizeSetupType(lead.setupType);
   const isBankLead = normalizedSetupType === 'bank';
   const setupTypeLabel = normalizedSetupType === 'mainland' ? 'Mainland' : 
@@ -1115,7 +1115,7 @@ export function buildBankInvoiceEmail(lead: Lead, paymentLink?: string, isRevise
     throw new Error('Lead fullName is required to build bank invoice email');
   }
   
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const invoiceNumber = lead.bankInvoiceNumber || 'N/A';
   const finalPaymentLink = paymentLink || lead.bankPaymentLink || '';
   
@@ -1224,7 +1224,7 @@ export function buildPaymentLinkEmail(lead: Lead): { subject: string; body: stri
     throw new Error('Lead companyPaymentLink is required to build payment link email');
   }
   
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const formattedAmount = lead.quotedAmountAed.toLocaleString('en-AE', {
     style: 'currency',
     currency: 'AED',
@@ -1260,7 +1260,7 @@ export function buildPaymentLinkEmail(lead: Lead): { subject: string; body: stri
  * Build payment confirmation email template
  */
 export function buildPaymentConfirmationEmail(lead: Lead): { subject: string; body: string; htmlBody?: string } {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const brandName = process.env.BRAND_NAME || 'UAE Business Desk';
   const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || 'support@uaebusinessdesk.com';
   const subject = `Payment Received`;
@@ -1348,7 +1348,7 @@ export function buildPaymentConfirmationEmail(lead: Lead): { subject: string; bo
  * Please do not modify without careful review and approval.
  */
 export function buildCompletionEmail(lead: Lead, isFirstCompletion: boolean): { subject: string; body: string; htmlBody?: string } {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const brandName = process.env.BRAND_NAME || 'UAE Business Desk';
   const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER || 'support@uaebusinessdesk.com';
   const subject = `Project Completed`;
