@@ -24,6 +24,14 @@ export async function middleware(request: NextRequest) {
     '/admin',      // Admin pages (app/admin/*)
     '/_next',      // Next.js internals (static files, etc.)
     '/assets',     // Static assets
+    '/mainland',   // Mainland company formation page
+    '/freezone',   // Freezone company formation page
+    '/offshore',   // Offshore company formation page
+    '/bank-account-setup', // Bank account setup page
+    '/contact',    // Contact page
+    '/privacy',    // Privacy policy page
+    '/terms',      // Terms and conditions page
+    '/disclaimer', // Disclaimer page
   ];
 
   // Check if pathname matches any allowlisted route OR is the root path
