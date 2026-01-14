@@ -74,7 +74,7 @@ function cleanNotes(notes: string | null, leadRef: string): string {
  * @param agentName - Optional agent name for personalization
  */
 export function buildCompanyAgentMessage(lead: Lead, agentName?: string): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const setupTypeLabel = lead.setupType === 'mainland' ? 'Mainland' : 
                          lead.setupType === 'freezone' ? 'Free Zone' : 
                          lead.setupType === 'offshore' ? 'Offshore' : lead.setupType || 'Company Setup';
@@ -208,7 +208,7 @@ export function buildCompanyAgentMessage(lead: Lead, agentName?: string): string
  * Build message for bank setup (Self)
  */
 export function buildBankSelfMessage(lead: Lead): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const setupTypeLabel = lead.setupType === 'mainland' ? 'Mainland' : 
                          lead.setupType === 'freezone' ? 'Free Zone' : 
                          lead.setupType === 'offshore' ? 'Offshore' : lead.setupType;
@@ -314,7 +314,7 @@ function formatGeography(geo: string): string {
  * Build message for bank account setup agent
  */
 export function buildBankAgentMessage(lead: Lead, prescreenData?: BankPrescreenData | null): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   
   let message = `*New Lead — Bank Account Setup (UBD)*\n\n`;
   message += `*Lead Reference:* ${leadRef}\n\n`;
@@ -412,7 +412,7 @@ export function buildBankAgentMessage(lead: Lead, prescreenData?: BankPrescreenD
  * @param isRevisedQuote - Whether this is a revised quote
  */
 export function buildQuoteReminderMessage(lead: Lead, approvalUrl?: string, isRevisedQuote?: boolean): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const serviceLabel = toSetupTypeLabel(lead.setupType);
   
   // Extract first name for personalization (prefer full name, fallback to first name)
