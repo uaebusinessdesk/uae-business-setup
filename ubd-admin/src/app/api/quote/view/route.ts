@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
           const fullName = lead.fullName || 'Unknown';
           const email = lead.email || 'No email';
           const amountStr = quoteAmount ? `AED ${quoteAmount.toLocaleString()}` : 'Amount not set';
-          const projectType = project === 'bank-deal' ? 'bank-deal' : project;
+          const projectType = project === 'bank-deal' ? 'bank' : project as 'bank' | 'company';
           
           await notifyAdmin({
             event: 'quote_viewed',
@@ -116,11 +116,11 @@ export async function POST(req: NextRequest) {
             project: projectType,
             subject: `[Quote Viewed] Lead ${fullName} – ${amountStr}`,
             lines: [
-              `${projectType === 'bank-deal' ? 'Bank Deal quote' : projectType === 'bank' ? 'Bank quote' : 'Company quote'} viewed by customer`,
+              `${project === 'bank-deal' ? 'Bank Deal quote' : projectType === 'bank' ? 'Bank quote' : 'Company quote'} viewed by customer`,
               `Lead: ${fullName}`,
               `Email: ${email}`,
               `Amount: ${amountStr}`,
-              `Project: ${projectType === 'bank-deal' ? 'Bank Deal' : projectType === 'bank' ? 'Bank' : 'Company'}`,
+              `Project: ${project === 'bank-deal' ? 'Bank Deal' : projectType === 'bank' ? 'Bank' : 'Company'}`,
               `Viewed at: ${now.toLocaleString('en-US', { timeZone: 'Asia/Dubai' })}`,
             ],
           });
