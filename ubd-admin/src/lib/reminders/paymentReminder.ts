@@ -151,10 +151,10 @@ export async function sendPaymentReminderEmail(
 
     // Build and send reminder email
     const { subject, body, htmlBody } = buildPaymentReminderEmail({
-      customerName: lead.fullName || 'Valued Client',
-      invoiceNumber: invoiceNumber,
-      amountAed: invoiceAmountAed,
-      paymentLink: invoicePaymentLink,
+      customerName: (lead.fullName as string) || 'Valued Client',
+      invoiceNumber: invoiceNumber as string,
+      amountAed: invoiceAmountAed as number,
+      paymentLink: invoicePaymentLink as string,
       invoiceViewUrl: invoiceViewUrl,
     });
 
