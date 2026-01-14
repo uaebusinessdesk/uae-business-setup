@@ -267,8 +267,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <button
                 className="cookie-consent-btn cookie-consent-btn-accept"
                 onClick={() => {
-                  if (typeof window !== 'undefined' && typeof (window as { acceptCookies?: () => void }).acceptCookies === 'function') {
-                    window.acceptCookies?.();
+                  if (typeof window !== 'undefined') {
+                    const cookieWindow = window as Window & { acceptCookies?: () => void };
+                    if (typeof cookieWindow.acceptCookies === 'function') {
+                      cookieWindow.acceptCookies();
+                    }
                   }
                 }}
               >
@@ -277,8 +280,11 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               <button
                 className="cookie-consent-btn cookie-consent-btn-decline"
                 onClick={() => {
-                  if (typeof window !== 'undefined' && typeof (window as { declineCookies?: () => void }).declineCookies === 'function') {
-                    window.declineCookies?.();
+                  if (typeof window !== 'undefined') {
+                    const cookieWindow = window as Window & { declineCookies?: () => void };
+                    if (typeof cookieWindow.declineCookies === 'function') {
+                      cookieWindow.declineCookies();
+                    }
                   }
                 }}
               >
