@@ -138,7 +138,7 @@ export default function DashboardChart({
           <ResponsiveContainer width="100%" height={height}>
             <PieChart>
               <Pie
-                data={data as PieChartData[]}
+                data={data as any}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
