@@ -21,20 +21,21 @@ export async function middleware(request: NextRequest) {
     '/api',        // API routes
     '/quote',      // Public quote view/decision pages (app/quote/*)
     '/invoice',    // Public invoice view pages (app/invoice/*)
-    '/admin/login', // Admin login page (app/admin/login/page.tsx)
+    '/admin',      // Admin pages (app/admin/*)
     '/_next',      // Next.js internals (static files, etc.)
     '/assets',     // Static assets
   ];
 
-  // Check if pathname matches any allowlisted route
-  if (appRouterRoutes.some(route => pathname.startsWith(route))) {
+  // Check if pathname matches any allowlisted route OR is the root path
+  // Root path should be handled by app/page.tsx, not rewritten to index.html
+  if (pathname === '/' || appRouterRoutes.some(route => pathname.startsWith(route))) {
     return NextResponse.next();
   }
 
-  // Serve static HTML files for root paths (legacy behavior)
-  // If the path doesn't have an extension, try to serve the HTML file
+  // Serve static HTML files for other paths (legacy behavior)
+  // Only rewrite paths that don't have an extension and aren't root or app router routes
   if (!pathname.includes('.')) {
-    const htmlPath = pathname === '/' ? '/index.html' : `${pathname}.html`;
+    const htmlPath = `${pathname}.html`;
     return NextResponse.rewrite(new URL(htmlPath, request.url));
   }
 
