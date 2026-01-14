@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import PublicLayout from '@/components/PublicLayout';
 import WebPageSchema from '@/components/SEO/WebPageSchema';
 
