@@ -31,6 +31,7 @@ interface BarChartData {
 interface PieChartData {
   name: string;
   value: number;
+  [key: string]: string | number;
 }
 
 interface DashboardChartProps {
