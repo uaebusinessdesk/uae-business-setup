@@ -314,7 +314,7 @@ export default function InvoiceViewPage() {
             )}
 
             {/* Payment Button */}
-            {invoice.paymentLink && (
+            {invoice?.paymentLink && (
               <div className="mb-6">
                 <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 border-2 border-amber-200 text-center">
                   <h2 className="text-lg font-bold text-gray-900 mb-3">Complete Your Payment</h2>
