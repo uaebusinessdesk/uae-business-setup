@@ -2,8 +2,19 @@
  * Email templates for quote emails (copy-to-clipboard only)
  */
 
-import type { Lead } from '@/app/admin/leads/[id]/page';
 import { toSetupTypeLabel, normalizeSetupType } from '@/lib/setupType';
+
+// Lead type for email templates
+interface Lead {
+  fullName: string;
+  setupType?: string | null;
+  notes: string | null;
+  quotedAmountAed?: number | null;
+  bankQuotedAmountAed?: number | null;
+  companyInvoiceNumber?: string | null;
+  companyInvoiceLink?: string | null;
+  companyPaymentLink?: string | null;
+}
 
 /**
  * Extract lead reference from notes
