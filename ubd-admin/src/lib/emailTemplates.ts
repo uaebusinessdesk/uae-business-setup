@@ -15,6 +15,7 @@ interface Lead {
   companyInvoiceLink?: string | null;
   companyPaymentLink?: string | null;
   bankInvoiceNumber?: string | null;
+  bankPaymentLink?: string | null;
 }
 
 /**
