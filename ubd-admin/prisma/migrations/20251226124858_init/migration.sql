@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "Lead" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL,
     "fullName" TEXT NOT NULL,
     "whatsapp" TEXT NOT NULL,
     "email" TEXT,
@@ -16,7 +16,7 @@ CREATE TABLE "Lead" (
     "timeline" TEXT,
     "notes" TEXT,
     "assignedTo" TEXT NOT NULL DEFAULT 'unassigned',
-    "sentToAgentAt" DATETIME,
+    "sentToAgentAt" TIMESTAMP,
     "feasible" BOOLEAN,
     "estimatedCostMinAed" INTEGER,
     "estimatedCostMaxAed" INTEGER,
@@ -24,8 +24,8 @@ CREATE TABLE "Lead" (
     "riskNotes" TEXT,
     "invoiceStatus" TEXT NOT NULL DEFAULT 'not_sent',
     "invoiceAmountAed" INTEGER,
-    "invoiceSentAt" DATETIME,
-    "paidAt" DATETIME,
+    "invoiceSentAt" TIMESTAMP,
+    "paidAt" TIMESTAMP,
     "stage" TEXT NOT NULL DEFAULT 'new',
     "dropReason" TEXT
 );

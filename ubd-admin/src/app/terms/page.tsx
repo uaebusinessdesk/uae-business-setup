@@ -1,15 +1,36 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions - UAE Business Desk',
   description: 'Terms and conditions for UAE Business Desk services. Read our terms of service and usage policies.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/terms',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/terms',
+    title: 'Terms & Conditions - UAE Business Desk',
+    description: 'Terms and conditions for UAE Business Desk services. Read our terms of service and usage policies.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Terms & Conditions - UAE Business Desk',
+    description: 'Terms and conditions for UAE Business Desk services. Read our terms of service and usage policies.',
+  },
 };
 
 export default function TermsPage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Terms & Conditions - UAE Business Desk"
+        description="Terms and conditions for UAE Business Desk services. Read our terms of service and usage policies."
+        url="https://www.uaebusinessdesk.com/terms"
+      />
       <section className="legal-page-hero">
         <div className="content-wrapper">
           <nav className="breadcrumbs" aria-label="Breadcrumb">

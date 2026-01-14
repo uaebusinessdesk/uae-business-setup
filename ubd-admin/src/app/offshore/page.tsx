@@ -1,15 +1,38 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Offshore Company Formation in the UAE - UAE Business Desk',
-  description: 'Professional documentation and facilitation services for UAE offshore company formation. We prepare incorporation paperwork; offshore authorities make approval decisions.',
+  description: 'Professional UAE offshore company formation services. We prepare incorporation paperwork and handle documentation; offshore authorities make approval decisions.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/offshore',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/offshore',
+    title: 'Offshore Company Formation in the UAE - UAE Business Desk',
+    description: 'Professional UAE offshore company formation services. We prepare incorporation paperwork and handle documentation; offshore authorities make approval decisions.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/offshore-hero-bg.jpg' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Offshore Company Formation in the UAE - UAE Business Desk',
+    description: 'Professional UAE offshore company formation services. We prepare incorporation paperwork and handle documentation; offshore authorities make approval decisions.',
+    images: ['https://uaebusinessdesk.com/assets/offshore-hero-bg.jpg'],
+  },
 };
 
 export default function OffshorePage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Offshore Company Formation in the UAE - UAE Business Desk"
+        description="Professional UAE offshore company formation services. We prepare incorporation paperwork and handle documentation; offshore authorities make approval decisions."
+        url="https://www.uaebusinessdesk.com/offshore"
+      />
       <section className="hero" style={{ backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/offshore-hero-bg.jpg')" }}>
         <div className="hero-inner container">
           <div className="hero-copy">

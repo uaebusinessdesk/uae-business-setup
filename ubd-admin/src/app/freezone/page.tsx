@@ -1,15 +1,38 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
-  title: 'Free Zone Company Formation in the UAE - UAE Business Desk',
-  description: 'Professional documentation and facilitation services for UAE free zone company formation. We prepare incorporation paperwork; free zone authorities make approval decisions.',
+  title: 'Free Zone Company Formation in UAE - UAE Business Desk',
+  description: 'Expert UAE free zone company formation services. We prepare incorporation paperwork and handle documentation; free zone authorities make approval decisions.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/freezone',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/freezone',
+    title: 'Free Zone Company Formation UAE - Expert Incorporation Services',
+    description: 'Expert UAE free zone company formation services. We prepare incorporation paperwork and handle documentation; free zone authorities make approval decisions.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/freezone-hero-bg.jpg' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Free Zone Company Formation UAE - Expert Incorporation Services',
+    description: 'Expert UAE free zone company formation services. We prepare incorporation paperwork and handle documentation; free zone authorities make approval decisions.',
+    images: ['https://uaebusinessdesk.com/assets/freezone-hero-bg.jpg'],
+  },
 };
 
 export default function FreezonePage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Free Zone Company Formation in UAE - UAE Business Desk"
+        description="Expert UAE free zone company formation services. We prepare incorporation paperwork and handle documentation; free zone authorities make approval decisions."
+        url="https://www.uaebusinessdesk.com/freezone"
+      />
       <section className="hero" style={{ backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/freezone-hero-bg.jpg')" }}>
         <div className="hero-inner container">
           <div className="hero-copy">

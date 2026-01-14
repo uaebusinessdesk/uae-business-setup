@@ -1,15 +1,38 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
-  title: 'Bank Account Setup in the UAE - UAE Business Desk',
-  description: 'Professional documentation and facilitation services for UAE bank account setup. We prepare bank documentation; banks make approval decisions.',
+  title: 'Bank Account Setup Support - UAE Business Desk',
+  description: 'UAE business bank account setup services. We prepare bank-ready documentation and handle application facilitation; banks make approval decisions.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/bank-account-setup',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/bank-account-setup',
+    title: 'UAE Bank Account Setup - Business Banking Solutions',
+    description: 'UAE business bank account setup services. We prepare bank-ready documentation and handle application facilitation; banks make approval decisions.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/bank-account-hero-bg.jpg' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'UAE Bank Account Setup - Business Banking Solutions',
+    description: 'UAE business bank account setup services. We prepare bank-ready documentation and handle application facilitation; banks make approval decisions.',
+    images: ['https://uaebusinessdesk.com/assets/bank-account-hero-bg.jpg'],
+  },
 };
 
 export default function BankAccountSetupPage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Bank Account Setup Support - UAE Business Desk"
+        description="UAE business bank account setup services. We prepare bank-ready documentation and handle application facilitation; banks make approval decisions."
+        url="https://www.uaebusinessdesk.com/bank-account-setup"
+      />
       <section className="hero" style={{ backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/bank-hero-bg.jpg')" }}>
         <div className="hero-inner container">
           <div className="hero-copy">

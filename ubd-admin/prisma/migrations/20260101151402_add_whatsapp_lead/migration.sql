@@ -1,8 +1,8 @@
 -- CreateTable
 CREATE TABLE "WhatsAppLead" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
+    "createdAt" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP NOT NULL,
     "source" TEXT NOT NULL DEFAULT 'whatsapp',
     "brand" TEXT NOT NULL DEFAULT 'UAE Business Desk',
     "whatsappNumber" TEXT NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE "WhatsAppLead" (
     "companyName" TEXT,
     "status" TEXT NOT NULL DEFAULT 'New',
     "assignedAgentId" TEXT,
-    "lastMessageAt" DATETIME,
+    "lastMessageAt" TIMESTAMP,
     "rawPayload" TEXT
 );
 

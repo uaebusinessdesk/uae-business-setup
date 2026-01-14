@@ -1,15 +1,34 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import ContactPageSchema from '@/components/SEO/ContactPageSchema';
 
 export const metadata: Metadata = {
   title: 'Contact Us - UAE Business Desk',
   description: 'Get in touch with UAE Business Desk for company incorporation and bank account setup services. Submit your enquiry or contact us directly.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/contact',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/contact',
+    title: 'Contact Us - UAE Business Desk',
+    description: 'Get in touch with UAE Business Desk for company incorporation and bank account setup services. Submit your enquiry or contact us directly.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/contact-hero.jpg' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact Us - UAE Business Desk',
+    description: 'Get in touch with UAE Business Desk for company incorporation and bank account setup services. Submit your enquiry or contact us directly.',
+    images: ['https://uaebusinessdesk.com/assets/contact-hero.jpg'],
+  },
 };
 
 export default function ContactPage() {
   return (
     <PublicLayout>
+      <ContactPageSchema />
       <section className="hero" style={{ backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/contact-hero.jpg')" }}>
         <div className="hero-inner container">
           <div className="hero-copy" style={{ textAlign: 'left', maxWidth: '800px', margin: '0 auto' }}>

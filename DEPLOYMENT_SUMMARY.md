@@ -66,9 +66,8 @@ After successful deployment, run migrations using one of these methods:
 
 **Method 1: Vercel CLI (Recommended)**
 ```bash
-npm i -g vercel
-vercel login
-vercel link
+npx vercel login
+npx vercel link
 cd ubd-admin
 npm run db:migrate:deploy
 ```

@@ -2,15 +2,38 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Mainland Company Formation in the UAE - UAE Business Desk',
-  description: 'Professional documentation and facilitation services for UAE mainland company formation. We prepare incorporation paperwork; UAE authorities make approval decisions.',
+  description: 'Professional UAE mainland company formation services. We prepare incorporation paperwork and handle documentation; UAE authorities make approval decisions.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/mainland',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/mainland',
+    title: 'Mainland Company Formation UAE - Professional Setup Services',
+    description: 'Professional UAE mainland company formation services. We prepare incorporation paperwork and handle documentation; UAE authorities make approval decisions.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/mainland-hero-bg.jpg' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Mainland Company Formation UAE - Professional Setup Services',
+    description: 'Professional UAE mainland company formation services. We prepare incorporation paperwork and handle documentation; UAE authorities make approval decisions.',
+    images: ['https://uaebusinessdesk.com/assets/mainland-hero-bg.jpg'],
+  },
 };
 
 export default function MainlandPage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Mainland Company Formation in the UAE - UAE Business Desk"
+        description="Professional UAE mainland company formation services. We prepare incorporation paperwork and handle documentation; UAE authorities make approval decisions."
+        url="https://www.uaebusinessdesk.com/mainland"
+      />
       <section className="mainland-hero" style={{ backgroundImage: "url('/assets/mainland-hero-bg.jpg')" }}>
         <div className="content-wrapper">
           <nav className="breadcrumbs" aria-label="Breadcrumb">

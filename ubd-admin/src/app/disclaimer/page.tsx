@@ -1,15 +1,36 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Disclaimer - UAE Business Desk',
   description: 'Disclaimer for UAE Business Desk services. Important information about our service scope and limitations.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/disclaimer',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/disclaimer',
+    title: 'Disclaimer - UAE Business Desk',
+    description: 'Disclaimer for UAE Business Desk services. Important information about our service scope and limitations.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Disclaimer - UAE Business Desk',
+    description: 'Disclaimer for UAE Business Desk services. Important information about our service scope and limitations.',
+  },
 };
 
 export default function DisclaimerPage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Disclaimer - UAE Business Desk"
+        description="Disclaimer for UAE Business Desk services. Important information about our service scope and limitations."
+        url="https://www.uaebusinessdesk.com/disclaimer"
+      />
       <section className="legal-page-hero">
         <div className="content-wrapper">
           <nav className="breadcrumbs" aria-label="Breadcrumb">

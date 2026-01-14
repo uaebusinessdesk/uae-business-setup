@@ -1,15 +1,36 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
+import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - UAE Business Desk',
   description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+  robots: 'index, follow',
+  alternates: {
+    canonical: 'https://uaebusinessdesk.com/privacy',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://uaebusinessdesk.com/privacy',
+    title: 'Privacy Policy - UAE Business Desk',
+    description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Privacy Policy - UAE Business Desk',
+    description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+  },
 };
 
 export default function PrivacyPage() {
   return (
     <PublicLayout>
+      <WebPageSchema
+        name="Privacy Policy - UAE Business Desk"
+        description="Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information."
+        url="https://www.uaebusinessdesk.com/privacy"
+      />
       <section className="legal-page-hero">
         <div className="content-wrapper">
           <nav className="breadcrumbs" aria-label="Breadcrumb">
