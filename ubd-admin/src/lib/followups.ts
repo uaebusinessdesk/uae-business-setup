@@ -7,6 +7,8 @@ interface Lead {
   fullName: string;
   setupType?: string | null;
   notes?: string | null;
+  companyAssignedTo?: string;
+  companyInvoiceNumber?: string | null;
   [key: string]: any;
 }
 
@@ -42,7 +44,7 @@ function getSetupTypeLabel(setupType: string): string {
  * Build agent feasibility follow-up message
  */
 export function buildAgentFeasibilityFollowUp(lead: Lead): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const agentName = getAgentName(lead.companyAssignedTo);
   const setupTypeLabel = getSetupTypeLabel(lead.setupType);
   
@@ -61,7 +63,7 @@ export function buildAgentFeasibilityFollowUp(lead: Lead): string {
  * Build agent completion follow-up message
  */
 export function buildAgentCompletionFollowUp(lead: Lead): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const agentName = getAgentName(lead.companyAssignedTo);
   const setupTypeLabel = getSetupTypeLabel(lead.setupType);
   
@@ -80,7 +82,7 @@ export function buildAgentCompletionFollowUp(lead: Lead): string {
  * Build company payment reminder message
  */
 export function buildCompanyPaymentReminder(lead: Lead): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const invoiceNumber = lead.companyInvoiceNumber || 'N/A';
   
   let message = `Hi ${lead.fullName},\n\n`;
@@ -100,7 +102,7 @@ export function buildCompanyPaymentReminder(lead: Lead): string {
  * Build bank payment reminder message
  */
 export function buildBankPaymentReminder(lead: Lead): string {
-  const leadRef = extractLeadRef(lead.notes);
+  const leadRef = extractLeadRef(lead.notes ?? null);
   const invoiceNumber = lead.bankInvoiceNumber || 'N/A';
   
   let message = `Hi ${lead.fullName},\n\n`;
