@@ -77,7 +77,7 @@ export default function AdminNav() {
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              SEO Analytics
+              Advanced Analytics
             </Link>
           </div>
           <LogoutButton />

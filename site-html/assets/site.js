@@ -702,14 +702,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         payload.timeline = timelineValue;
                     }
 
-                    // Determine needsBankAccount as boolean
-                    const needsBankAccountValue = formData.get('needsBankAccount');
-                    if (needsBankAccountValue === 'yes') {
-                        payload.needsBankAccount = true;
-                    } else {
-                        payload.needsBankAccount = false;
-                    }
-
                     // Add company setup fields if relevant
                     if (serviceValue === 'mainland' || serviceValue === 'freezone' || serviceValue === 'offshore') {
                         const shareholdersValue = formData.get('shareholders');
@@ -728,16 +720,16 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
 
-                    // Add bank fields if relevant (ONLY when needsBankAccount is true)
-                    if (payload.needsBankAccount === true) {
-                        const turnoverLaterValue = formData.get('turnoverLater');
-                        if (turnoverLaterValue) {
-                            payload.monthlyTurnover = turnoverLaterValue;
+                    // Add bank fields if relevant (for bank account setup service only)
+                    if (serviceValue === 'bank' || serviceValue === 'existing-company') {
+                        const turnoverValue = formData.get('turnover') || formData.get('turnoverLater');
+                        if (turnoverValue) {
+                            payload.monthlyTurnover = turnoverValue;
                         }
 
-                        const existingAccountLaterValue = formData.get('existingAccountLater');
-                        if (existingAccountLaterValue) {
-                            payload.existingUaeBankAccount = existingAccountLaterValue === 'yes' ? 'yes' : 'no';
+                        const existingAccountValue = formData.get('existingAccount') || formData.get('existingAccountLater');
+                        if (existingAccountValue) {
+                            payload.existingUaeBankAccount = existingAccountValue === 'yes' ? 'yes' : 'no';
                         }
                     }
                 }

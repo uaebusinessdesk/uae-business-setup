@@ -1,133 +1,89 @@
-import { redirect } from 'next/navigation';
-import { isAuthenticated } from '@/lib/auth';
-import AdminNav from '@/components/AdminNav';
+import { analyzePage, analyzeAllPages, PAGES } from '@/lib/seoAnalyzer';
+import SEOInsightsClient from '@/components/SEOInsightsClient';
+import type { SEOAnalysis } from '@/types/seo';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export default async function SEOInsightsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const selectedPage = params?.page || '/';
 
-export default async function SEOInsightsPage() {
-  const authenticated = await isAuthenticated();
+  // Analyze the selected page
+  const analysis = analyzePage(selectedPage);
 
-  if (!authenticated) {
-    redirect('/admin/login');
-  }
+  // Get all pages analysis for overview
+  const allPagesAnalysis = analyzeAllPages();
 
-  // Mock data for page optimization insights
-  // In production, this would fetch from an analytics API or database
-  const pageInsights = [
-    {
-      page: '/',
-      title: 'Homepage',
-      loadTime: 1.2,
-      score: 92,
-      issues: ['Large image files', 'Unused CSS'],
-      recommendations: ['Optimize hero images', 'Remove unused CSS rules'],
-    },
-    {
-      page: '/mainland',
-      title: 'Mainland Company Formation',
-      loadTime: 1.5,
-      score: 88,
-      issues: ['Multiple large images', 'External font loading'],
-      recommendations: ['Compress images', 'Use font-display: swap'],
-    },
-    {
-      page: '/freezone',
-      title: 'Free Zone Company Formation',
-      loadTime: 1.3,
-      score: 90,
-      issues: ['Large background image'],
-      recommendations: ['Use WebP format for background'],
-    },
-    {
-      page: '/offshore',
-      title: 'Offshore Company Formation',
-      loadTime: 1.4,
-      score: 89,
-      issues: ['Multiple external scripts'],
-      recommendations: ['Defer non-critical scripts'],
-    },
-    {
-      page: '/bank-account-setup',
-      title: 'Bank Account Setup',
-      loadTime: 1.6,
-      score: 85,
-      issues: ['Large form assets', 'Multiple API calls'],
-      recommendations: ['Lazy load form components', 'Batch API requests'],
-    },
-  ];
+  // Calculate overall statistics
+  const overallStats = {
+    averageScore: Math.round(
+      allPagesAnalysis.reduce((sum, a) => sum + a.overallScore, 0) / allPagesAnalysis.length
+    ),
+    totalRecommendations: allPagesAnalysis.reduce(
+      (sum, a) => sum + a.allRecommendations.length,
+      0
+    ),
+    criticalIssues: allPagesAnalysis.reduce(
+      (sum, a) => sum + a.allRecommendations.filter((r) => r.priority === 'critical').length,
+      0
+    ),
+    highPriorityIssues: allPagesAnalysis.reduce(
+      (sum, a) => sum + a.allRecommendations.filter((r) => r.priority === 'high').length,
+      0
+    ),
+  };
 
   return (
     <div className="bg-[#faf8f3] min-h-screen">
-      <AdminNav />
       <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-0">
+          {/* Header Section */}
           <div className="mb-10">
             <div className="flex items-center gap-3">
               <div className="w-1 h-12 bg-gradient-to-b from-indigo-600 to-blue-600 rounded-full"></div>
               <div>
                 <h1 className="text-4xl font-bold text-gray-900 mb-2">SEO Insights</h1>
-                <p className="text-sm text-gray-500">Page optimization insights and recommendations</p>
+                <p className="text-sm text-gray-500">
+                  Comprehensive SEO analysis and optimization recommendations
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-6">
-            {pageInsights.map((insight) => (
-              <div key={insight.page} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900">{insight.title}</h3>
-                    <p className="text-sm text-gray-500 mt-1">{insight.page}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-indigo-600">{insight.score}</div>
-                    <div className="text-xs text-gray-500">Score</div>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4 mb-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-sm text-gray-600 mb-1">Load Time</div>
-                    <div className="text-lg font-semibold text-gray-900">{insight.loadTime}s</div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-sm text-gray-600 mb-1">Performance Score</div>
-                    <div className="text-lg font-semibold text-gray-900">{insight.score}/100</div>
-                  </div>
-                </div>
-
-                {insight.issues.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Issues Found</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {insight.issues.map((issue, idx) => (
-                        <li key={idx} className="text-sm text-red-600">{issue}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {insight.recommendations.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Recommendations</h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {insight.recommendations.map((rec, idx) => (
-                        <li key={idx} className="text-sm text-green-600">{rec}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
+          {/* Overall Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+              <div className="text-sm font-medium text-gray-500 mb-1">Average Score</div>
+              <div className="text-3xl font-bold text-indigo-600">{overallStats.averageScore}/100</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+              <div className="text-sm font-medium text-gray-500 mb-1">Total Recommendations</div>
+              <div className="text-3xl font-bold text-gray-900">{overallStats.totalRecommendations}</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-red-200 bg-red-50">
+              <div className="text-sm font-medium text-red-600 mb-1">Critical Issues</div>
+              <div className="text-3xl font-bold text-red-600">{overallStats.criticalIssues}</div>
+            </div>
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-orange-200 bg-orange-50">
+              <div className="text-sm font-medium text-orange-600 mb-1">High Priority</div>
+              <div className="text-3xl font-bold text-orange-600">{overallStats.highPriorityIssues}</div>
+            </div>
           </div>
 
-          <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              <strong>Note:</strong> These insights are based on performance metrics. For real-time data, 
-              integrate with Google PageSpeed Insights API or similar services.
-            </p>
-          </div>
+          {/* Main Content */}
+          {analysis ? (
+            <SEOInsightsClient
+              analysis={analysis}
+              allPagesAnalysis={allPagesAnalysis}
+              pages={PAGES}
+            />
+          ) : (
+            <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200 text-center">
+              <p className="text-gray-600">Page not found or could not be analyzed.</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

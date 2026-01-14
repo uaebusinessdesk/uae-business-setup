@@ -276,7 +276,7 @@ export default function InvoiceViewPage() {
         {/* Header Card with Standardized Header */}
         <div className="bg-white shadow-2xl rounded-2xl overflow-hidden mb-6">
           {/* Header Section with Gradient */}
-          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-10 text-center">
+          <div className="bg-gradient-to-r from-amber-600 to-yellow-600 px-8 py-10 text-center">
             <div className="inline-flex items-center justify-center gap-3 mb-3">
               <img 
                 src={logoUrl} 
@@ -306,9 +306,9 @@ export default function InvoiceViewPage() {
             {/* Invoice Amount - Prominent */}
             {formattedAmount && (
               <div className="text-center mb-8">
-                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-8 border-2 border-indigo-200">
+                <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-8 border-2 border-amber-200">
                   <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Total Amount</p>
-                  <p className="text-5xl font-bold text-indigo-600 mb-4">{formattedAmount}</p>
+                  <p className="text-5xl font-bold text-amber-600 mb-4">{formattedAmount}</p>
                 </div>
               </div>
             )}
@@ -346,7 +346,7 @@ export default function InvoiceViewPage() {
         {customer && (
           <div className="bg-white shadow-2xl rounded-2xl p-8 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <svg className="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Customer Information
@@ -361,7 +361,7 @@ export default function InvoiceViewPage() {
               {customer.email && (
                 <div>
                   <p className="text-sm font-medium text-gray-500 mb-1">Email</p>
-                  <a href={`mailto:${customer.email}`} className="text-base text-indigo-600 hover:text-indigo-800 underline">
+                  <a href={`mailto:${customer.email}`} className="text-base text-amber-600 hover:text-amber-800 underline">
                     {customer.email}
                   </a>
                 </div>
@@ -369,7 +369,7 @@ export default function InvoiceViewPage() {
               {customer.whatsapp && (
                 <div>
                   <p className="text-sm font-medium text-gray-500 mb-1">WhatsApp</p>
-                  <a href={`https://wa.me/${customer.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-base text-indigo-600 hover:text-indigo-800 underline">
+                  <a href={`https://wa.me/${customer.whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="text-base text-amber-600 hover:text-amber-800 underline">
                     {customer.whatsapp}
                   </a>
                 </div>
@@ -394,7 +394,7 @@ export default function InvoiceViewPage() {
         {customer && (
           <div className="bg-white shadow-2xl rounded-2xl p-8 mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
-              <svg className="w-6 h-6 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-amber-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
               Service Request Details
@@ -455,11 +455,11 @@ export default function InvoiceViewPage() {
               <p className="text-sm font-semibold text-gray-900 mb-1">Need help?</p>
               <p className="text-sm text-gray-600">
                 Contact us at{' '}
-                <a href={`mailto:${supportEmail}`} className="text-indigo-600 hover:text-indigo-800 font-medium underline">
+                <a href={`mailto:${supportEmail}`} className="text-amber-600 hover:text-amber-800 font-medium underline">
                   {supportEmail}
                 </a>
                 {' '}or{' '}
-                <a href="https://wa.me/971504209110?text=Hi%20UAE%20Business%20Desk,%20I%20have%20a%20question%20about%20my%20invoice." className="text-indigo-600 hover:text-indigo-800 font-medium underline">
+                <a href="https://wa.me/971504209110?text=Hi%20UAE%20Business%20Desk,%20I%20have%20a%20question%20about%20my%20invoice." className="text-amber-600 hover:text-amber-800 font-medium underline">
                   WhatsApp: +971 50 420 9110
                 </a>
               </p>

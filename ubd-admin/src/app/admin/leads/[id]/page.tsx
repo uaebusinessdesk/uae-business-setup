@@ -8,7 +8,7 @@ import { ATHAR_WHATSAPP, ANOOP_WHATSAPP, SELF_WHATSAPP, TEST_WHATSAPP } from '@/
 import { waLink } from '@/lib/whatsapp';
 import { normalizePhone, isValidE164 } from '@/lib/phone';
 import { getNextAction, getStatus, type LeadWorkflowData } from '@/lib/leadWorkflow';
-import { buildCompanyAgentMessage, buildBankAgentMessage, type BankPrescreenData } from '@/lib/messages';
+import { buildCompanyAgentMessage, buildBankAgentMessage, buildQuoteReminderMessage, type BankPrescreenData } from '@/lib/messages';
 import AgentAssignment from '@/components/AgentAssignment';
 import { toSetupTypeLabel } from '@/lib/setupType';
 
@@ -184,7 +184,6 @@ export default function LeadDetailPage() {
   const [editingAgentContact, setEditingAgentContact] = useState(false);
   const [editingPaymentCompletion, setEditingPaymentCompletion] = useState<'company' | 'bank' | null>(null);
   const [editingDeclineStatus, setEditingDeclineStatus] = useState(false);
-  const [prescreenExpanded, setPrescreenExpanded] = useState(true);
   const [editingQuote, setEditingQuote] = useState(false);
   
   const [quoteEditData, setQuoteEditData] = useState<{ feasible: boolean | null; quotedAmountAed: number | null }>({ feasible: null, quotedAmountAed: null });
@@ -252,6 +251,10 @@ export default function LeadDetailPage() {
   const [showBankResetConfirm, setShowBankResetConfirm] = useState(false);
   const [bankResetConfirmText, setBankResetConfirmText] = useState('');
   const [bankResetConfirmChecked, setBankResetConfirmChecked] = useState(false);
+  const [showMasterResetConfirm, setShowMasterResetConfirm] = useState(false);
+  const [masterResetConfirmText, setMasterResetConfirmText] = useState('');
+  const [masterResetConfirmChecked, setMasterResetConfirmChecked] = useState(false);
+  const [masterResetPassword, setMasterResetPassword] = useState('');
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
 
 
@@ -278,9 +281,13 @@ export default function LeadDetailPage() {
   // Helper function to format timeline value
   const formatTimeline = (timeline: string | null): string => {
     if (!timeline) return 'Not provided';
-    // Capitalize first letter and handle "immediately"
-    const formatted = timeline.toLowerCase() === 'immediately' ? 'Immediately' : timeline.charAt(0).toUpperCase() + timeline.slice(1);
-    return formatted;
+    const timelineMap: Record<string, string> = {
+      'immediately': 'Immediately',
+      'within-1-month': 'Within 1 month',
+      '1-3-months': '1–3 months',
+      'exploring': 'Exploring',
+    };
+    return timelineMap[timeline.toLowerCase()] || timeline.charAt(0).toUpperCase() + timeline.slice(1).replace(/-/g, ' ');
   };
 
   // Helper function to parse notes and extract bank account details
@@ -729,7 +736,8 @@ export default function LeadDetailPage() {
 
       // Send WhatsApp to current company agent if exists
       if (currentCompanyAgent && currentCompanyAgent.agent) {
-        const message = buildCompanyAgentMessage(lead);
+        const agentName = currentCompanyAgent.agent.name || currentCompanyAgent.agent.fullName || undefined;
+        const message = buildCompanyAgentMessage(lead, agentName);
         const waUrl = waLink(currentCompanyAgent.agent.whatsappNumber, message);
         window.open(waUrl, '_blank');
 
@@ -744,40 +752,74 @@ export default function LeadDetailPage() {
       }
 
       // Send WhatsApp to current bank agents
-      for (const bankAgent of currentBankAgents) {
-        if (bankAgent.agent) {
-          const message = buildCompanyAgentMessage(lead);
-          const waUrl = waLink(bankAgent.agent.whatsappNumber, message);
-          window.open(waUrl, '_blank');
+      if (currentBankAgents.length > 0) {
+        // Extract prescreen data from lead.serviceDetails for bank agents
+        let bankPrescreenData: BankPrescreenData = {};
+        if (lead.serviceDetails) {
+          try {
+            const serviceDetails = typeof lead.serviceDetails === 'string' 
+              ? JSON.parse(lead.serviceDetails) 
+              : lead.serviceDetails;
+            const bankPrescreen = serviceDetails?.bankAccountPrescreen;
+            if (bankPrescreen) {
+              bankPrescreenData = {
+                companyName: bankPrescreen.companyName,
+                shareholderNationalities: bankPrescreen.shareholderNationalities,
+                corporateStructure: bankPrescreen.corporateStructure,
+                placeOfIncorporation: bankPrescreen.placeOfIncorporation,
+                dateOfIncorporation: bankPrescreen.dateOfIncorporation,
+                uaeSetupType: bankPrescreen.uaeSetupType,
+                primaryActivityCategory: bankPrescreen.primaryActivityCategory,
+                primaryActivityDetails: bankPrescreen.primaryActivityDetails,
+                ownerUaeResident: bankPrescreen.ownerUaeResident,
+                uboNationality: bankPrescreen.uboNationality,
+                expectedMonthlyTurnoverAed: bankPrescreen.expectedMonthlyTurnoverAed,
+                paymentGeographies: bankPrescreen.paymentGeographies,
+                paymentGeographiesOther: bankPrescreen.paymentGeographiesOther,
+                involvesCrypto: bankPrescreen.involvesCrypto,
+                cashIntensive: bankPrescreen.cashIntensive,
+                sanctionedHighRiskCountries: bankPrescreen.sanctionedHighRiskCountries,
+                kycDocsReady: bankPrescreen.kycDocsReady,
+              };
+            }
+          } catch (e) {
+            console.error('Error parsing serviceDetails:', e);
+          }
+        }
 
-          // Update agent status to 'contacted' if it was 'assigned'
-          if (bankAgent.status === 'assigned') {
-            await fetch(`/api/leads/${id}/agents/${bankAgent.agentId}/status`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: 'contacted' }),
-            });
+        for (const bankAgent of currentBankAgents) {
+          if (bankAgent.agent) {
+            const message = buildBankAgentMessage(lead, bankPrescreenData);
+            const waUrl = waLink(bankAgent.agent.whatsappNumber, message);
+            window.open(waUrl, '_blank');
+
+            // Update agent status to 'contacted' if it was 'assigned'
+            if (bankAgent.status === 'assigned') {
+              await fetch(`/api/leads/${id}/agents/${bankAgent.agentId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'contacted' }),
+              });
+            }
           }
         }
       }
 
-      // Update lead with agentContactedAt timestamp (only if not already set)
-      if (!lead.agentContactedAt) {
-        const agentContactedAt = new Date().toISOString();
-        const response = await fetch(`/api/leads/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            agentContactedAt,
-          }),
-        });
+      // Update lead with agentContactedAt timestamp (always update to track last sent time)
+      const agentContactedAt = new Date().toISOString();
+      const response = await fetch(`/api/leads/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          agentContactedAt,
+        }),
+      });
 
-        if (!response.ok) {
-          const text = await response.text();
-          console.error('Failed to update agentContactedAt:', response.status, text);
-          setError(`Failed to save: ${text}`);
-          return;
-        }
+      if (!response.ok) {
+        const text = await response.text();
+        console.error('Failed to update agentContactedAt:', response.status, text);
+        setError(`Failed to save: ${text}`);
+        return;
       }
 
       // Refresh lead state - fetch full lead to ensure all fields are present
@@ -821,36 +863,44 @@ export default function LeadDetailPage() {
         return;
       }
 
-      // Build prescreen data object (only include fields with values)
-      const prescreenData: BankPrescreenData = {};
-      
-      // Company-specific fields
-      if (bankPrescreenData.companyName) prescreenData.companyName = bankPrescreenData.companyName;
-      if (bankPrescreenData.shareholderNationalities) prescreenData.shareholderNationalities = bankPrescreenData.shareholderNationalities;
-      if (bankPrescreenData.corporateStructure) prescreenData.corporateStructure = bankPrescreenData.corporateStructure;
-      if (bankPrescreenData.placeOfIncorporation) prescreenData.placeOfIncorporation = bankPrescreenData.placeOfIncorporation;
-      if (bankPrescreenData.dateOfIncorporation) prescreenData.dateOfIncorporation = bankPrescreenData.dateOfIncorporation;
-      
-      // Business Snapshot
-      if (bankPrescreenData.uaeSetupType) prescreenData.uaeSetupType = bankPrescreenData.uaeSetupType;
-      if (bankPrescreenData.primaryActivityCategory) prescreenData.primaryActivityCategory = bankPrescreenData.primaryActivityCategory;
-      if (bankPrescreenData.primaryActivityDetails) prescreenData.primaryActivityDetails = bankPrescreenData.primaryActivityDetails;
-      if (bankPrescreenData.ownerUaeResident) prescreenData.ownerUaeResident = bankPrescreenData.ownerUaeResident;
-      
-      // Expected Account Use
-      if (bankPrescreenData.expectedMonthlyTurnoverAed) prescreenData.expectedMonthlyTurnoverAed = bankPrescreenData.expectedMonthlyTurnoverAed;
-      if (bankPrescreenData.paymentGeographies && bankPrescreenData.paymentGeographies.length > 0) {
-        prescreenData.paymentGeographies = bankPrescreenData.paymentGeographies;
+      // Extract prescreen data from lead.serviceDetails if available
+      let prescreenData: BankPrescreenData = {};
+      if (lead.serviceDetails) {
+        try {
+          const serviceDetails = typeof lead.serviceDetails === 'string' 
+            ? JSON.parse(lead.serviceDetails) 
+            : lead.serviceDetails;
+          const bankPrescreen = serviceDetails?.bankAccountPrescreen;
+          if (bankPrescreen) {
+            prescreenData = {
+              companyName: bankPrescreen.companyName,
+              shareholderNationalities: bankPrescreen.shareholderNationalities,
+              corporateStructure: bankPrescreen.corporateStructure,
+              placeOfIncorporation: bankPrescreen.placeOfIncorporation,
+              dateOfIncorporation: bankPrescreen.dateOfIncorporation,
+              uaeSetupType: bankPrescreen.uaeSetupType,
+              primaryActivityCategory: bankPrescreen.primaryActivityCategory,
+              primaryActivityDetails: bankPrescreen.primaryActivityDetails,
+              ownerUaeResident: bankPrescreen.ownerUaeResident,
+              uboNationality: bankPrescreen.uboNationality,
+              expectedMonthlyTurnoverAed: bankPrescreen.expectedMonthlyTurnoverAed,
+              paymentGeographies: bankPrescreen.paymentGeographies,
+              paymentGeographiesOther: bankPrescreen.paymentGeographiesOther,
+              involvesCrypto: bankPrescreen.involvesCrypto,
+              cashIntensive: bankPrescreen.cashIntensive,
+              sanctionedHighRiskCountries: bankPrescreen.sanctionedHighRiskCountries,
+              kycDocsReady: bankPrescreen.kycDocsReady,
+            };
+          }
+        } catch (e) {
+          console.error('Error parsing serviceDetails:', e);
+        }
       }
-      if (bankPrescreenData.paymentGeographiesOther) prescreenData.paymentGeographiesOther = bankPrescreenData.paymentGeographiesOther;
-      
-      // Compliance Flags
-      if (bankPrescreenData.involvesCrypto) prescreenData.involvesCrypto = bankPrescreenData.involvesCrypto;
-      if (bankPrescreenData.cashIntensive) prescreenData.cashIntensive = bankPrescreenData.cashIntensive;
-      if (bankPrescreenData.sanctionedHighRiskCountries) prescreenData.sanctionedHighRiskCountries = bankPrescreenData.sanctionedHighRiskCountries;
-      
-      // Readiness
-      if (bankPrescreenData.kycDocsReady) prescreenData.kycDocsReady = bankPrescreenData.kycDocsReady;
+
+      // Fallback to state if lead.serviceDetails doesn't have prescreen data
+      if (Object.keys(prescreenData).length === 0 && bankPrescreenData) {
+        prescreenData = { ...bankPrescreenData };
+      }
 
       // Send WhatsApp to each current bank agent
       for (const bankAgent of currentBankAgents) {
@@ -1545,7 +1595,6 @@ export default function LeadDetailPage() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">UBO's Nationality</label>
                       <p className="text-gray-900">{bankPrescreen.uboNationality}</p>
-                      <small className="text-xs text-gray-500 mt-1 block">UBO (Ultimate Beneficial Owner) is the person who owns majority control of the company (typically 25% or more ownership or significant decision-making authority).</small>
                     </div>
                   )}
                   {bankPrescreen.expectedMonthlyTurnoverAed && (
@@ -1960,197 +2009,6 @@ export default function LeadDetailPage() {
           })()}
         </div>
 
-        {/* Bank Account Prescreen Details */}
-        {lead.setupType === 'bank' && lead.serviceDetails && (() => {
-          try {
-            const serviceDetails = typeof lead.serviceDetails === 'string' 
-              ? JSON.parse(lead.serviceDetails) 
-              : lead.serviceDetails;
-            const prescreen = serviceDetails?.bankAccountPrescreen;
-            
-            if (!prescreen) return null;
-
-            // Helper functions to format values
-            const formatUaeSetupType = (type: string) => {
-              const map: Record<string, string> = {
-                'MAINLAND': 'Mainland',
-                'FREE_ZONE': 'Free Zone',
-                'OFFSHORE': 'Offshore'
-              };
-              return map[type] || type;
-            };
-
-            const formatActivityCategory = (category: string) => {
-              const map: Record<string, string> = {
-                'GENERAL_TRADING': 'General Trading',
-                'TRADING_SPECIFIC_GOODS': 'Trading (specific goods)',
-                'SERVICES_CONSULTANCY': 'Services / Consultancy',
-                'IT_SOFTWARE': 'IT / Software',
-                'MARKETING_MEDIA': 'Marketing / Media',
-                'ECOMMERCE': 'E-commerce',
-                'LOGISTICS_SHIPPING': 'Logistics / Shipping',
-                'MANUFACTURING': 'Manufacturing',
-                'REAL_ESTATE_RELATED': 'Real Estate related',
-                'OTHER': 'Other'
-              };
-              return map[category] || category;
-            };
-
-            const formatTurnover = (turnover: string) => {
-              const map: Record<string, string> = {
-                'UNDER_100K': 'Under 100,000 AED',
-                '100K_500K': '100,000 – 500,000 AED',
-                '500K_2M': '500,000 – 2,000,000 AED',
-                'OVER_2M': 'Over 2,000,000 AED'
-              };
-              return map[turnover] || turnover;
-            };
-
-            const formatGeography = (geo: string) => {
-              const map: Record<string, string> = {
-                'UAE': 'UAE',
-                'GCC': 'GCC',
-                'UK': 'UK',
-                'EUROPE': 'Europe',
-                'USA_CANADA': 'USA / Canada',
-                'ASIA': 'Asia',
-                'AFRICA': 'Africa',
-                'OTHER': 'Other'
-              };
-              return map[geo] || geo;
-            };
-
-            return (
-              <div className="bg-white shadow-lg rounded-xl border border-gray-100 p-8 mb-8">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-1 h-10 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
-                    <h2 className="text-2xl font-bold text-gray-900">Bank Account Prescreen Details</h2>
-                  </div>
-                  <button
-                    onClick={() => setPrescreenExpanded(!prescreenExpanded)}
-                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                  >
-                    {prescreenExpanded ? 'Collapse' : 'Expand'}
-                  </button>
-                </div>
-
-                {prescreenExpanded && (
-                  <div className="space-y-6">
-                    {/* Business Snapshot */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Business Snapshot</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {prescreen.uaeSetupType && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">UAE Setup Type</label>
-                            <p className="text-gray-900">{formatUaeSetupType(prescreen.uaeSetupType)}</p>
-                          </div>
-                        )}
-                        {prescreen.primaryActivityCategory && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Primary Business Activity</label>
-                            <p className="text-gray-900">{formatActivityCategory(prescreen.primaryActivityCategory)}</p>
-                          </div>
-                        )}
-                        {prescreen.primaryActivityDetails && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Activity Details</label>
-                            <p className="text-gray-900">{prescreen.primaryActivityDetails}</p>
-                          </div>
-                        )}
-                        {prescreen.ownerUaeResident && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Owner UAE Resident</label>
-                            <p className="text-gray-900">{prescreen.ownerUaeResident === 'yes' ? 'Yes' : 'No'}</p>
-                          </div>
-                        )}
-                        {prescreen.uboNationality && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">UBO's Nationality</label>
-                            <p className="text-gray-900">{prescreen.uboNationality}</p>
-                            <small className="text-xs text-gray-500 mt-1 block">UBO (Ultimate Beneficial Owner) is the person who owns majority control of the company (typically 25% or more ownership or significant decision-making authority).</small>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Expected Account Use */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Expected Account Use</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {prescreen.expectedMonthlyTurnoverAed && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Expected Monthly Turnover</label>
-                            <p className="text-gray-900">{formatTurnover(prescreen.expectedMonthlyTurnoverAed)}</p>
-                          </div>
-                        )}
-                        {prescreen.paymentGeographies && prescreen.paymentGeographies.length > 0 && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Geographies</label>
-                            <p className="text-gray-900">
-                              {Array.isArray(prescreen.paymentGeographies)
-                                ? prescreen.paymentGeographies.map(formatGeography).join(', ')
-                                : formatGeography(prescreen.paymentGeographies)}
-                            </p>
-                          </div>
-                        )}
-                        {prescreen.paymentGeographiesOther && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Other Geographies</label>
-                            <p className="text-gray-900">{prescreen.paymentGeographiesOther}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Compliance Flags */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Compliance Flags</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {prescreen.involvesCrypto !== undefined && prescreen.involvesCrypto !== null && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Crypto / Digital Assets Involved</label>
-                            <p className="text-gray-900">{prescreen.involvesCrypto === 'yes' ? 'Yes' : 'No'}</p>
-                          </div>
-                        )}
-                        {prescreen.cashIntensive !== undefined && prescreen.cashIntensive !== null && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Cash-Intensive Business</label>
-                            <p className="text-gray-900">{prescreen.cashIntensive === 'yes' ? 'Yes' : 'No'}</p>
-                          </div>
-                        )}
-                        {prescreen.sanctionedHighRiskCountries !== undefined && prescreen.sanctionedHighRiskCountries !== null && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Sanctioned / High-Risk Countries</label>
-                            <p className="text-gray-900">{prescreen.sanctionedHighRiskCountries === 'yes' ? 'Yes' : 'No'}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Readiness */}
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-200">Readiness</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {prescreen.kycDocsReady && (
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">KYC Documents Ready</label>
-                            <p className="text-gray-900">{prescreen.kycDocsReady === 'YES' ? 'Yes' : 'Not yet'}</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          } catch (e) {
-            console.error('Error parsing serviceDetails:', e);
-            return null;
-          }
-        })()}
-
         {/* Company Deal Workflow */}
         {/* ⚠️ COMPANY DEAL WORKFLOW SECTION - FINALIZED & APPROVED ⚠️
             This section has been reviewed and approved for company setup.
@@ -2282,10 +2140,31 @@ export default function LeadDetailPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <p className="text-sm text-gray-600">
                     Contacted: {formatDubaiTime(lead.agentContactedAt)}
                   </p>
+                  <button
+                    onClick={async () => {
+                      // Check if current agents are assigned before allowing send
+                      const agentsResponse = await fetch(`/api/leads/${id}/agents`);
+                      if (agentsResponse.ok) {
+                        const data = await agentsResponse.json();
+                        const allAssignments = data.all || data;
+                        const hasCurrentAgent = allAssignments.some((a: any) => a.isCurrent);
+                        if (!hasCurrentAgent) {
+                          setError('Please set a current agent before sending WhatsApp.');
+                          return;
+                        }
+                      }
+                      await handleSendToAgent();
+                      await fetchAssignedAgentsForSummary();
+                    }}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {actionLoading ? 'Sending...' : 'Resend WhatsApp to Agent'}
+                  </button>
                 </div>
                 <AgentAssignment 
                   leadId={id}
@@ -2636,11 +2515,9 @@ export default function LeadDetailPage() {
                                 return;
                               }
 
-                              // Extract firstName from fullName
-                              const firstName = lead.fullName?.split(' ')[0] || lead.fullName || 'there';
-                              
-                              // Build message (same as API endpoint)
-                              const message = `Hi ${firstName}, your UAE Business Desk quote has been emailed to you. No payment is required at this stage. Please use the 'View Quote & Decide' link in the email to confirm whether you'd like to proceed.`;
+                              // Build structured quote reminder message
+                              // For manual send, we don't have approvalUrl and can't reliably determine if revised
+                              const message = buildQuoteReminderMessage(lead, undefined, false);
                               
                               // Generate WhatsApp link and open it
                               const waUrl = waLink(phoneNumber, message);
@@ -5349,6 +5226,160 @@ export default function LeadDetailPage() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+        </div>
+
+        {/* Master Reset - Reset All Workflow */}
+        <div className="mt-8 mb-8">
+          {!showMasterResetConfirm ? (
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-6">
+              <div className="flex items-center gap-3 mb-3">
+                <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <h2 className="text-lg font-bold text-red-800">Master Reset - Reset All Workflow</h2>
+              </div>
+              <p className="text-sm text-red-700 mb-4">
+                This will reset ALL workflow fields including agent assignments, feasibility, quotes, invoices, payments, and completion status. The lead will return to 'unassigned' status. Use this only when you need to completely restart the workflow from the beginning.
+              </p>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowMasterResetConfirm(true);
+                  setMasterResetConfirmText('');
+                  setMasterResetConfirmChecked(false);
+                  setMasterResetPassword('');
+                }}
+                className="px-5 py-2.5 text-sm font-semibold text-white bg-red-600 border border-red-700 rounded-lg hover:bg-red-700 transition-colors shadow-md hover:shadow-lg"
+              >
+                Master Reset - Reset All Workflow
+              </button>
+            </div>
+          ) : (
+            <div className="p-6 bg-red-50 border-2 border-red-300 rounded-xl">
+              <p className="text-base font-bold text-red-800 mb-3">
+                Confirm Master Reset
+              </p>
+              <p className="text-sm text-red-700 mb-4">
+                This will reset ALL workflow fields including agent assignments, feasibility, quotes, invoices, payments, and completion status. The lead will return to 'unassigned' status. Type <strong>RESET</strong> to confirm:
+              </p>
+              <input
+                type="text"
+                value={masterResetConfirmText}
+                onChange={(e) => setMasterResetConfirmText(e.target.value)}
+                placeholder="Type RESET"
+                className="w-full px-4 py-2.5 text-sm border border-red-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                autoFocus
+              />
+              <input
+                type="password"
+                value={masterResetPassword}
+                onChange={(e) => setMasterResetPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full px-4 py-2.5 text-sm border border-red-300 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+              />
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="master-reset-confirm-checkbox"
+                  checked={masterResetConfirmChecked}
+                  onChange={(e) => setMasterResetConfirmChecked(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="master-reset-confirm-checkbox" className="text-sm text-red-700">
+                  I understand this will reset the entire workflow
+                </label>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (masterResetConfirmText !== 'RESET' || !masterResetConfirmChecked) {
+                      setError('Please type RESET and check the confirmation box');
+                      setTimeout(() => setError(''), 3000);
+                      return;
+                    }
+                    
+                    if (masterResetPassword !== '9211') {
+                      setError('Invalid password');
+                      setTimeout(() => setError(''), 3000);
+                      return;
+                    }
+                    
+                    setActionLoading(true);
+                    setError('');
+                    setSuccessMessage(null);
+                    
+                    try {
+                      const response = await fetch(`/api/leads/${id}/reset-master`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                          password: masterResetPassword,
+                          reason: 'Master reset by admin' 
+                        }),
+                      });
+                      
+                      let data: any = {};
+                      const contentType = response.headers.get('content-type');
+                      if (contentType && contentType.includes('application/json')) {
+                        data = await response.json();
+                      } else {
+                        const text = await response.text();
+                        try {
+                          data = JSON.parse(text);
+                        } catch {
+                          data = { error: text || 'Request failed' };
+                        }
+                      }
+                      
+                      if (response.ok && data.ok) {
+                        setSuccessMessage(data.message || 'Master reset completed successfully');
+                        setShowMasterResetConfirm(false);
+                        setMasterResetConfirmText('');
+                        setMasterResetConfirmChecked(false);
+                        setMasterResetPassword('');
+                        await fetchLead();
+                        setTimeout(() => setSuccessMessage(null), 5000);
+                      } else {
+                        setError(data.error || 'Failed to reset workflow');
+                        setTimeout(() => setError(''), 5000);
+                      }
+                    } catch (err) {
+                      console.error('Error resetting workflow:', err);
+                      setError('Failed to reset workflow. Please try again.');
+                      setTimeout(() => setError(''), 5000);
+                    } finally {
+                      setActionLoading(false);
+                    }
+                  }}
+                  disabled={actionLoading}
+                  className="px-5 py-2.5 text-sm font-semibold text-white bg-red-600 border border-red-700 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                >
+                  {actionLoading ? 'Resetting...' : 'Confirm Master Reset'}
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMasterResetConfirm(false);
+                    setMasterResetConfirmText('');
+                    setMasterResetConfirmChecked(false);
+                    setMasterResetPassword('');
+                  }}
+                  disabled={actionLoading}
+                  className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>

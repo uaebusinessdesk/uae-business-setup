@@ -4,7 +4,8 @@ import { sendCustomerEmail } from '@/lib/sendCustomerEmail';
 import { buildCompanyQuoteEmail } from '@/lib/emailTemplates';
 import { db } from '@/lib/db';
 import { createApprovalToken } from '@/lib/quote-approval-token';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+// WhatsApp sending removed - now manual-only via admin dashboard
+import { buildQuoteReminderMessage } from '@/lib/messages';
 
 export const dynamic = 'force-dynamic';
 
@@ -188,75 +189,12 @@ export async function POST(
       },
     });
 
-    // Attempt to send WhatsApp notification (non-blocking)
-    let whatsappResult: { attempted: boolean; ok?: boolean; error?: string } = { attempted: false };
-    let whatsappMessageId: string | undefined = undefined;
-    
-    try {
-      // Get phone number (prefer phone, fallback to whatsapp)
-      const phoneNumber = (lead as any).phone || lead.whatsapp;
-      
-      if (!phoneNumber) {
-        console.log('[API/Leads/Email/Quote/Company] WhatsApp skipped: no phone number available');
-        whatsappResult = { attempted: false };
-      } else {
-        // Validate E.164 format (must start with +)
-        const phoneE164 = phoneNumber.trim();
-        if (!phoneE164.startsWith('+')) {
-          console.log('[API/Leads/Email/Quote/Company] WhatsApp skipped: phone number not in E.164 format', { phone: phoneE164 });
-          whatsappResult = { attempted: false };
-        } else {
-          // Extract firstName from fullName
-          const firstName = lead.fullName?.split(' ')[0] || lead.fullName || 'there';
-          
-          // Build message
-          const message = `Hi ${firstName}, your UAE Business Desk quote has been emailed to you. No payment is required at this stage. Please use the 'View Quote' link in the email to confirm whether you'd like to proceed.`;
-          
-          // Send WhatsApp (non-blocking - don't throw)
-          const result = await sendWhatsAppMessage(phoneE164, message);
-          
-          whatsappResult = {
-            attempted: true,
-            ok: result.ok,
-            error: result.userMessage || result.error,
-          };
-          
-          // Only set tracking fields if send succeeded
-          if (result.ok && result.messageId) {
-            whatsappMessageId = result.messageId;
-            
-            // Update tracking fields in database
-            const updateData: any = {
-              quoteWhatsAppSentAt: new Date(),
-              quoteWhatsAppMessageId: result.messageId,
-            };
-            
-            {
-              await db.lead.update({
-                where: { id },
-                data: updateData,
-              });
-            }
-          } else {
-            console.error('[API/Leads/Email/Quote/Company] WhatsApp send failed:', result.error);
-          }
-        }
-      }
-    } catch (whatsappError: any) {
-      // Log but don't fail the API response
-      console.error('[API/Leads/Email/Quote/Company] WhatsApp notification error:', whatsappError.message || whatsappError);
-      whatsappResult = {
-        attempted: true,
-        ok: false,
-        error: whatsappError.message || 'Unknown error',
-      };
-      // Do not set tracking fields on error
-    }
+    // WhatsApp notifications are now manual-only (removed automated sending)
+    // Admins can send WhatsApp manually via /api/leads/[id]/whatsapp/quote-notification endpoint
 
     return NextResponse.json({ 
       success: true, 
       message: 'Company quote email sent',
-      whatsapp: whatsappResult,
     });
   } catch (error: any) {
     console.error('[API/Leads/Email/Quote/Company] Error:', error);

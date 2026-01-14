@@ -167,7 +167,12 @@ export default function LeadDetailPage() {
       return;
     }
 
-    const message = buildCompanyAgentMessage(lead);
+    // Get agent name for personalization
+    const agentName = lead.assignedAgent === 'athar' ? 'Athar' :
+                     lead.assignedAgent === 'anoop' ? 'Anoop' :
+                     lead.assignedAgent === 'self' ? 'Self' : undefined;
+
+    const message = buildCompanyAgentMessage(lead, agentName);
     const waUrl = waLink(agentNumber, message);
     window.open(waUrl, '_blank');
 
@@ -366,9 +371,18 @@ export default function LeadDetailPage() {
                 {actionLoading ? 'Processing...' : 'Send WhatsApp to Agent'}
               </button>
             ) : (
-              <p className="text-sm text-gray-600">
-                Contacted: {formatDubaiTime(lead.agentContactedAt)}
-              </p>
+              <div className="space-y-2">
+                <p className="text-sm text-gray-600">
+                  Contacted: {formatDubaiTime(lead.agentContactedAt)}
+                </p>
+                <button
+                  onClick={handleSendToAgent}
+                  disabled={actionLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium disabled:opacity-50"
+                >
+                  {actionLoading ? 'Sending...' : 'Resend WhatsApp to Agent'}
+                </button>
+              </div>
             )}
           </div>
 

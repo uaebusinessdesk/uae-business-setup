@@ -69,7 +69,16 @@ export async function POST(req: NextRequest) {
       : project === 'bank'
       ? lead.bankQuoteViewedAt
       : lead.quoteViewedAt;
-    if (!viewedAtField) {
+    
+    // Check if quote was actually sent (prevent notifications after master reset)
+    const quoteSentAt = project === 'bank-deal'
+      ? (lead as any).bankDealQuoteSentAt
+      : project === 'bank'
+      ? lead.bankQuoteSentAt
+      : lead.companyQuoteSentAt;
+    
+    // Only track view and send notification if quote was actually sent
+    if (!viewedAtField && quoteSentAt) {
       try {
         const updateData: any = project === 'bank-deal'
           ? { bankDealQuoteViewedAt: now }
@@ -89,7 +98,7 @@ export async function POST(req: NextRequest) {
         });
         await logActivity(payload.leadId, project === 'bank-deal' ? 'bank_deal_quote_viewed' : 'quote_viewed', message);
         
-        // Send admin notification (only on first view)
+        // Send admin notification (only on first view and if quote was sent)
         try {
           const quoteAmount = project === 'bank-deal'
             ? (lead as any).bankDealQuotedAmountAed

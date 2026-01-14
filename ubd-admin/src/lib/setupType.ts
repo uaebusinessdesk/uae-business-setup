@@ -26,9 +26,10 @@ export const SETUP_TYPE_LABEL: Record<SetupType, string> = {
 /**
  * Normalize setup type input to canonical value
  * - "company" or empty/null -> "mainland" (legacy support)
- * - Combined types (e.g., "mainland + bank account") -> extract base type
+ * - Combined types (e.g., "mainland + bank account") -> extract base type (legacy only, combined services no longer supported)
  * - Unknown values -> "mainland" (default fallback)
  * - Returns canonical SetupType
+ * Note: Combined services are no longer supported. This normalization is for backward compatibility with existing leads.
  */
 export function normalizeSetupType(input: string | null | undefined): SetupType {
   if (!input || input.trim() === '') {
@@ -75,24 +76,14 @@ export function normalizeSetupType(input: string | null | undefined): SetupType 
 
 /**
  * Get display label for setup type
- * Handles combined types (e.g., "mainland + bank account") and returns appropriate label
+ * Note: Combined services are no longer supported. For legacy combined types, returns only the base service label.
  */
 export function toSetupTypeLabel(input: string | null | undefined): string {
   if (!input || input.trim() === '') {
     return SETUP_TYPE_LABEL['mainland'];
   }
 
-  const normalized = input.trim().toLowerCase();
-
-  // Handle combined types (e.g., "mainland + bank account")
-  if (normalized.includes('+ bank account')) {
-    const baseType = normalized.split('+')[0].trim();
-    if (baseType === 'mainland') return 'Mainland Company Setup + Bank Account';
-    if (baseType === 'freezone') return 'Free Zone Company Setup + Bank Account';
-    if (baseType === 'offshore') return 'Offshore Company Setup + Bank Account';
-  }
-
-  // Normalize and return label
+  // Normalize and return label (combined types are normalized to base type)
   const normalizedType = normalizeSetupType(input);
   return SETUP_TYPE_LABEL[normalizedType];
 }

@@ -167,36 +167,16 @@ function getBankNextAction(lead: LeadWorkflowData, leadType?: 'Lead'): string | 
 
 /**
  * Get the next action for a lead based on its current state
- * Handles both company and bank-only leads correctly
+ * Bank account setup now uses the same workflow as company setup
  */
 export function getNextAction(lead: LeadWorkflowData, leadType?: 'Lead'): string {
-  // Check if this is a bank-only lead
-  const isBankOnlyLead = lead.setupType === 'bank';
-  
   // Closed states (check declinedAt first)
   if (lead.declinedAt) {
     return 'No further action';
   }
   if (lead.feasible === false) return 'Closed (Not Feasible)';
   
-  // For bank-only leads, check bank-specific decline fields
-  if (isBankOnlyLead) {
-    if (lead.bankQuoteDeclinedAt || lead.bankDeclinedAt || lead.bankApproved === false) {
-      return 'Bank Quote Declined';
-    }
-    if (lead.bankCompletedAt !== null) {
-      return 'Completed';
-    }
-    
-    // Get bank-specific next action
-    const bankAction = getBankNextAction(lead, leadType);
-    if (bankAction) {
-      return bankAction;
-    }
-    return 'Completed';
-  }
-  
-  // Company workflow (or combined company + bank)
+  // All leads (company and bank) now use company workflow
   if (lead.quoteDeclinedAt) {
     return 'Quote Declined';
   }
@@ -212,7 +192,7 @@ export function getNextAction(lead: LeadWorkflowData, leadType?: 'Lead'): string
     return 'Completed';
   }
   
-  // Get company next action
+  // Get company next action (used for both company and bank leads)
   const companyAction = getCompanyNextAction(lead);
   
   if (companyAction) {
@@ -225,80 +205,14 @@ export function getNextAction(lead: LeadWorkflowData, leadType?: 'Lead'): string
 
 /**
  * Get the status for a lead based on its current state
- * Handles both company and bank-only leads correctly
+ * Bank account setup now uses the same workflow as company setup
  */
 export function getStatus(lead: LeadWorkflowData, leadType?: 'Lead'): string {
-  // Check if this is a bank-only lead
-  const isBankOnlyLead = lead.setupType === 'bank';
-  
   // Closed states (check declinedAt first)
   if (lead.declinedAt) return 'Closed - Declined';
   if (lead.feasible === false) return 'Not Feasible';
   
-  // For bank-only leads, use bank-specific workflow
-  if (isBankOnlyLead) {
-    if (lead.bankQuoteDeclinedAt || lead.bankDeclinedAt || lead.bankApproved === false) {
-      return 'Declined';
-    }
-    
-    // Bank completed
-    if (lead.bankCompletedAt !== null) {
-      return 'Completed';
-    }
-    
-    // Bank payment received
-    if (lead.bankPaymentReceivedAt) {
-      if (!lead.bankCompletedAt) {
-        return 'Bank In Progress';
-      }
-    }
-    
-    // Bank invoice sent
-    const hasBankInvoice = lead.bankInvoiceNumber && lead.bankInvoiceSentAt;
-    if (hasBankInvoice) {
-      if (!lead.bankPaymentReceivedAt) {
-        return 'Awaiting Payment';
-      }
-      return 'Invoice Sent';
-    }
-    
-    if (lead.bankApproved === true && !lead.bankPaymentReceivedAt && !hasBankInvoice) {
-      return 'Awaiting Payment';
-    }
-    
-    // Bank quote sent but waiting for decision
-    const hasBankQuote = lead.bankQuoteSentAt;
-    const isBankApproved = lead.bankProceedConfirmedAt || lead.bankQuoteApprovedAt || lead.bankApproved === true;
-    
-    if (hasBankQuote && !isBankApproved && !lead.bankQuoteDeclinedAt && !hasBankInvoice) {
-      return 'Awaiting Customer Approval';
-    }
-    
-    if (hasBankQuote) {
-      if (!isBankApproved && !lead.bankQuoteDeclinedAt) {
-        return 'Quoted';
-      }
-    }
-    
-    // Bank quote state
-    if (lead.bankQuotedAmountAed) {
-      return 'Quoted';
-    }
-    
-    // Feasibility state
-    if (lead.feasible === null && lead.agentContactedAt) {
-      return 'Feasibility Review';
-    }
-    
-    // Agent contact state
-    if (lead.agentContactedAt) {
-      return 'Agent Contacted';
-    }
-    
-    return 'New';
-  }
-  
-  // Company workflow (or combined company + bank)
+  // All leads (company and bank) now use company workflow
   if (lead.quoteDeclinedAt) return 'Declined';
   if (lead.approved === false && lead.quoteDeclinedAt) return 'Declined';
   

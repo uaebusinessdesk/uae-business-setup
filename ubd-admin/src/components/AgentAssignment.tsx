@@ -308,7 +308,19 @@ export default function AgentAssignment({
   // Filter agents by service type
   const getAgentsForService = (serviceType: 'company' | 'bank'): Agent[] => {
     if (serviceType === 'bank') {
-      // For bank, show agents whose names contain bank patterns
+      // First check for agents with 'bank' service type association
+      const bankServiceAgents = agents.filter(agent => 
+        agent.services?.some(service => 
+          service.serviceType.slug === 'bank'
+        )
+      );
+      
+      // If we found agents with bank service association, return them
+      if (bankServiceAgents.length > 0) {
+        return bankServiceAgents;
+      }
+      
+      // Fallback to name pattern matching (for backward compatibility)
       return agents.filter(agent => {
         const agentName = agent.name.toLowerCase();
         return extractBankName(agent.name) !== null || 
@@ -630,8 +642,10 @@ export default function AgentAssignment({
     );
   };
 
+  // needsCompany: true for company setup types (not bank)
   const needsCompany = setupType && setupType !== 'bank';
-  const needsBank = hasBankProject || setupType === 'bank';
+  // needsBank: true for bank-only leads OR combined company + bank projects
+  const needsBank = setupType === 'bank' || hasBankProject;
 
   return (
     <div className="space-y-4">
@@ -665,6 +679,7 @@ export default function AgentAssignment({
       {needsBank && (() => {
         const isBankOnlyLead = setupType === 'bank';
         const isCompanyCompleted = !!companyCompletedAt;
+        // Only disable bank section for combined projects (not bank-only leads) if company not completed
         const shouldDisableBankSection = !isBankOnlyLead && !isCompanyCompleted;
         
         return (
@@ -675,7 +690,9 @@ export default function AgentAssignment({
               </div>
             )}
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium text-gray-900">Bank Setup Agents</div>
+              <div className="text-sm font-medium text-gray-900">
+                {isBankOnlyLead ? 'Bank Account Setup Agents' : 'Bank Setup Agents'}
+              </div>
               <button
                 onClick={() => {
                   if (!shouldDisableBankSection) {

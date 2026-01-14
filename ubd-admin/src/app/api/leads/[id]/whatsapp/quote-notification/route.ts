@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/lib/auth';
 import { sendWhatsAppMessage } from '@/lib/whatsapp';
 import { db } from '@/lib/db';
+import { createApprovalToken } from '@/lib/quote-approval-token';
+import { buildQuoteReminderMessage } from '@/lib/messages';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,11 +67,26 @@ export async function POST(
       );
     }
 
-    // Extract firstName from fullName
-    const firstName = fullName?.split(' ')[0] || fullName || 'there';
+    // For manual notification route, we can't reliably determine if quote is revised
+    // Default to false (the quote email route handles revised quote detection)
+    const isRevisedQuote = false;
 
-    // Build message (same as quote email route)
-    const message = `Hi ${firstName}, your UAE Business Desk quote has been emailed to you. No payment is required at this stage. Please use the 'View Quote & Decide' link in the email to confirm whether you'd like to proceed.`;
+    // Generate approval URL for the quote (if needed)
+    let approvalUrl: string | undefined;
+    try {
+      const approvalToken = await createApprovalToken(id, 'Lead', 'company');
+      const baseUrl = 
+        process.env.ADMIN_BASE_URL ||
+        process.env.NEXT_PUBLIC_BASE_URL ||
+        'http://localhost:3001';
+      approvalUrl = `${baseUrl}/quote/approve?token=${approvalToken}`;
+    } catch (error) {
+      // If token generation fails, continue without approvalUrl
+      console.error('[API/Leads/WhatsApp/Quote-Notification] Failed to generate approval URL:', error);
+    }
+
+    // Build structured quote reminder message
+    const message = buildQuoteReminderMessage(lead, approvalUrl, isRevisedQuote);
 
     // Send WhatsApp
     const result = await sendWhatsAppMessage(phoneE164, message);

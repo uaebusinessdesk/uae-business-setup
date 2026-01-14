@@ -1,15 +1,39 @@
-import SEOAnalyticsClient from '@/components/SEOAnalyticsClient';
-import type { AnalyticsDashboard } from '@/types/seoAnalytics';
+import { NextRequest, NextResponse } from 'next/server';
 import { analyzeAllPagesContentQuality, calculateOverallSeoScore } from '@/lib/seoAnalytics';
 import { analyzeAllPages } from '@/lib/seoAnalyzer';
 import { analyzeAllPagesSpeed } from '@/lib/pageSpeedAnalyzer';
-import { getDateRange, fetchSearchPerformance, fetchTopQueries } from '@/lib/googleSearchConsole';
+import { fetchSearchPerformance, fetchTopQueries, getDateRange } from '@/lib/googleSearchConsole';
 import { db } from '@/lib/db';
+import type { AnalyticsDashboard } from '@/types/seoAnalytics';
 
-async function fetchDashboardData(): Promise<AnalyticsDashboard | null> {
+// Helper to get stored tokens from database
+async function getStoredTokens() {
   try {
-    const dateRange = getDateRange('30d');
+    const token = await db.googleAuthToken.findFirst();
+    
+    if (!token) {
+      return null;
+    }
 
+    return {
+      accessToken: token.accessToken,
+      refreshToken: token.refreshToken,
+      expiresAt: token.expiresAt,
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const preset = (searchParams.get('preset') || '30d') as '7d' | '30d' | '90d' | 'custom';
+  const startDate = searchParams.get('startDate') || undefined;
+  const endDate = searchParams.get('endDate') || undefined;
+
+  const dateRange = getDateRange(preset, startDate, endDate);
+
+  try {
     // Get content quality analysis
     const contentQuality = analyzeAllPagesContentQuality();
 
@@ -17,10 +41,11 @@ async function fetchDashboardData(): Promise<AnalyticsDashboard | null> {
     const technicalAnalysis = analyzeAllPages();
     const avgTechnicalScore = technicalAnalysis.reduce((sum, a) => sum + a.technical.score, 0) / technicalAnalysis.length;
 
-    // Get PageSpeed metrics (mobile) - skip for now to avoid long load times
-    const pageSpeedMetrics: any[] = []; // await analyzeAllPagesSpeed('mobile');
+    // Get PageSpeed metrics (mobile)
+    const pageSpeedMetrics = await analyzeAllPagesSpeed('mobile');
 
     // Try to get Google Search Console data
+    const tokens = await getStoredTokens();
     let searchPerformance: any[] = [];
     let topKeywords: any[] = [];
     let avgPosition: number | null = null;
@@ -28,20 +53,17 @@ async function fetchDashboardData(): Promise<AnalyticsDashboard | null> {
     let totalClicks = 0;
     let pagesOnPage1 = 0;
 
-    try {
-      // Use Prisma to get tokens
-      const token = await db.googleAuthToken.findFirst();
-      
-      if (token && token.expiresAt && new Date() < token.expiresAt) {
+    if (tokens && tokens.expiresAt && new Date() < tokens.expiresAt) {
+      try {
         searchPerformance = await fetchSearchPerformance(
-          token.accessToken,
-          token.refreshToken || undefined,
+          tokens.accessToken,
+          tokens.refreshToken || undefined,
           dateRange
         );
 
         topKeywords = await fetchTopQueries(
-          token.accessToken,
-          token.refreshToken || undefined,
+          tokens.accessToken,
+          tokens.refreshToken || undefined,
           dateRange,
           100
         );
@@ -54,20 +76,19 @@ async function fetchDashboardData(): Promise<AnalyticsDashboard | null> {
           avgPosition = totalImpressions > 0 ? totalPosition / totalImpressions : null;
         }
 
+        // Count pages on page 1 (positions 1-10)
         pagesOnPage1 = topKeywords.filter((k) => k.currentPosition !== null && k.currentPosition <= 10).length;
+      } catch (error) {
+        console.error('Error fetching GSC data:', error);
+        // Continue without GSC data
       }
-    } catch (error) {
-      // GSC not connected or error - continue without it
-      console.log('GSC data not available:', error);
     }
 
     // Calculate average CTR
     const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
 
     // Calculate overall SEO score
-    const avgContentScore = contentQuality.length > 0
-      ? contentQuality.reduce((sum, c) => sum + c.keywordOptimizationScore, 0) / contentQuality.length
-      : 0;
+    const avgContentScore = contentQuality.reduce((sum, c) => sum + c.keywordOptimizationScore, 0) / contentQuality.length;
     const avgPerformanceScore = pageSpeedMetrics.length > 0
       ? pageSpeedMetrics.reduce((sum, p) => sum + p.performanceScore, 0) / pageSpeedMetrics.length
       : 0;
@@ -89,46 +110,23 @@ async function fetchDashboardData(): Promise<AnalyticsDashboard | null> {
       dateRange,
     };
 
-    return {
+    const dashboard: AnalyticsDashboard = {
       overview,
       searchPerformance,
       topKeywords,
-      topPages: [],
+      topPages: [], // Would need to fetch separately
       pageSpeedMetrics,
       contentQuality,
-      competitorInsights: [],
+      competitorInsights: [], // Would need separate implementation
       lastUpdated: new Date(),
     };
-  } catch (error) {
+
+    return NextResponse.json({ data: dashboard });
+  } catch (error: any) {
     console.error('Error building analytics dashboard:', error);
-    return null;
+    return NextResponse.json(
+      { error: error.message || 'Failed to build analytics dashboard' },
+      { status: 500 }
+    );
   }
-}
-
-export default async function SEOAnalyticsPage() {
-  const dashboardData = await fetchDashboardData();
-
-  return (
-    <div className="bg-[#faf8f3] min-h-screen">
-      <div className="max-w-7xl mx-auto py-8 sm:px-6 lg:px-8">
-        <div className="px-4 sm:px-0">
-          {/* Header Section */}
-          <div className="mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-1 h-12 bg-gradient-to-b from-indigo-600 to-blue-600 rounded-full"></div>
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900 mb-2">Advanced SEO Analytics</h1>
-                <p className="text-sm text-gray-500">
-                  Comprehensive analytics to help you rank on page 1 of Google
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <SEOAnalyticsClient initialData={dashboardData || undefined} />
-        </div>
-      </div>
-    </div>
-  );
 }

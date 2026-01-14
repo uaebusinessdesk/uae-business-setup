@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -60,7 +60,7 @@ model Lead {
   bankQuoteDeclinedAt           DateTime?
   bankQuoteDeclineReason        String?
   bankQuoteQuestionsAt          DateTime?
-  bankQuoteQuestionsReason       String?
+  bankQuoteQuestionsReason      String?
   bankPaymentLink               String?
   bankApprovalRequestedAt       DateTime?
   bankApproved                  Boolean?
@@ -304,4 +304,73 @@ model LeadAgent {
   @@index([agentId])
   @@index([leadId, order])
   @@index([leadId, serviceType])
+}
+
+model SEOKeyword {
+  id               String   @id @default(uuid())
+  keyword          String
+  pagePath         String
+  currentPosition  Int?
+  previousPosition Int?
+  impressions      Int      @default(0)
+  clicks           Int      @default(0)
+  ctr              Float    @default(0)
+  lastUpdated      DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([keyword, pagePath])
+  @@index([keyword])
+  @@index([pagePath])
+  @@index([lastUpdated])
+}
+
+model SEOPerformance {
+  id          String   @id @default(uuid())
+  date        DateTime
+  pagePath    String?
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  ctr         Float    @default(0)
+  avgPosition Float?
+  createdAt   DateTime @default(now())
+
+  @@unique([date, pagePath])
+  @@index([date])
+  @@index([pagePath])
+}
+
+model SEOPageSpeed {
+  id                     String   @id @default(uuid())
+  pagePath               String
+  strategy               String // 'mobile' or 'desktop'
+  performanceScore       Int
+  mobileScore            Int?
+  desktopScore           Int?
+  lcp                    Float?
+  fid                    Float?
+  cls                    Float?
+  loadTime               Float?
+  ttfb                   Float?
+  totalPageSize          Int?
+  numberOfRequests       Int?
+  imageOptimizationScore Int?
+  lastAnalyzed           DateTime @default(now())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@unique([pagePath, strategy])
+  @@index([pagePath])
+  @@index([lastAnalyzed])
+}
+
+model GoogleAuthToken {
+  id           String    @id @default(uuid())
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([id])
 }

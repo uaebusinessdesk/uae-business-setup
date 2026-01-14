@@ -4,7 +4,7 @@ import { sendCustomerEmail } from '@/lib/sendCustomerEmail';
 import { buildBankDealQuoteEmail } from '@/lib/emailTemplates';
 import { db } from '@/lib/db';
 import { createApprovalToken } from '@/lib/quote-approval-token';
-import { sendWhatsAppMessage } from '@/lib/whatsapp';
+// WhatsApp sending removed - now manual-only via admin dashboard
 
 export const dynamic = 'force-dynamic';
 
@@ -114,16 +114,8 @@ export async function POST(
     const { logActivity } = await import('@/lib/activity');
     await logActivity(id, 'bank_deal_quote_sent', `Bank Deal quote sent to ${lead.email}`);
 
-    // Send WhatsApp notification if phone number available
-    if (lead.whatsapp) {
-      try {
-        const message = `Hi ${lead.fullName},\n\nWe have sent you a Bank Deal quote via email. Please check your inbox and review the quote.\n\nThank you!`;
-        await sendWhatsAppMessage(lead.whatsapp, message);
-      } catch (waError) {
-        console.error('Failed to send WhatsApp notification for Bank Deal quote:', waError);
-        // Don't fail the request if WhatsApp fails
-      }
-    }
+    // WhatsApp notifications are now manual-only (removed automated sending)
+    // Admins can send WhatsApp manually from the admin dashboard
 
     return NextResponse.json({
       ok: true,

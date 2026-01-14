@@ -312,12 +312,34 @@ export async function POST(request: NextRequest) {
     // Please do not modify without careful review and approval.
     const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
     
-    // Determine subject line based on request type
+    // Helper function to format timeline for display
+    const formatTimeline = (timeline: string | null): string => {
+      if (!timeline) return '';
+      const timelineMap: Record<string, string> = {
+        'immediately': 'Immediately',
+        'within-1-month': 'Within 1 month',
+        '1-3-months': '1–3 months',
+        'exploring': 'Exploring',
+      };
+      return timelineMap[timeline.toLowerCase()] || timeline;
+    };
+
+    // Determine subject line based on request type - Enhanced with service type and customer name
     let adminSubject: string;
     if (isCallbackRequest) {
-      adminSubject = `📞 Callback Request – ${leadRef}`;
+      adminSubject = `📞 Callback Request – ${leadRef} | ${lead.fullName}`;
     } else {
-      adminSubject = isEnquiry ? `New Enquiry Received – ${leadRef}` : `New Lead Received – ${leadRef}`;
+      // Check if this is a bank account setup (using setupType or serviceRequired)
+      const isBankAccountSetup = setupType === 'bank' || body.serviceRequired === 'bank' || body.serviceRequired === 'existing-company';
+      const serviceType = isBankAccountSetup ? 'Bank Account Setup' :
+                          body.serviceRequired === 'mainland' ? 'Mainland' :
+                          body.serviceRequired === 'freezone' ? 'Free Zone' :
+                          body.serviceRequired === 'offshore' ? 'Offshore' :
+                          body.serviceRequired === 'not-sure' ? 'General Enquiry' :
+                          'Company Setup';
+      adminSubject = isEnquiry 
+        ? `📧 New Enquiry – ${leadRef} | ${lead.fullName}` 
+        : `🎯 New Lead: ${serviceType} – ${leadRef} | ${lead.fullName}`;
     }
     
     // Format service name for display
@@ -500,10 +522,10 @@ export async function POST(request: NextRequest) {
                       ${lead.timeline ? `
                       <tr>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
-                          <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Timeline</p>
+                          <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Preferred Timeline</p>
                         </td>
                         <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
-                          <p style="margin: 0; color: #333333; font-size: 15px;">${lead.timeline.toLowerCase() === 'immediately' ? 'Immediately' : lead.timeline}</p>
+                          <p style="margin: 0; color: #333333; font-size: 15px;">${formatTimeline(lead.timeline)}</p>
                         </td>
                       </tr>
                       ` : ''}
@@ -593,13 +615,38 @@ export async function POST(request: NextRequest) {
                 </tr>
                 ` : ''}
                 
+                <!-- Action Required Section -->
+                <tr>
+                  <td style="padding: 0 40px 24px;">
+                    <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; border-radius: 6px; padding: 20px 24px; margin: 0;">
+                      <h3 style="margin: 0 0 12px; color: #92400e; font-size: 16px; font-weight: 700;">📋 Action Required</h3>
+                      <ul style="margin: 0; padding-left: 20px; color: #78350f; font-size: 14px; line-height: 1.8;">
+                        <li style="margin-bottom: 8px;">Review the lead details above</li>
+                        <li style="margin-bottom: 8px;">Assign an agent if not already assigned</li>
+                        <li style="margin-bottom: 8px;">Contact the client within 24 hours via WhatsApp or email</li>
+                        <li style="margin-bottom: 0;">Update lead status in admin portal after initial contact</li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                
                 <!-- Footer -->
                 <tr>
                   <td style="background-color: #faf8f3; padding: 24px 40px; border-top: 1px solid #e2e8f0;">
-                    <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center; line-height: 1.5;">
-                      This is an automated notification from the UBD Lead Capture API.<br>
-                      <a href="http://localhost:3001/admin/leads/${lead.id}" style="color: #0b2a4a; text-decoration: none; font-weight: 600;">View Lead in Admin Portal →</a>
-                    </p>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" style="padding-bottom: 16px;">
+                          <a href="${process.env.ADMIN_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001'}/admin/leads/${lead.id}" style="display: inline-block; background: linear-gradient(135deg, #0b2a4a 0%, #1e3a5f 100%); color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: 600; font-size: 14px;">View Lead in Admin Portal →</a>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center">
+                          <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center; line-height: 1.5;">
+                            This is an automated notification from the UBD Lead Capture API.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
@@ -630,11 +677,69 @@ export async function POST(request: NextRequest) {
     // - Additional notes (only user-entered notes, excluding bank details and lead reference)
     // Please do not modify without careful review and approval.
     if (lead.email) {
-      const clientSubject = isEnquiry ? `We received your enquiry – ${leadRef}` : `We received your request – ${leadRef}`;
-      
       // Format service name for display using toSetupTypeLabel for consistent formatting
       const { toSetupTypeLabel } = await import('@/lib/setupType');
       const serviceName = toSetupTypeLabel(setupType);
+      
+      // Parse bank account prescreen data if available
+      let bankPrescreen: any = null;
+      if (setupType === 'bank' && body.serviceDetails?.bankAccountPrescreen) {
+        bankPrescreen = body.serviceDetails.bankAccountPrescreen;
+      }
+      
+      // Helper functions for formatting bank prescreen fields
+      const formatUaeSetupType = (type: string) => {
+        const map: Record<string, string> = {
+          'MAINLAND': 'Mainland',
+          'FREE_ZONE': 'Free Zone',
+          'OFFSHORE': 'Offshore'
+        };
+        return map[type] || type;
+      };
+      
+      const formatActivityCategory = (category: string) => {
+        const map: Record<string, string> = {
+          'GENERAL_TRADING': 'General Trading',
+          'TRADING_SPECIFIC_GOODS': 'Trading (specific goods)',
+          'SERVICES_CONSULTANCY': 'Services / Consultancy',
+          'IT_SOFTWARE': 'IT / Software',
+          'MARKETING_MEDIA': 'Marketing / Media',
+          'ECOMMERCE': 'E-commerce',
+          'LOGISTICS_SHIPPING': 'Logistics / Shipping',
+          'MANUFACTURING': 'Manufacturing',
+          'REAL_ESTATE_RELATED': 'Real Estate related',
+          'OTHER': 'Other'
+        };
+        return map[category] || category;
+      };
+      
+      const formatTurnover = (turnover: string) => {
+        const map: Record<string, string> = {
+          'UNDER_100K': 'Under 100,000 AED',
+          '100K_500K': '100,000 – 500,000 AED',
+          '500K_2M': '500,000 – 2,000,000 AED',
+          'OVER_2M': 'Over 2,000,000 AED'
+        };
+        return map[turnover] || turnover;
+      };
+      
+      const formatGeography = (geo: string) => {
+        const map: Record<string, string> = {
+          'UAE': 'UAE',
+          'GCC': 'GCC',
+          'UK': 'UK',
+          'EUROPE': 'Europe',
+          'USA_CANADA': 'USA / Canada',
+          'ASIA': 'Asia',
+          'AFRICA': 'Africa',
+          'OTHER': 'Other'
+        };
+        return map[geo] || geo;
+      };
+      
+      const clientSubject = isEnquiry 
+        ? `Thank you for your enquiry – ${leadRef} | ${serviceName}` 
+        : `Thank you for your consultation request – ${leadRef} | ${serviceName}`;
       
       // Logo URL - using header logo for footer logo structure
       const logoUrl = process.env.EMAIL_LOGO_URL || 'https://www.uaebusinessdesk.com/assets/header-logo.png';
@@ -682,9 +787,9 @@ export async function POST(request: NextRequest) {
                   <!-- Main Content -->
                   <tr>
                     <td style="padding: 40px 40px 30px;">
-                      <h2 style="margin: 0 0 20px; color: #0b2a4a; font-size: 24px; font-weight: 600;">Thank you for your enquiry</h2>
-                      <p style="margin: 0 0 16px; color: #333333; font-size: 16px;">Dear ${lead.fullName},</p>
-                      <p style="margin: 0 0 24px; color: #333333; font-size: 16px;">${isEnquiry ? 'We have received your enquiry and will review it shortly.' : 'We have received your consultation request and will review your requirements shortly.'}</p>
+                      <h2 style="margin: 0 0 20px; color: #0b2a4a; font-size: 24px; font-weight: 600;">Thank you for your consultation request</h2>
+                      <p style="margin: 0 0 16px; color: #333333; font-size: 16px; line-height: 1.6;">Dear ${lead.fullName},</p>
+                      <p style="margin: 0 0 24px; color: #333333; font-size: 16px; line-height: 1.6;">${isEnquiry ? 'We have received your enquiry and appreciate you taking the time to reach out to us. Our team will review your request and get back to you shortly.' : 'Thank you for choosing UAE Business Desk for your company setup needs. We have received your consultation request and will begin reviewing your requirements immediately.'}</p>
                       
                       <!-- Reference Box -->
                       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf8f3; border-left: 4px solid #c9a14a; border-radius: 4px; margin: 24px 0; padding: 20px;">
@@ -808,7 +913,7 @@ export async function POST(request: NextRequest) {
                             <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Preferred Timeline</p>
                           </td>
                           <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
-                            <p style="margin: 0; color: #333333; font-size: 15px;">${lead.timeline.toLowerCase() === 'immediately' ? 'Immediately' : lead.timeline}</p>
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${formatTimeline(lead.timeline)}</p>
                           </td>
                         </tr>
                         ` : ''}
@@ -862,6 +967,128 @@ export async function POST(request: NextRequest) {
                           </td>
                         </tr>
                         ` : ''}
+                        ${bankPrescreen ? `
+                        ${bankPrescreen.uaeSetupType ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">UAE Setup Type</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${formatUaeSetupType(bankPrescreen.uaeSetupType)}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.primaryActivityCategory ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Primary Business Activity</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${formatActivityCategory(bankPrescreen.primaryActivityCategory)}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.primaryActivityDetails ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Activity Details</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.primaryActivityDetails}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.ownerUaeResident ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Is the business owner a UAE resident?</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.ownerUaeResident === 'yes' ? 'Yes' : 'No'}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.uboNationality ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">UBO's Nationality</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.uboNationality}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.expectedMonthlyTurnoverAed ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Expected Monthly Turnover (AED)</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${formatTurnover(bankPrescreen.expectedMonthlyTurnoverAed)}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.paymentGeographies && bankPrescreen.paymentGeographies.length > 0 ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Payment Geographies</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${Array.isArray(bankPrescreen.paymentGeographies) ? bankPrescreen.paymentGeographies.map(formatGeography).join(', ') : formatGeography(bankPrescreen.paymentGeographies)}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.paymentGeographiesOther ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Other Geographies</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.paymentGeographiesOther}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.involvesCrypto !== undefined && bankPrescreen.involvesCrypto !== null ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Crypto / Digital Assets Involved?</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.involvesCrypto === 'yes' ? 'Yes' : 'No'}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.cashIntensive !== undefined && bankPrescreen.cashIntensive !== null ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Cash-Intensive Business?</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.cashIntensive === 'yes' ? 'Yes' : 'No'}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.sanctionedHighRiskCountries !== undefined && bankPrescreen.sanctionedHighRiskCountries !== null ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Sanctioned / High-Risk Countries Expected?</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.sanctionedHighRiskCountries === 'yes' ? 'Yes' : 'No'}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ${bankPrescreen.kycDocsReady ? `
+                        <tr>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                            <p style="margin: 0; color: #64748b; font-size: 13px; font-weight: 500;">Can you provide standard KYC documents?</p>
+                          </td>
+                          <td style="padding: 10px 0; border-bottom: 1px solid #f1f5f9; text-align: right;">
+                            <p style="margin: 0; color: #333333; font-size: 15px;">${bankPrescreen.kycDocsReady === 'YES' || bankPrescreen.kycDocsReady === 'yes' ? 'Yes' : 'Not yet'}</p>
+                          </td>
+                        </tr>
+                        ` : ''}
+                        ` : ''}
                       </table>
                       
                       ${(() => {
@@ -892,9 +1119,35 @@ export async function POST(request: NextRequest) {
                       </div>
                       ` : ''}
                       
-                      <p style="margin: 24px 0 0; color: #333333; font-size: 16px;">Our team will contact you${lead.whatsapp ? ` via WhatsApp at <strong style="color: #0b2a4a;">${lead.whatsapp}</strong>` : lead.email ? ` at <strong style="color: #0b2a4a;">${lead.email}</strong>` : ''} within one business day to discuss your requirements and next steps.</p>
+                      <!-- What Happens Next Section -->
+                      <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-left: 4px solid #3b82f6; border-radius: 6px; padding: 24px; margin: 32px 0 24px;">
+                        <h3 style="margin: 0 0 16px; color: #1e40af; font-size: 18px; font-weight: 700;">📋 What Happens Next</h3>
+                        <ol style="margin: 0; padding-left: 20px; color: #1e3a8a; font-size: 15px; line-height: 1.8;">
+                          <li style="margin-bottom: 12px;">
+                            <strong style="color: #1e40af;">Initial Review (1-2 Business Days)</strong><br>
+                            <span style="color: #334155; font-size: 14px;">Our team will review your requirements and assess feasibility for your ${serviceName.toLowerCase()}.</span>
+                          </li>
+                          <li style="margin-bottom: 12px;">
+                            <strong style="color: #1e40af;">We'll Contact You</strong><br>
+                            <span style="color: #334155; font-size: 14px;">We'll contact you within one business day to discuss your requirements in detail.</span>
+                          </li>
+                          <li style="margin-bottom: 12px;">
+                            <strong style="color: #1e40af;">Review & Approval</strong><br>
+                            <span style="color: #334155; font-size: 14px;">We'll share our assessment and proposed approach. You approve before we proceed with any documentation or applications.</span>
+                          </li>
+                          <li style="margin-bottom: 0;">
+                            <strong style="color: #1e40af;">Documentation & Facilitation</strong><br>
+                            <span style="color: #334155; font-size: 14px;">Once approved, we'll prepare all required documentation and facilitate the application process with relevant authorities.</span>
+                          </li>
+                        </ol>
+                      </div>
                       
-                      <p style="margin: 24px 0 0; color: #64748b; font-size: 14px;">We review feasibility first and proceed only after your approval — no surprises, no unnecessary commitments.</p>
+                      <!-- Important Note -->
+                      <div style="background-color: #fef3c7; border-left: 3px solid #f59e0b; border-radius: 4px; padding: 16px 20px; margin: 24px 0;">
+                        <p style="margin: 0; color: #78350f; font-size: 14px; line-height: 1.6;">
+                          <strong>💡 Our Commitment:</strong> We review feasibility first and proceed only after your approval — no surprises, no unnecessary commitments. ${setupType === 'bank' ? 'Approval decisions are made by banks based on their policies and client eligibility.' : 'Approval decisions are made by UAE authorities and banks based on their policies and client eligibility.'}
+                        </p>
+                      </div>
                     </td>
                   </tr>
                   
@@ -907,8 +1160,9 @@ export async function POST(request: NextRequest) {
                         <a href="tel:+971504209110" style="color: #0b2a4a; text-decoration: none;">+971 50 420 9110</a> | 
                         <a href="mailto:support@uaebusinessdesk.com" style="color: #0b2a4a; text-decoration: none;">support@uaebusinessdesk.com</a>
                       </p>
+                      <p style="margin: 12px 0 4px; color: #64748b; font-size: 13px; font-style: italic;">Office Hours: Sunday to Thursday, 9:00 AM – 6:00 PM (UAE Time)</p>
                       <p style="margin: 20px 0 0; padding-top: 20px; border-top: 1px solid #e2e8f0; color: #94a3b8; font-size: 12px; line-height: 1.5;">
-                        <strong>Important:</strong> We provide documentation preparation and application facilitation services only. Approval decisions are made by UAE authorities and banks based on their policies and client eligibility.
+                        <strong>Important:</strong> We provide documentation preparation and application facilitation services only. ${setupType === 'bank' ? 'Approval decisions are made by banks based on their policies and client eligibility.' : 'Approval decisions are made by UAE authorities and banks based on their policies and client eligibility.'}
                       </p>
                     </td>
                   </tr>

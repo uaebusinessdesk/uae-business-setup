@@ -15,7 +15,6 @@ export default function HomePageClient() {
     'Free zone company setup',
     'Offshore company setup',
     'Bank account setup',
-    'Combined services',
   ];
 
   useEffect(() => {
