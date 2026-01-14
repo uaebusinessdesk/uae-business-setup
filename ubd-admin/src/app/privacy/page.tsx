@@ -5,7 +5,7 @@ import WebPageSchema from '@/components/SEO/WebPageSchema';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - UAE Business Desk',
-  description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+  description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information when you use our company setup and bank account services.',
   robots: 'index, follow',
   alternates: {
     canonical: 'https://uaebusinessdesk.com/privacy',
@@ -15,11 +15,13 @@ export const metadata: Metadata = {
     url: 'https://uaebusinessdesk.com/privacy',
     title: 'Privacy Policy - UAE Business Desk',
     description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+    images: [{ url: 'https://uaebusinessdesk.com/assets/header-logo.png' }],
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: 'Privacy Policy - UAE Business Desk',
     description: 'Privacy policy for UAE Business Desk. Learn how we collect, use, and protect your personal information.',
+    images: ['https://uaebusinessdesk.com/assets/header-logo.png'],
   },
 };
 
@@ -44,52 +46,69 @@ export default function PrivacyPage() {
             </ol>
           </nav>
           <h1>Privacy Policy</h1>
-          <p>Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <p>How we collect, use, and protect your personal information.</p>
         </div>
       </section>
 
-      <section className="legal-content">
-        <div className="legal-section">
-          <h2>Introduction</h2>
-          <p>
-            UAE Business Desk (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website or use our services.
-          </p>
-        </div>
-
+      <div className="legal-content">
         <div className="legal-section">
           <h2>Information We Collect</h2>
-          <p>We may collect information that you provide directly to us, including:</p>
+          <p>We collect information that you provide directly to us through:</p>
           <ul>
-            <li>Name and contact information (email, phone number, WhatsApp number)</li>
-            <li>Business information (activity, nationality, country of residence)</li>
-            <li>Service requirements and preferences</li>
-            <li>Any other information you choose to provide</li>
+            <li>Contact forms on our website</li>
+            <li>Email communications</li>
+            <li>Phone or WhatsApp conversations</li>
+            <li>Service enquiry messages</li>
+          </ul>
+          <p>This information may include:</p>
+          <ul>
+            <li>Name</li>
+            <li>Email address</li>
+            <li>Phone number or WhatsApp contact</li>
+            <li>Enquiry details and business requirements</li>
           </ul>
         </div>
 
         <div className="legal-section">
-          <h2>How We Use Your Information</h2>
-          <p>We use the information we collect to:</p>
+          <h2>How We Use Information</h2>
+          <p>We use the information you provide to:</p>
           <ul>
-            <li>Provide, maintain, and improve our services</li>
-            <li>Process and respond to your inquiries</li>
-            <li>Communicate with you about our services</li>
-            <li>Comply with legal obligations</li>
+            <li>Respond to your enquiries and provide information about our services</li>
+            <li>Deliver documentation preparation and application facilitation services</li>
+            <li>Follow up on service delivery and provide updates</li>
+            <li>Communicate with you regarding your business setup requirements</li>
           </ul>
         </div>
 
         <div className="legal-section">
-          <h2>Data Security</h2>
-          <p>
-            We implement appropriate technical and organizational measures to protect your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.
-          </p>
+          <h2>Cookies and Analytics</h2>
+          <p>We may use basic cookies for site functionality and to improve your browsing experience. We do not sell your data to third parties.</p>
         </div>
 
         <div className="legal-section">
-          <h2>Contact Us</h2>
-          <p>If you have questions about this Privacy Policy, please contact us at support@uaebusinessdesk.com</p>
+          <h2>Sharing of Information</h2>
+          <p>We may share your information only with service providers as needed to deliver our services (such as document processing or communication tools). We do not sell your personal information to third parties.</p>
         </div>
-      </section>
+
+        <div className="legal-section">
+          <h2>Data Retention</h2>
+          <p>We retain your information as long as needed for business purposes and compliance requirements. You may request deletion of your data where applicable, and we will comply with reasonable requests subject to legal and business obligations.</p>
+        </div>
+        <div className="legal-section">
+          <h2>Your Rights</h2>
+          <p>You have the right to:</p>
+          <ul>
+            <li>Request access to your personal information</li>
+            <li>Request correction of inaccurate information</li>
+            <li>Request deletion of your information (subject to legal and business requirements)</li>
+          </ul>
+        </div>
+        <div className="legal-cta">
+          <p><strong>Questions About Privacy?</strong></p>
+          <p>For privacy-related enquiries or to exercise your rights, please contact us.</p>
+          <p><Link href="/contact" className="btn">Contact Us</Link></p>
+        </div>
+      </div>
     </PublicLayout>
   );
 }
