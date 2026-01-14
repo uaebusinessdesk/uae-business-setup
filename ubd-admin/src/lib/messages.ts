@@ -185,7 +185,7 @@ export function buildCompanyAgentMessage(lead: Lead, agentName?: string): string
   }
   
   // Additional Notes Section
-  const cleanedNotes = cleanNotes(lead.notes, leadRef);
+  const cleanedNotes = cleanNotes(lead.notes ?? null, leadRef);
   if (cleanedNotes) {
     message += `📝 *Additional Notes*\n`;
     message += `${cleanedNotes}\n\n`;
@@ -391,7 +391,7 @@ export function buildBankAgentMessage(lead: Lead, prescreenData?: BankPrescreenD
   }
   
   // Customer Notes Section
-  const cleanedNotes = cleanNotes(lead.notes, leadRef);
+  const cleanedNotes = cleanNotes(lead.notes ?? null, leadRef);
   if (cleanedNotes) {
     message += `\n📝 *Additional Notes*\n`;
     message += `${cleanedNotes}\n`;
