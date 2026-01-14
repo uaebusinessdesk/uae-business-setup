@@ -2,12 +2,5 @@
   "buildCommand": "cd ubd-admin && npm install && npm run build",
   "outputDirectory": "ubd-admin/.next",
   "framework": "nextjs",
-  "installCommand": "cd ubd-admin && npm install",
-  "rootDirectory": "ubd-admin",
-  "rewrites": [
-    {
-      "source": "/admin/:path*",
-      "destination": "/admin/:path*"
-    }
-  ]
+  "installCommand": "cd ubd-admin && npm install"
 }
