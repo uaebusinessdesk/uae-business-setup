@@ -77,7 +77,7 @@ async function deleteAllLeads() {
     
     console.log('  - Deleting agent assignments...');
     try {
-      await db.agentAssignment.deleteMany({
+      await db.leadAgent.deleteMany({
         where: { leadId: { in: leadIds } },
       });
       console.log('    ✅ Agent assignments deleted');

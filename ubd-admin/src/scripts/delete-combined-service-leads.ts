@@ -85,8 +85,8 @@ async function deleteCombinedServiceLeads() {
     }
     
     try {
-      if (db.agentAssignment) {
-        await db.agentAssignment.deleteMany({
+      if (db.leadAgent) {
+        await db.leadAgent.deleteMany({
           where: { leadId: { in: leadIds } },
         });
       }
