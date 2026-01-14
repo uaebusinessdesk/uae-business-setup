@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Work_Sans } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
-import StylesheetLoader from "@/components/StylesheetLoader";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta-sans",
@@ -47,10 +47,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/assets/styles.css" />
+      </head>
       <body
         className={`${plusJakartaSans.variable} ${workSans.variable} antialiased`}
       >
-        <StylesheetLoader />
         {children}
       </body>
     </html>
