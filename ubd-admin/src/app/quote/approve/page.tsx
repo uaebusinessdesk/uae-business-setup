@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import DecisionButtons from './DecisionButtons';
 import QuoteViewTracker from './QuoteViewTracker';
@@ -41,7 +41,7 @@ function formatDate(dateString: string): string {
   });
 }
 
-export default function QuoteDecisionPage() {
+function QuoteDecisionPageContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   
@@ -400,5 +400,13 @@ export default function QuoteDecisionPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function QuoteDecisionPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <QuoteDecisionPageContent />
+    </Suspense>
   );
 }
