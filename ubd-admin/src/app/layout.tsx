@@ -47,12 +47,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="stylesheet" href="/assets/styles.css" />
-      </head>
       <body
         className={`${plusJakartaSans.variable} ${workSans.variable} antialiased`}
       >
+        <Script
+          id="load-stylesheet"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (document.querySelector('link[href="/assets/styles.css"]')) return;
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '/assets/styles.css';
+                link.media = 'all';
+                document.head.insertBefore(link, document.head.firstChild);
+              })();
+            `,
+          }}
+        />
         {children}
       </body>
     </html>
