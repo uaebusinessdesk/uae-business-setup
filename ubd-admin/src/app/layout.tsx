@@ -40,15 +40,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://uaebusinessdesk.com'),
 };
 
-// Add stylesheet link to head
-export function Head() {
-  return (
-    <>
-      <link rel="stylesheet" href="/assets/styles.css" />
-    </>
-  );
-}
-
 export default function RootLayout({
   children,
 }: Readonly<{
