@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 interface CustomerDetails {
@@ -45,7 +45,7 @@ function formatAmount(amount: number | null): string | null {
   });
 }
 
-export default function InvoiceViewPage() {
+function InvoiceViewPageContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   
@@ -470,5 +470,13 @@ export default function InvoiceViewPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function InvoiceViewPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <InvoiceViewPageContent />
+    </Suspense>
   );
 }
