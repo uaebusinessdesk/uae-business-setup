@@ -2,7 +2,13 @@
  * Follow-up message builders for WhatsApp
  */
 
-import type { Lead } from '@/app/admin/leads/[id]/page';
+// Lead type for followups
+interface Lead {
+  fullName: string;
+  setupType?: string | null;
+  notes?: string | null;
+  [key: string]: any;
+}
 
 /**
  * Extract lead reference from notes
