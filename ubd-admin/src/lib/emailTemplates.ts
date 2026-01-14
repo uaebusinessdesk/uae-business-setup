@@ -8,12 +8,13 @@ import { toSetupTypeLabel, normalizeSetupType } from '@/lib/setupType';
 interface Lead {
   fullName: string;
   setupType?: string | null;
-  notes: string | null;
+  notes?: string | null;
   quotedAmountAed?: number | null;
   bankQuotedAmountAed?: number | null;
   companyInvoiceNumber?: string | null;
   companyInvoiceLink?: string | null;
   companyPaymentLink?: string | null;
+  bankInvoiceNumber?: string | null;
 }
 
 /**
