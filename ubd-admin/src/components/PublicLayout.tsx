@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import Script from 'next/script';
 import { useState } from 'react';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -180,6 +181,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </footer>
+      <Script src="/assets/site.js" strategy="afterInteractive" />
     </>
   );
 }

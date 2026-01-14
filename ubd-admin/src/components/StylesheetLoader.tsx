@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 
 export default function StylesheetLoader() {
   useEffect(() => {
-    // Function to load stylesheet synchronously
+    // Function to load stylesheet
     const loadStylesheet = () => {
       // Check if stylesheet is already loaded
       const existingLink = document.querySelector('link[href="/assets/styles.css"]');
@@ -18,6 +18,15 @@ export default function StylesheetLoader() {
       link.href = '/assets/styles.css';
       link.media = 'all';
       
+      // Use onload to ensure it's loaded
+      link.onload = () => {
+        // Stylesheet loaded successfully
+      };
+      
+      link.onerror = () => {
+        console.error('Failed to load styles.css');
+      };
+      
       // Insert at the beginning of head for early loading
       if (document.head.firstChild) {
         document.head.insertBefore(link, document.head.firstChild);
@@ -26,17 +35,8 @@ export default function StylesheetLoader() {
       }
     };
 
-    // Load immediately if DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', loadStylesheet);
-    } else {
-      loadStylesheet();
-    }
-
-    // Cleanup
-    return () => {
-      document.removeEventListener('DOMContentLoaded', loadStylesheet);
-    };
+    // Load immediately
+    loadStylesheet();
   }, []);
 
   return null;
