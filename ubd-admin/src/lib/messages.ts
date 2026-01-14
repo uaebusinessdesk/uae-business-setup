@@ -2,7 +2,17 @@
  * Message builders for WhatsApp routing
  */
 
-import type { Lead } from '@/app/admin/leads/[id]/page';
+// Lead type for messages
+interface Lead {
+  fullName: string;
+  whatsapp: string;
+  email?: string | null;
+  setupType?: string | null;
+  notes?: string | null;
+  quotedAmountAed?: number | null;
+  companyAssignedTo?: string;
+  [key: string]: any;
+}
 import { toSetupTypeLabel } from '@/lib/setupType';
 
 /**
