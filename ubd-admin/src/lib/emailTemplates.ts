@@ -16,6 +16,9 @@ interface Lead {
   companyPaymentLink?: string | null;
   bankInvoiceNumber?: string | null;
   bankPaymentLink?: string | null;
+  companyCompletedAt?: Date | null;
+  bankCompletedAt?: Date | null;
+  [key: string]: any; // Allow additional properties
 }
 
 /**
