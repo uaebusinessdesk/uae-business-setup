@@ -45,7 +45,7 @@ function getSetupTypeLabel(setupType: string): string {
  */
 export function buildAgentFeasibilityFollowUp(lead: Lead): string {
   const leadRef = extractLeadRef(lead.notes ?? null);
-  const agentName = getAgentName(lead.companyAssignedTo);
+  const agentName = getAgentName(lead.companyAssignedTo || 'unassigned');
   const setupTypeLabel = getSetupTypeLabel(lead.setupType);
   
   let message = `Hi ${agentName},\n\n`;
@@ -64,7 +64,7 @@ export function buildAgentFeasibilityFollowUp(lead: Lead): string {
  */
 export function buildAgentCompletionFollowUp(lead: Lead): string {
   const leadRef = extractLeadRef(lead.notes ?? null);
-  const agentName = getAgentName(lead.companyAssignedTo);
+  const agentName = getAgentName(lead.companyAssignedTo || 'unassigned');
   const setupTypeLabel = getSetupTypeLabel(lead.setupType);
   
   let message = `Hi ${agentName},\n\n`;
