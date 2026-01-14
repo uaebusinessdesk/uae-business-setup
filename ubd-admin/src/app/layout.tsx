@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Work_Sans } from "next/font/google";
 import "./globals.css";
+import StylesheetLoader from "@/components/StylesheetLoader";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
+  weight: ["600", "700"],
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
+  weight: ["400", "500", "600"],
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -35,6 +40,15 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://uaebusinessdesk.com'),
 };
 
+// Add stylesheet link to head
+export function Head() {
+  return (
+    <>
+      <link rel="stylesheet" href="/assets/styles.css" />
+    </>
+  );
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,8 +57,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${plusJakartaSans.variable} ${workSans.variable} antialiased`}
       >
+        <StylesheetLoader />
         {children}
       </body>
     </html>

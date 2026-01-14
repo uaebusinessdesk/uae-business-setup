@@ -29,7 +29,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      <link rel="stylesheet" href="/assets/styles.css" />
       <OrganizationSchema />
       <WebPageSchema
         name="UAE Business Desk - Company Setup Services"
