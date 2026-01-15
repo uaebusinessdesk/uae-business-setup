@@ -2828,6 +2828,7 @@ details p {
     margin-top: 0 !important;
     margin-bottom: 0;
     padding-top: var(--space-4xl);
+    min-height: 400px;
 }
 
 main + .footer {
@@ -2840,8 +2841,9 @@ section.faq-section + footer {
 }
 
 .footer-content {
-    max-width: var(--container-max-width);
+    max-width: 1318.54px;
     margin: 0 auto;
+    width: 100%;
 }
 
 .footer-grid {
