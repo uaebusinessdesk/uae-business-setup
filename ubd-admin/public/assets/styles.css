@@ -1082,7 +1082,7 @@ select option {
 }
 
 .intro-section h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: var(--space-xl);
     color: var(--color-navy);
     text-align: left;
@@ -1340,7 +1340,7 @@ select option {
 }
 
 .jurisdiction-section h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: var(--space-3xl);
     color: #ffffff;
     text-align: center;
@@ -1576,7 +1576,7 @@ select option {
 }
 
 .services-section h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     margin-bottom: var(--space-md);
     color: #ffffff;
     text-align: center;
@@ -1810,7 +1810,7 @@ select option {
 }
 
 .steps-section h2 {
-    font-size: 2.25rem;
+    font-size: 2rem;
     margin-bottom: var(--space-sm);
     color: var(--color-navy);
     text-align: center;
@@ -1971,7 +1971,7 @@ select option {
     }
     
     .steps-section h2 {
-        font-size: 2.5rem;
+        font-size: 2rem;
         margin-bottom: var(--space-md);
     }
     
@@ -2159,7 +2159,7 @@ select option {
 }
 
 .anywhere-section h2 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     color: var(--color-navy);
     margin-bottom: var(--space-md);
     font-family: var(--font-family-headings);
