@@ -1,139 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useState, useEffect } from 'react';
 
 export default function HomePageClient() {
-  const [isNavOpen, setIsNavOpen] = useState(false);
-  const [isCallbackModalOpen, setIsCallbackModalOpen] = useState(false);
-  const [typedText, setTypedText] = useState('');
-  const [callbackMessage, setCallbackMessage] = useState<{ type: string; text: string } | null>(null);
-
-  const services = [
-    'Mainland company setup',
-    'Free zone company setup',
-    'Offshore company setup',
-    'Bank account setup',
-  ];
-
-  useEffect(() => {
-    let currentIndex = 0;
-    let currentChar = 0;
-    let isDeleting = false;
-
-    const type = () => {
-      const currentService = services[currentIndex];
-      
-      if (isDeleting) {
-        setTypedText(currentService.substring(0, currentChar - 1));
-        currentChar--;
-        if (currentChar === 0) {
-          isDeleting = false;
-          currentIndex = (currentIndex + 1) % services.length;
-        }
-      } else {
-        setTypedText(currentService.substring(0, currentChar + 1));
-        currentChar++;
-        if (currentChar === currentService.length) {
-          setTimeout(() => {
-            isDeleting = true;
-          }, 2000);
-        }
-      }
-    };
-
-    const interval = setInterval(type, 100);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleCallbackSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const phone = formData.get('phone') as string;
-    const name = formData.get('name') as string;
-
-    if (!phone || !name) {
-      setCallbackMessage({ type: 'error', text: 'Please fill in all fields.' });
-      return;
-    }
-
-    try {
-      const apiUrl = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL || 'http://localhost:3001';
-      const response = await fetch(`${apiUrl}/api/callback/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, phone }),
-      });
-
-      if (response.ok) {
-        setCallbackMessage({ type: 'success', text: "Thank you! We'll call you back soon." });
-        e.currentTarget.reset();
-        setTimeout(() => {
-          setIsCallbackModalOpen(false);
-          setCallbackMessage(null);
-        }, 2000);
-      } else {
-        setCallbackMessage({ type: 'error', text: 'Something went wrong. Please try again.' });
-      }
-    } catch (error) {
-      setCallbackMessage({ type: 'error', text: 'Failed to send request. Please try again.' });
-    }
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    
-    const apiUrl = process.env.NEXT_PUBLIC_ADMIN_API_BASE_URL || 'http://localhost:3001';
-    try {
-      const response = await fetch(`${apiUrl}/api/leads/capture`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fullName: formData.get('fullName'),
-          whatsapp: formData.get('whatsapp'),
-          email: formData.get('email'),
-          serviceChoice: formData.get('helpWith'),
-          emirate: formData.get('emirate'),
-          activity: formData.get('activity'),
-          nationality: formData.get('nationality'),
-          residenceCountry: formData.get('residence'),
-          timeline: formData.get('timeline'),
-          shareholdersCount: formData.get('shareholders'),
-          visasRequired: formData.get('visasRequired') === 'yes',
-          visasCount: formData.get('visasCount'),
-          notes: formData.get('notes'),
-        }),
-      });
-
-      if (response.ok) {
-        alert('Thank you! We will review your request and get back to you soon.');
-        e.currentTarget.reset();
-      } else {
-        alert('Something went wrong. Please try again.');
-      }
-    } catch (error) {
-      alert('Failed to submit form. Please try again.');
-    }
-  };
-
   return (
     <>
       <header>
         <nav className="nav">
           <Link href="/" className="brand">
-            <Image
+            <img
               src="/assets/header-logo.png"
               alt="UBD - UAE Business Desk"
-              width={120}
-              height={40}
               className="logo-img"
-              priority
+              onError={(event) => {
+                const target = event.currentTarget;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement | null;
+                if (fallback) {
+                  fallback.style.display = 'inline';
+                }
+              }}
             />
             <span style={{ display: 'none' }}>UBD</span>
           </Link>
@@ -141,18 +27,23 @@ export default function HomePageClient() {
             id="navToggle"
             className="nav-toggle"
             aria-label="Toggle navigation"
-            onClick={() => setIsNavOpen(!isNavOpen)}
           >
             <span></span>
             <span></span>
             <span></span>
           </button>
-          <ul id="navLinks" className={`nav-links ${isNavOpen ? 'active' : ''}`}>
+          <ul id="navLinks" className="nav-links">
             <li>
               <Link href="/">Home</Link>
             </li>
             <li className="has-dropdown">
-              <a href="#" className="dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              <a
+                href="#"
+                className="dropdown-toggle"
+                aria-haspopup="true"
+                aria-expanded="false"
+                onClick={(event) => event.preventDefault()}
+              >
                 Company Formation
               </a>
               <ul className="dropdown-menu">
@@ -214,7 +105,7 @@ export default function HomePageClient() {
                 <div className="hero-typed-static">We help with</div>
                 <div className="hero-typed" aria-label="Services">
                   <div className="hero-typed__line">
-                    <span id="heroTypedText" className="hero-typed__text">{typedText}</span>
+                    <span id="heroTypedText" className="hero-typed__text"></span>
                     <span className="hero-typed__cursor" aria-hidden="true">•</span>
                   </div>
                 </div>
@@ -360,13 +251,34 @@ export default function HomePageClient() {
               </div>
               <div className="intro-images">
                 <div className="intro-image-item">
-                  <Image src="/assets/intro-1.jpg" alt="UAE Business Setup Services" width={300} height={200} />
+                  <img
+                    src="/assets/intro-1.jpg"
+                    alt="UAE Business Setup Services"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                 </div>
                 <div className="intro-image-item">
-                  <Image src="/assets/intro-2.jpg" alt="UAE Company Incorporation" width={300} height={200} />
+                  <img
+                    src="/assets/intro-2.jpg"
+                    alt="UAE Company Incorporation"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                 </div>
                 <div className="intro-image-item">
-                  <Image src="/assets/intro-3.jpg" alt="UAE Business Documentation" width={300} height={200} />
+                  <img
+                    src="/assets/intro-3.jpg"
+                    alt="UAE Business Documentation"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -404,7 +316,14 @@ export default function HomePageClient() {
             <div className="jurisdiction-grid">
               <Link href="/mainland" className="jurisdiction-card">
                 <div className="jurisdiction-image">
-                  <Image src="/assets/jurisdiction-mainland.jpg" alt="Mainland UAE" width={400} height={300} />
+                  <img
+                    src="/assets/jurisdiction-mainland.jpg"
+                    alt="Mainland UAE"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                   <p className="jurisdiction-text-overlay">
                     Best for businesses serving the local UAE market and operating without geographic restrictions.
                   </p>
@@ -416,7 +335,14 @@ export default function HomePageClient() {
               </Link>
               <Link href="/freezone" className="jurisdiction-card">
                 <div className="jurisdiction-image">
-                  <Image src="/assets/jurisdiction-freezone.jpg" alt="Free Zone UAE" width={400} height={300} />
+                  <img
+                    src="/assets/jurisdiction-freezone.jpg"
+                    alt="Free Zone UAE"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                   <p className="jurisdiction-text-overlay">
                     Ideal for startups and international businesses looking for faster setup and simplified operations.
                   </p>
@@ -428,7 +354,14 @@ export default function HomePageClient() {
               </Link>
               <Link href="/offshore" className="jurisdiction-card">
                 <div className="jurisdiction-image">
-                  <Image src="/assets/jurisdiction-offshore.jpg" alt="Offshore UAE" width={400} height={300} />
+                  <img
+                    src="/assets/jurisdiction-offshore.jpg"
+                    alt="Offshore UAE"
+                    onError={(event) => {
+                      event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                      event.currentTarget.style.display = 'block';
+                    }}
+                  />
                   <p className="jurisdiction-text-overlay">
                     Suitable for asset holding, international structuring, and businesses without local operations.
                   </p>
@@ -490,9 +423,7 @@ export default function HomePageClient() {
                   <li>Bank documentation preparation</li>
                   <li>Application submission coordination</li>
                 </ul>
-                <Link href="/bank-account-setup" className="service-link">
-                  Read more →
-                </Link>
+                <a href="/bank-account-setup" className="service-link">Read more →</a>
               </div>
               <div className="service-card">
                 <div className="service-icon">
@@ -531,8 +462,15 @@ export default function HomePageClient() {
                 <div className="authority-logos-scroll">
                   <div className="authority-logos-track">
                     {[1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6].map((num, idx) => (
-                      <div key={idx} className="authority-logo-item">
-                        <Image src={`/assets/authority-logo-${num}.png`} alt="Authority Logo" width={120} height={60} />
+                      <div key={`${num}-${idx}`} className="authority-logo-item">
+                        <img
+                          src={`/assets/authority-logo-${num}.png`}
+                          alt="Authority Logo"
+                          onError={(event) => {
+                            event.currentTarget.style.backgroundColor = 'var(--color-bg-light)';
+                            event.currentTarget.style.display = 'block';
+                          }}
+                        />
                       </div>
                     ))}
                   </div>
@@ -563,7 +501,7 @@ export default function HomePageClient() {
                   <h3>Request a Free Consultation</h3>
                   <p className="form-reassurance">Share your details. We&apos;ll conduct initial review and get back to you.</p>
                 </div>
-                <form className="form ubd-consultation-form" onSubmit={handleFormSubmit} autoComplete="on">
+                <form className="form ubd-consultation-form" autoComplete="on">
                   <div className="ubd-form-grid">
                     <div className="form-section-divider">
                       <span className="form-section-title">Contact Information</span>
@@ -723,7 +661,7 @@ export default function HomePageClient() {
                           <input type="checkbox" name="privacyAccepted" required />
                           <span className="privacy-checkbox-custom"></span>
                           <span className="privacy-checkbox-text">
-                            I agree to the <Link href="/privacy" target="_blank">Privacy Policy</Link> *
+                            I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> *
                           </span>
                         </label>
                       </div>
@@ -790,7 +728,15 @@ export default function HomePageClient() {
           <div className="footer-grid">
             <div className="footer-column">
               <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', textDecoration: 'none', color: 'inherit' }}>
-                <Image src="/assets/header-logo.png" alt="UAE Business Desk" width={40} height={40} className="footer-logo" />
+                <img
+                  src="/assets/header-logo.png"
+                  alt="UAE Business Desk"
+                  className="footer-logo"
+                  style={{ height: '40px', width: 'auto', display: 'block' }}
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none';
+                  }}
+                />
                 <span style={{ fontSize: '40px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', fontFamily: 'var(--font-family-headings)', letterSpacing: '0.05em', lineHeight: 1 }}>
                   UBD
                 </span>
@@ -799,6 +745,39 @@ export default function HomePageClient() {
                 Clarity before commitment
               </p>
               <p className="footer-description">Documentation preparation and application facilitation services.</p>
+              <div className="footer-social">
+                <a href="https://www.facebook.com/uaebusinessdeskuae" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+                <a href="https://www.linkedin.com/company/uaebusinessdesk/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="LinkedIn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M16 8C17.5913 8 19.1174 8.63214 20.2426 9.75736C21.3679 10.8826 22 12.4087 22 14V21H18V14C18 13.4696 17.7893 12.9609 17.4142 12.5858C17.0391 12.2107 16.5304 12 16 12C15.4696 12 14.9609 12.2107 14.5858 12.5858C14.2107 12.9609 14 13.4696 14 14V21H10V14C10 12.4087 10.6321 10.8826 11.7574 9.75736C12.8826 8.63214 14.4087 8 16 8Z"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <rect x="2" y="9" width="4" height="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="4" cy="4" r="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+                <a href="https://www.instagram.com/uaebusinessdesk/" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              </div>
             </div>
 
             <div className="footer-column">
@@ -871,7 +850,6 @@ export default function HomePageClient() {
                 <li>
                   <button
                     id="requestCallbackBtn"
-                    onClick={() => setIsCallbackModalOpen(true)}
                     style={{
                       display: 'inline-flex',
                       alignItems: 'center',
@@ -940,117 +918,139 @@ export default function HomePageClient() {
         </div>
       </footer>
 
-      {/* Callback Request Modal */}
-      {isCallbackModalOpen && (
-        <div id="callbackModal" className="callback-modal" style={{ display: 'flex' }}>
-          <div className="callback-modal-overlay" onClick={() => setIsCallbackModalOpen(false)}></div>
-          <div className="callback-modal-content">
-            <button className="callback-modal-close" onClick={() => setIsCallbackModalOpen(false)} aria-label="Close modal">
-              &times;
-            </button>
-            <h3 style={{ margin: '0 0 8px 0', fontSize: '1.5rem', color: 'var(--color-navy)' }}>Request a Call Back</h3>
-            <p style={{ margin: '0 0 24px 0', color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
-              Enter your mobile number and we&apos;ll call you back at your convenience.
+      <div id="cookieConsent" className="cookie-consent">
+        <div className="cookie-consent-content">
+          <div className="cookie-consent-text">
+            <p>
+              We use cookies to enhance your browsing experience and analyze site traffic. By clicking &quot;Accept&quot;, you consent to our use of cookies.
+              <a href="/privacy" target="_blank" rel="noopener noreferrer"> Learn more</a>
             </p>
-            <form id="callbackForm" onSubmit={handleCallbackSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label htmlFor="callbackPhone" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-navy)' }}>
-                  Mobile Number *
-                </label>
-                <input
-                  type="tel"
-                  id="callbackPhone"
-                  name="phone"
-                  placeholder="+971 50 123 4567"
-                  required
-                  style={{
-                    padding: '12px 16px',
-                    border: '2px solid var(--color-border)',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                    transition: 'border-color 0.2s',
-                  }}
-                />
-                <small style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Include country code (e.g., +971)</small>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label htmlFor="callbackName" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-navy)' }}>
-                  Your Name *
-                </label>
-                <input
-                  type="text"
-                  id="callbackName"
-                  name="name"
-                  placeholder="John Smith"
-                  required
-                  style={{
-                    padding: '12px 16px',
-                    border: '2px solid var(--color-border)',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontFamily: 'inherit',
-                    transition: 'border-color 0.2s',
-                  }}
-                />
-              </div>
-              {callbackMessage && (
-                <div
-                  id="callbackMessage"
-                  style={{
-                    display: 'block',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    fontSize: '0.875rem',
-                    marginTop: '8px',
-                    backgroundColor: callbackMessage.type === 'success' ? '#d4edda' : '#f8d7da',
-                    color: callbackMessage.type === 'success' ? '#155724' : '#721c24',
-                  }}
-                >
-                  {callbackMessage.text}
-                </div>
-              )}
-              <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-                <button
-                  type="submit"
-                  id="callbackSubmitBtn"
-                  style={{
-                    flex: 1,
-                    padding: '14px 24px',
-                    background: 'linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%)',
-                    color: 'var(--color-navy)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Send Request
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsCallbackModalOpen(false)}
-                  style={{
-                    padding: '14px 24px',
-                    background: 'var(--color-bg)',
-                    color: 'var(--color-text)',
-                    border: '2px solid var(--color-border)',
-                    borderRadius: '8px',
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
+          </div>
+          <div className="cookie-consent-buttons">
+            <button
+              className="cookie-consent-btn cookie-consent-btn-accept"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const cookieWindow = window as Window & { acceptCookies?: () => void };
+                  if (typeof cookieWindow.acceptCookies === 'function') {
+                    cookieWindow.acceptCookies();
+                  }
+                }
+              }}
+            >
+              Accept
+            </button>
+            <button
+              className="cookie-consent-btn cookie-consent-btn-decline"
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  const cookieWindow = window as Window & { declineCookies?: () => void };
+                  if (typeof cookieWindow.declineCookies === 'function') {
+                    cookieWindow.declineCookies();
+                  }
+                }
+              }}
+            >
+              Decline
+            </button>
           </div>
         </div>
-      )}
+      </div>
+
+      <div id="callbackModal" className="callback-modal" style={{ display: 'none' }}>
+        <div className="callback-modal-overlay"></div>
+        <div className="callback-modal-content">
+          <button className="callback-modal-close" id="callbackModalClose" aria-label="Close modal">
+            &times;
+          </button>
+          <h3 style={{ margin: '0 0 8px 0', fontSize: '1.5rem', color: 'var(--color-navy)' }}>Request a Call Back</h3>
+          <p style={{ margin: '0 0 24px 0', color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>
+            Enter your mobile number and we&apos;ll call you back at your convenience.
+          </p>
+          <form id="callbackForm" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label htmlFor="callbackPhone" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-navy)' }}>
+                Mobile Number *
+              </label>
+              <input
+                type="tel"
+                id="callbackPhone"
+                name="phone"
+                placeholder="+971 50 123 4567"
+                required
+                style={{
+                  padding: '12px 16px',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+              />
+              <small style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>Include country code (e.g., +971)</small>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label htmlFor="callbackName" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--color-navy)' }}>
+                Your Name *
+              </label>
+              <input
+                type="text"
+                id="callbackName"
+                name="name"
+                placeholder="John Smith"
+                required
+                style={{
+                  padding: '12px 16px',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontFamily: 'inherit',
+                  transition: 'border-color 0.2s',
+                }}
+              />
+            </div>
+            <div id="callbackMessage" style={{ display: 'none', padding: '12px', borderRadius: '8px', fontSize: '0.875rem', marginTop: '8px' }}></div>
+            <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+              <button
+                type="submit"
+                id="callbackSubmitBtn"
+                style={{
+                  flex: 1,
+                  padding: '14px 24px',
+                  background: 'linear-gradient(135deg, var(--color-gold) 0%, var(--color-gold-dark) 100%)',
+                  color: 'var(--color-navy)',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+                aria-label="Send callback request"
+              >
+                Send Request
+              </button>
+              <button
+                type="button"
+                id="callbackCancelBtn"
+                style={{
+                  padding: '14px 24px',
+                  background: 'var(--color-bg)',
+                  color: 'var(--color-text)',
+                  border: '2px solid var(--color-border)',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
     </>
   );
 }
