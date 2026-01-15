@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import ClientImage from '@/components/ClientImage';
 
 interface CustomerDetails {
   fullName: string | null;
@@ -280,13 +281,10 @@ function InvoiceViewPageContent() {
           {/* Header Section with Gradient */}
           <div className="bg-gradient-to-r from-amber-600 to-yellow-600 px-8 py-10 text-center">
             <div className="inline-flex items-center justify-center gap-3 mb-3">
-              <img 
-                src={logoUrl} 
-                alt={brandName} 
+              <ClientImage
+                src={logoUrl}
+                alt={brandName}
                 className="w-10 h-10 object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
               />
               <span className="text-4xl font-bold text-white tracking-wider">UBD</span>
             </div>
