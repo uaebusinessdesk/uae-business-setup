@@ -2829,6 +2829,9 @@ details p {
     margin-bottom: 0;
     padding-top: var(--space-4xl);
     min-height: 400px;
+    font-family: var(--font-family-body);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
 }
 
 main + .footer {
