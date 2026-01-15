@@ -872,8 +872,9 @@ select {
 }
 
 select option {
-    line-height: 1.4;
-    padding: 0.5rem 0.75rem;
+    font-size: inherit;
+    line-height: 1.5;
+    padding: 0.6rem 0.75rem;
 }
 
 .submit-button {
@@ -2458,8 +2459,9 @@ select option {
 .quote-form select option {
     background-color: var(--color-navy);
     color: #ffffff;
-    padding: var(--space-sm);
-    line-height: 1.4;
+    font-size: inherit;
+    padding: 0.6rem 0.75rem;
+    line-height: 1.5;
 }
 
 /* Ensure dropdown menus can overflow container */
@@ -3733,6 +3735,12 @@ main {
     overflow: visible !important;
     text-overflow: clip !important;
     white-space: normal !important;
+}
+
+.ubd-form-grid .form-group select option {
+    font-size: inherit;
+    line-height: 1.5;
+    padding: 0.6rem 0.75rem;
 }
 
 .ubd-form-grid .form-group select:hover {
