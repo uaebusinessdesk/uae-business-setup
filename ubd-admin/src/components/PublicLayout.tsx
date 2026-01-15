@@ -1,13 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
-  const [isNavOpen, setIsNavOpen] = useState(false);
   const pathname = usePathname();
   const showCookieConsent = [
     '/',
@@ -23,25 +20,42 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <header>
         <nav className="nav">
           <Link href="/" className="brand">
-            <Image src="/assets/header-logo.png" alt="UBD - UAE Business Desk" width={120} height={40} className="logo-img" priority />
+            <img
+              src="/assets/header-logo.png"
+              alt="UBD - UAE Business Desk"
+              className="logo-img"
+              onError={(event) => {
+                const target = event.currentTarget;
+                target.style.display = 'none';
+                const fallback = target.nextElementSibling as HTMLElement | null;
+                if (fallback) {
+                  fallback.style.display = 'inline';
+                }
+              }}
+            />
             <span style={{ display: 'none' }}>UBD</span>
           </Link>
           <button
             id="navToggle"
             className="nav-toggle"
             aria-label="Toggle navigation"
-            onClick={() => setIsNavOpen(!isNavOpen)}
           >
             <span></span>
             <span></span>
             <span></span>
           </button>
-          <ul id="navLinks" className={`nav-links ${isNavOpen ? 'active' : ''}`}>
+          <ul id="navLinks" className="nav-links">
             <li>
               <Link href="/">Home</Link>
             </li>
             <li className="has-dropdown">
-              <a href="#" className="dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+              <a
+                href="#"
+                className="dropdown-toggle"
+                aria-haspopup="true"
+                aria-expanded="false"
+                onClick={(event) => event.preventDefault()}
+              >
                 Company Formation
               </a>
               <ul className="dropdown-menu">
@@ -73,7 +87,15 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div className="footer-grid">
             <div className="footer-column">
               <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px', textDecoration: 'none', color: 'inherit' }}>
-                <Image src="/assets/header-logo.png" alt="UAE Business Desk" width={40} height={40} className="footer-logo" />
+                <img
+                  src="/assets/header-logo.png"
+                  alt="UAE Business Desk"
+                  className="footer-logo"
+                  style={{ height: '40px', width: 'auto', display: 'block' }}
+                  onError={(event) => {
+                    event.currentTarget.style.display = 'none';
+                  }}
+                />
                 <span style={{ fontSize: '40px', fontWeight: 700, color: 'rgba(255, 255, 255, 0.95)', fontFamily: 'var(--font-family-headings)', letterSpacing: '0.05em', lineHeight: 1 }}>
                   UBD
                 </span>

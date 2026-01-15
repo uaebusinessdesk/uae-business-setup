@@ -61,7 +61,7 @@ export default function RootLayout({
                 link.rel = 'stylesheet';
                 link.href = '/assets/styles.css';
                 link.media = 'all';
-                document.head.insertBefore(link, document.head.firstChild);
+                document.head.appendChild(link);
               })();
             `,
           }}
