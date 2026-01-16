@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
 import WebPageSchema from '@/components/SEO/WebPageSchema';
 import CompanyConsultationForm from '@/components/CompanyConsultationForm';
@@ -36,16 +35,623 @@ export default function OffshorePage() {
         description="Professional UAE offshore company formation services. We prepare incorporation paperwork and handle documentation; offshore authorities make approval decisions."
         url="https://www.uaebusinessdesk.com/offshore"
       />
-      <div className="page-offshore">
+      <style>{`
+        /* Richman-style Mainland Page Specific Styles */
+        .mainland-hero {
+            background-color: var(--color-navy);
+            background-image: url('./assets/offshore-hero-bg.jpg');
+            background-size: cover;
+            background-position: center bottom;
+            background-repeat: no-repeat;
+            padding: 120px 0 100px;
+            text-align: left;
+            color: white;
+            position: relative;
+        }
+        .mainland-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.2));
+            z-index: 1;
+        }
+        .mainland-hero .content-wrapper {
+            position: relative;
+            z-index: 2;
+            text-align: left;
+        }
+        .mainland-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+            line-height: 1.2;
+            text-align: left;
+        }
+        .mainland-hero p {
+            font-size: 1.125rem;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.95);
+            max-width: 800px;
+            text-align: left;
+        }
+        .mainland-hero .btn {
+            display: inline-block;
+            padding: 16px 40px;
+            background-color: #c9a14a;
+            color: #0b2a4a;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .mainland-hero .btn:hover {
+            background-color: #a8853a;
+            transform: translateY(-2px);
+        }
+        .mainland-content {
+            padding: 0;
+        }
+        .mainland-section {
+            padding: var(--space-4xl) var(--container-padding);
+            margin-bottom: 0;
+            background-color: var(--color-bg);
+        }
+        .why-choose-section {
+            background-color: var(--color-gold-light);
+            margin-top: var(--space-2xl);
+        }
+        @media (min-width: 1024px) {
+            .why-choose-section {
+                margin-top: var(--space-2xl);
+            }
+        }
+        @media (min-width: 1024px) {
+            .mainland-section {
+                padding-top: var(--space-4xl);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .mainland-intro-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: stretch;
+            margin-bottom: 60px;
+        }
+        .mainland-intro-text h2 {
+            margin-bottom: 20px;
+        }
+        .mainland-intro-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+        .mainland-intro-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .mainland-section h1,
+        .legal-structure-section h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0b2a4a;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+        .mainland-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0b2a4a;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        .mainland-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        .mainland-section p {
+            font-size: 1.125rem;
+            line-height: 1.7;
+            color: #475569;
+            margin-bottom: var(--space-lg);
+        }
+        .mainland-section h1[style*="center"] + p {
+            font-size: 1.125rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .why-mainland-wrapper {
+            background-color: var(--color-gold-light);
+            padding: var(--space-3xl) var(--container-padding);
+            margin: var(--space-3xl) calc(-1 * var(--container-padding)) 0;
+        }
+        @media (min-width: 1024px) {
+            .why-mainland-wrapper {
+                padding: var(--space-4xl) var(--container-padding);
+                margin: var(--space-4xl) calc(-1 * var(--container-padding)) 0;
+            }
+        }
+        .why-mainland-header {
+            margin-bottom: 40px;
+        }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: stretch;
+            margin-top: 40px;
+        }
+        .benefits-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+        .benefits-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .benefits-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .benefit-card {
+            background: transparent;
+            padding: 20px 0;
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .benefit-card:last-child {
+            border-bottom: none;
+        }
+        .benefit-card h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .benefit-card h4::before {
+            content: '✓';
+            width: 24px;
+            height: 24px;
+            background: #c9a14a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .benefit-card p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #475569;
+            margin: 0;
+            padding-left: 36px;
+        }
+        .legal-structure-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: stretch;
+            margin-top: 30px;
+        }
+        .legal-structure-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .legal-card {
+            background: transparent;
+            padding: 15px 0;
+            border: none;
+            border-bottom: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .legal-card:last-child {
+            border-bottom: none;
+        }
+        .legal-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .legal-card h4::before {
+            content: '✓';
+            width: 24px;
+            height: 24px;
+            background: #c9a14a;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .legal-card p {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #475569;
+            margin: 0;
+            padding-left: 36px;
+        }
+        .legal-structure-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f1f5f9;
+        }
+        .legal-structure-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .process-section {
+            background-color: var(--color-bg);
+            padding: var(--space-4xl) 0;
+            margin: 0;
+            width: 100%;
+        }
+        .process-section .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        @media (min-width: 1024px) {
+            .process-section {
+                padding-top: var(--space-4xl);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .process-step {
+            text-align: left;
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .process-step:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+            border-color: rgba(201, 161, 74, 0.3);
+        }
+        .process-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #c9a14a, #a8853a);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        .process-step h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 10px;
+        }
+        .process-step p {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+        }
+        .cost-section-wrapper {
+            background: linear-gradient(
+                135deg,
+                rgba(11, 42, 74, 0.95) 0%,
+                rgba(11, 42, 74, 0.92) 50%,
+                rgba(201, 161, 74, 0.90) 100%
+            );
+            padding: calc(var(--space-2xl) * 0.7) 0;
+            margin: 0;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        .cost-section-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(201, 161, 74, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(11, 42, 74, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .cost-section-wrapper .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .cost-section-wrapper h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: calc(var(--space-md) * 0.7);
+            text-align: center;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+        .cost-section-wrapper p {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.125rem;
+            line-height: 1.7;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+            font-weight: 400;
+            position: relative;
+        }
+        .cost-section-wrapper p::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(201, 161, 74, 0.6), transparent);
+            margin: calc(var(--space-lg) * 0.7) auto 0;
+        }
+        @media (min-width: 1024px) {
+            .cost-section-wrapper {
+                padding-top: calc(var(--space-2xl) * 0.7);
+                padding-bottom: calc(var(--space-2xl) * 0.7);
+            }
+            .cost-section-wrapper h1 {
+                font-size: 3rem;
+                margin-bottom: calc(var(--space-lg) * 0.7);
+            }
+            .cost-section-wrapper p {
+                font-size: 1.25rem;
+            }
+        }
+        .cost-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            align-items: center;
+        }
+        .cost-info h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: var(--space-md);
+        }
+        .cost-info p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: var(--space-xl);
+        }
+        .cost-note {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c9a14a;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .cost-note p {
+            font-size: 14px;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+        .cost-note strong {
+            color: #ffffff;
+        }
+        .disclaimer-section {
+            padding-top: 0 !important;
+            padding-bottom: var(--space-2xl);
+        }
+        .disclaimer-note {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #c9a14a;
+            margin-top: 8px;
+        }
+        .disclaimer-note p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+            max-width: 100%;
+            width: 100%;
+        }
+        .disclaimer-note strong {
+            color: #0b2a4a;
+        }
+        .why-choose-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+            margin-bottom: 0;
+        }
+        .why-choose-card {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .why-choose-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            border-color: rgba(201, 161, 74, 0.3);
+        }
+        .why-choose-icon {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .why-choose-icon svg {
+            stroke: #c9a14a;
+        }
+        .why-choose-card h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #0b2a4a;
+            margin-bottom: 12px;
+        }
+        .why-choose-card p {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: #475569;
+            margin: 0;
+        }
+        .legal-structure-section {
+            background-color: var(--color-gold-light);
+            padding: var(--space-4xl) 0;
+            margin: 0;
+            border-radius: 0;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        @media (min-width: 1024px) {
+            .legal-structure-section {
+                padding-top: var(--space-4xl);
+                padding-bottom: var(--space-2xl);
+            }
+        }
+        .legal-structure-section .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .consultation-section {
+            background-color: var(--color-gold-light);
+        }
+        #consultation-form {
+            background-color: var(--color-gold-light);
+        }
+        .faq-section {
+            background-color: var(--color-bg);
+        }
+        @media (max-width: 1024px) {
+            .mainland-hero h1 {
+                font-size: 36px;
+            }
+            .mainland-hero p {
+                font-size: 18px;
+            }
+            .mainland-intro-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .mainland-intro-image {
+                height: 300px;
+                min-height: 300px;
+            }
+            .benefits-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .benefits-image {
+                height: 300px;
+                min-height: 300px;
+                order: 1;
+            }
+            .benefits-content {
+                order: 2;
+            }
+            .legal-structure-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .legal-structure-image {
+                height: 300px;
+                min-height: 300px;
+                order: 2;
+            }
+            .legal-structure-content {
+                order: 1;
+            }
+            .license-grid,
+            .why-choose-grid {
+                grid-template-columns: 1fr;
+            }
+            .process-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .cost-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .mainland-hero h1 {
+                font-size: 36px;
+            }
+            .mainland-hero p {
+                font-size: 18px;
+            }
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+      `}</style>
+      <div>
         <section className="mainland-hero">
           <div className="content-wrapper">
             <nav className="breadcrumbs" aria-label="Breadcrumb">
               <ol className="breadcrumbs-list">
                 <li className="breadcrumbs-item">
-                  <Link href="/" className="breadcrumbs-link">Home</Link>
+                  <a href="/" className="breadcrumbs-link">Home</a>
                 </li>
                 <li className="breadcrumbs-item">
-                  <Link href="/" className="breadcrumbs-link">Company Formation</Link>
+                  <a href="/" className="breadcrumbs-link">Company Formation</a>
                 </li>
                 <li className="breadcrumbs-item">
                   <span className="breadcrumbs-current">Offshore Company Formation</span>
@@ -222,16 +828,16 @@ export default function OffshorePage() {
             <div className="mainland-section related-services-section">
               <h2>Related Services</h2>
               <div className="related-services-grid">
-                <Link href="/mainland" className="related-service-card">
+                <a href="/mainland" className="related-service-card">
                   <h3>Mainland Company Formation</h3>
                   <p>For businesses that require unrestricted access to the UAE market.</p>
                   <span className="related-service-link">Learn More →</span>
-                </Link>
-                <Link href="/freezone" className="related-service-card">
+                </a>
+                <a href="/freezone" className="related-service-card">
                   <h3>Free Zone Company Formation</h3>
                   <p>Suitable for international businesses and startups within designated free zones.</p>
                   <span className="related-service-link">Learn More →</span>
-                </Link>
+                </a>
               </div>
             </div>
 
