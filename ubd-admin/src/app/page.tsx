@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import HomePageClient from './HomePageClient';
 import OrganizationSchema from '@/components/SEO/OrganizationSchema';
 import WebPageSchema from '@/components/SEO/WebPageSchema';
+import PublicLayout from '@/components/PublicLayout';
 
 export const metadata: Metadata = {
   title: 'UAE Business Desk - Company Setup Services',
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <>
+    <PublicLayout>
       <OrganizationSchema />
       <WebPageSchema
         name="UAE Business Desk - Company Setup Services"
@@ -36,7 +36,6 @@ export default function HomePage() {
         url="https://www.uaebusinessdesk.com"
       />
       <HomePageClient />
-      <Script src="/assets/site.js" strategy="afterInteractive" />
-    </>
+    </PublicLayout>
   );
 }

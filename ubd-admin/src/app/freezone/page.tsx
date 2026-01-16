@@ -906,12 +906,12 @@ export default function FreezonePage() {
                   </div>
                 </div>
               </div>
-            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         <div className="legal-structure-section">
-          <div className="content-wrapper">
+        <div className="content-wrapper">
             <h2 style={{ textAlign: 'left', marginBottom: '20px' }}>Legal Structure</h2>
             <div className="legal-structure-grid">
               <div className="legal-structure-content">
@@ -939,7 +939,7 @@ export default function FreezonePage() {
         </div>
 
         <div className="process-section">
-          <div className="content-wrapper">
+        <div className="content-wrapper">
             <h2 style={{ textAlign: 'center' }}>Free Zone Company Formation Process</h2>
             <p style={{ textAlign: 'center', marginLeft: 'auto', marginRight: 'auto', display: 'block' }}>A simple, transparent process from start to finish:</p>
             <div className="process-grid">
@@ -1034,10 +1034,10 @@ export default function FreezonePage() {
             <div className="mainland-section disclaimer-section">
               <div className="disclaimer-note">
                 <p><strong>Important:</strong> UBD provides documentation preparation and application facilitation services only. We do not guarantee company registration approvals. Approval decisions are made by the relevant free zone authorities based on their policies and client eligibility. All timelines are indicative estimates only, not commitments.</p>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
         <CompanyConsultationForm variant="freezone" />
         <CompanyFaq variant="freezone" />

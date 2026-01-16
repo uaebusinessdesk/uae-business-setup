@@ -1,21 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Work_Sans } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
-
-const plusJakartaSans = Plus_Jakarta_Sans({
-  variable: "--font-plus-jakarta-sans",
-  weight: ["600", "700"],
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const workSans = Work_Sans({
-  variable: "--font-work-sans",
-  weight: ["400", "500", "600"],
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "UAE Business Desk - Company Setup Services",
@@ -47,25 +31,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${plusJakartaSans.variable} ${workSans.variable} antialiased`}
-      >
-        <Script
-          id="load-stylesheet"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (document.querySelector('link[href="/assets/styles.css"]')) return;
-                var link = document.createElement('link');
-                link.rel = 'stylesheet';
-                link.href = '/assets/styles.css';
-                link.media = 'all';
-                document.head.appendChild(link);
-              })();
-            `,
-          }}
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700&family=Work+Sans:wght@400;500;600&display=swap"
+          rel="stylesheet"
         />
+        <link rel="stylesheet" href="/assets/styles.css" />
+      </head>
+      <body className="antialiased">
         {children}
       </body>
     </html>

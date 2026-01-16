@@ -89,8 +89,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div className="cookie-consent-content">
             <div className="cookie-consent-text">
               <p>
-                We use cookies to enhance your browsing experience and analyze site traffic. By clicking &quot;Accept&quot;, you consent to our use of cookies.
-                <a href="/privacy" target="_blank" rel="noopener noreferrer"> Learn more</a>
+                We use cookies to enhance your browsing experience and analyze site traffic. By clicking &quot;Accept&quot;, you consent to our use of cookies.{' '}
+                <a href="/privacy" target="_blank">Learn more</a>
               </p>
             </div>
             <div className="cookie-consent-buttons">

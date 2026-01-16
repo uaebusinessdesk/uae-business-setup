@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import PublicLayout from '@/components/PublicLayout';
 import ContactPageSchema from '@/components/SEO/ContactPageSchema';
 
@@ -29,13 +28,21 @@ export default function ContactPage() {
   return (
     <PublicLayout>
       <ContactPageSchema />
-      <section className="hero" style={{ backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/contact-hero.jpg')" }}>
+      <section
+        className="hero"
+        style={{
+          backgroundImage: "linear-gradient(rgba(11, 42, 74, 0.3), rgba(11, 42, 74, 0.4)), url('/assets/contact-hero.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
         <div className="hero-inner container">
           <div className="hero-copy" style={{ textAlign: 'left', maxWidth: '800px', margin: '0 auto' }}>
             <nav className="breadcrumbs" aria-label="Breadcrumb">
               <ol className="breadcrumbs-list">
                 <li className="breadcrumbs-item">
-                  <Link href="/" className="breadcrumbs-link">Home</Link>
+                  <a href="/" className="breadcrumbs-link">Home</a>
                 </li>
                 <li className="breadcrumbs-item">
                   <span className="breadcrumbs-current">Contact</span>
@@ -52,6 +59,25 @@ export default function ContactPage() {
       <section className="section" style={{ paddingBottom: 'var(--space-xl)' }}>
         <div className="content-wrapper">
           <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>Contact Us</h2>
+          <style>{`
+            /* Ensure WhatsApp contact card behaves exactly like other contact cards - no green color changes */
+            .contact-methods a.contact-method[data-whatsapp] {
+                border-color: var(--color-border) !important;
+            }
+            .contact-methods a.contact-method[data-whatsapp]:hover {
+                background-color: var(--color-bg) !important;
+                border-color: var(--color-gold) !important;
+                outline: none !important;
+                box-shadow: var(--shadow-xl) !important;
+                transform: translateY(-2px) !important;
+            }
+            .contact-methods a.contact-method[data-whatsapp]:hover * {
+                color: inherit !important;
+            }
+            .contact-methods a.contact-method[data-whatsapp]:hover svg {
+                color: var(--color-gold) !important;
+            }
+          `}</style>
           <div className="contact-methods">
             <a
               href="https://wa.me/971504209110"
@@ -103,7 +129,6 @@ export default function ContactPage() {
             <a
               href="https://www.google.com/maps/search/?api=1&query=Business+Center+Sharjah+Publishing+City+Sharjah+United+Arab+Emirates"
               target="_blank"
-              rel="noopener noreferrer"
               className="contact-method"
               style={{ textDecoration: 'none', display: 'block', cursor: 'pointer' }}
             >
@@ -207,7 +232,7 @@ export default function ContactPage() {
                   <label>
                     <input type="checkbox" name="privacyAccepted" required />
                     <span>
-                      I agree to the <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a> *
+                      I agree to the <a href="/privacy" target="_blank">Privacy Policy</a> *
                     </span>
                   </label>
                 </div>
