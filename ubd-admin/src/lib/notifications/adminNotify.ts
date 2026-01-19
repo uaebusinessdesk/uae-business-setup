@@ -19,21 +19,7 @@ export async function notifyAdmin(params: {
 }): Promise<void> {
   const { event, leadId, project, subject, lines } = params;
 
-  // If ADMIN_NOTIFY_EMAILS is empty, return early
-  const notifyEmailsEnv = process.env.ADMIN_NOTIFY_EMAILS;
-  if (!notifyEmailsEnv || notifyEmailsEnv.trim() === '') {
-    return;
-  }
-
-  // Parse recipients from comma-separated list
-  const recipients = notifyEmailsEnv
-    .split(',')
-    .map(email => email.trim())
-    .filter(email => email.length > 0 && email.includes('@'));
-
-  if (recipients.length === 0) {
-    return;
-  }
+  const recipients = ['support@uaebusinessdesk.com'];
 
   // Build admin link
   const adminBaseUrl = process.env.ADMIN_BASE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3001';

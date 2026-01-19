@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
 import AdminNav from '@/components/AdminNav';
 import ErrorSuppression from '@/components/ErrorSuppression';
@@ -21,10 +22,14 @@ export default async function AdminLayout({
 }) {
   const authenticated = await isAuthenticated();
 
+  if (!authenticated) {
+    redirect('/admin/login');
+  }
+
   return (
     <div className="min-h-screen bg-[#faf8f3]">
       <ErrorSuppression />
-      {authenticated ? <AdminNav /> : null}
+      <AdminNav />
       {children}
     </div>
   );

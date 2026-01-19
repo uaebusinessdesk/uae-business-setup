@@ -1,338 +1,250 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { sendEmail, generateLeadRef } from '@/lib/email';
-import { logActivity } from '@/lib/activity';
-import { sendText } from '@/lib/whatsapp';
-import { ATHAR_WHATSAPP, ANOOP_WHATSAPP, SELF_WHATSAPP } from '@/config/contacts';
+import { sendCustomerEmail } from '@/lib/sendCustomerEmail';
 import { normalizePhone, isValidE164 } from '@/lib/phone';
 
-// CORS headers - Allow both localhost and network IP
+const adminRecipient = 'support@uaebusinessdesk.com';
+
 const ALLOWED_ORIGINS = [
-  'http://localhost:3000', // Static website server
-  'http://127.0.0.1:3000', // Static website server
-  'http://10.50.9.210:3000', // Network IP for mobile access
-  'http://localhost:3001', // Admin portal (if running separately)
-  'http://localhost:8080', // Website static server (legacy)
-  'http://127.0.0.1:8080', // Website static server (legacy)
-  'https://www.uaebusinessdesk.com', // Production website
-  'http://www.uaebusinessdesk.com', // Production website (HTTP fallback)
-  'https://uaebusinessdesk.com', // Production website (without www)
-  'http://uaebusinessdesk.com', // Production website (without www, HTTP fallback)
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'https://uaebusinessdesk.com',
+  'https://www.uaebusinessdesk.com',
 ];
 
 function addCorsHeaders(response: NextResponse, origin?: string | null): NextResponse {
-  // In development, allow all origins; in production, check allowed list
-  const isDevelopment = process.env.NODE_ENV !== 'production';
-  
-  if (isDevelopment) {
-    // Allow all origins in development
-    const allowedOrigin = origin || '*';
-    response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
-  } else {
-    // In production, only allow specific origins
-    const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) 
-      ? origin 
-      : ALLOWED_ORIGINS[0];
-    response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
-  }
-  
-  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, X-UBD-LEAD-KEY');
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
+    ? origin
+    : ALLOWED_ORIGINS[0];
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
   response.headers.set('Access-Control-Max-Age', '86400');
   return response;
 }
 
-// DEPRECATED: This function is no longer used. Service types are now preserved as-is (mainland/freezone/offshore)
-// instead of being mapped to generic 'company'. Kept for reference only.
-// function mapServiceToSetupType(serviceRequired: string): 'company' | 'bank' {
-//   const mapping: Record<string, 'company' | 'bank'> = {
-//     'mainland': 'company',
-//     'freezone': 'company',
-//     'offshore': 'company',
-//   };
-//   return mapping[serviceRequired] || 'company';
-// }
-
-// Validate required fields
-function validateRequiredFields(body: any): { valid: boolean; error?: string; normalizedPhone?: string } {
-  if (!body.fullName || typeof body.fullName !== 'string' || body.fullName.trim() === '') {
-    return { valid: false, error: 'fullName is required' };
-  }
-  if (!body.whatsapp || typeof body.whatsapp !== 'string' || body.whatsapp.trim() === '') {
-    return { valid: false, error: 'whatsapp is required' };
-  }
-  
-  // Normalize phone number
-  const normalized = normalizePhone(body.whatsapp);
-  
-  // Validate E.164 format
-  if (!isValidE164(normalized)) {
-    return { valid: false, error: 'Invalid phone number. Please include country code, e.g. +97150xxxxxxx' };
-  }
-  
-  const serviceRequired = body.serviceRequired || body.helpWith || body.serviceChoice;
-  if (!serviceRequired || typeof serviceRequired !== 'string' || serviceRequired.trim() === '') {
-    return { valid: false, error: 'serviceRequired is required' };
-  }
-  
-  return { valid: true, normalizedPhone: normalized };
+function jsonError(origin: string | null, status: number, error: string, message: string): NextResponse {
+  const response = NextResponse.json({ ok: false, error, message }, { status });
+  return addCorsHeaders(response, origin);
 }
 
-// Handle GET requests (for testing/debugging)
-export async function GET(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  const response = NextResponse.json({
-    message: 'Lead Capture API Endpoint',
-    method: 'POST',
-    requiredHeaders: {
-      'Content-Type': 'application/json',
-      'X-UBD-LEAD-KEY': 'API key required',
-    },
-    requiredFields: ['fullName', 'whatsapp', 'serviceRequired'],
-    cors: {
-      origins: ALLOWED_ORIGINS,
-      methods: ['POST', 'OPTIONS'],
-    },
+function logRequest(origin: string | null, referer: string | null, ok: boolean): void {
+  console.log(`[PUBLIC_LEAD_CAPTURE] origin=${origin || 'unknown'} referer=${referer || 'unknown'} ok=${ok}`);
+}
+
+const knownFields = new Set([
+  'fullName',
+  'whatsapp',
+  'email',
+  'serviceRequired',
+  'helpWith',
+  'serviceChoice',
+  'nationality',
+  'residenceCountry',
+  'residence',
+  'emirate',
+  'activity',
+  'shareholdersCount',
+  'visasRequired',
+  'visasCount',
+  'timeline',
+  'notes',
+  'serviceDetails',
+  'companyJurisdiction',
+  'companyStatus',
+  'monthlyTurnover',
+  'turnoverLater',
+  'existingUaeBankAccount',
+  'existingAccountLater',
+  'needsBankAccount',
+  'privacyAccepted',
+  'website',
+]);
+
+function toTrimmedString(value: any): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value.trim();
+  return String(value).trim();
+}
+
+function toOptionalString(value: any): string | null {
+  const trimmed = toTrimmedString(value);
+  return trimmed ? trimmed : null;
+}
+
+function toOptionalInt(value: any): number | null {
+  const trimmed = toTrimmedString(value);
+  if (!trimmed) return null;
+  const parsed = Number.parseInt(trimmed, 10);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function toOptionalBoolean(value: any): boolean | null {
+  if (value === true || value === 'yes' || value === 'true') return true;
+  if (value === false || value === 'no' || value === 'false') return false;
+  return null;
+}
+
+function collectExtraFields(body: Record<string, any>): string[] {
+  const extras: string[] = [];
+  Object.keys(body || {}).forEach((key) => {
+    if (knownFields.has(key)) return;
+    const raw = body[key];
+    if (raw === undefined || raw === null || raw === '') return;
+    let value: string;
+    if (typeof raw === 'string') {
+      value = raw.trim();
+    } else {
+      try {
+        value = JSON.stringify(raw);
+      } catch {
+        value = String(raw);
+      }
+    }
+    if (!value) return;
+    extras.push(`${key}: ${value}`);
   });
-  return addCorsHeaders(response, origin);
+  return extras;
 }
 
-// Handle CORS preflight requests
-export async function OPTIONS(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  const response = new NextResponse(null, { status: 200 });
-  return addCorsHeaders(response, origin);
+function formatTimeline(timeline: string | null): string {
+  if (!timeline) return '';
+  const timelineMap: Record<string, string> = {
+    'immediately': 'Immediately',
+    'within-1-month': 'Within 1 month',
+    '1-3-months': '1–3 months',
+    'exploring': 'Exploring',
+  };
+  return timelineMap[timeline.toLowerCase()] || timeline;
 }
 
 export async function POST(request: NextRequest) {
-  const origin = request.headers.get('origin');
-  const isDev = process.env.NODE_ENV !== 'production';
-  
   try {
-    // Check API key
-    const apiKey = request.headers.get('X-UBD-LEAD-KEY');
-    const expectedKey = process.env.LEAD_API_KEY;
-    
-    if (!expectedKey) {
-      console.error('LEAD_API_KEY not configured');
-      const response = NextResponse.json(
-        { ok: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
-      return addCorsHeaders(response, origin);
-    }
-    
-    if (!apiKey || apiKey !== expectedKey) {
-      const response = NextResponse.json(
-        { ok: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-      return addCorsHeaders(response, origin);
-    }
-
-    // Parse request body
+    const origin = request.headers.get('origin');
+    const referer = request.headers.get('referer');
     let body: any;
     try {
       body = await request.json();
-    } catch (parseError: any) {
-      const response = NextResponse.json(
-        { ok: false, error: 'Invalid JSON in request body' },
-        { status: 400 }
-      );
-      return addCorsHeaders(response, origin);
+    } catch {
+      const message = 'Invalid JSON in request body';
+      logRequest(origin, referer, false);
+      return jsonError(origin, 400, 'BAD_REQUEST', message);
     }
 
-    // Validate required fields
-    const validation = validateRequiredFields(body);
-    if (!validation.valid) {
-      const fieldErrors: Record<string, string> = {};
-      if (validation.error?.includes('fullName')) {
-        fieldErrors.fullName = 'Full name is required';
-      } else if (validation.error?.includes('whatsapp')) {
-        fieldErrors.whatsapp = validation.error;
-      } else if (validation.error?.includes('serviceRequired')) {
-        fieldErrors.serviceRequired = 'Service selection is required';
-      }
-      
-      const response = NextResponse.json(
-        { 
-          ok: false, 
-          error: validation.error || 'Validation failed',
-          ...(Object.keys(fieldErrors).length > 0 && { fieldErrors })
-        },
-        { status: 400 }
-      );
-      return addCorsHeaders(response, origin);
+    const fullName = toTrimmedString(body.fullName);
+    const whatsappRaw = toTrimmedString(body.whatsapp);
+    const serviceRequired = toTrimmedString(body.serviceRequired || body.helpWith || body.serviceChoice);
+
+    if (!fullName || !whatsappRaw || !serviceRequired) {
+      const message = 'Missing required fields';
+      logRequest(origin, referer, false);
+      return jsonError(origin, 400, 'BAD_REQUEST', message);
     }
-    
-    // Get normalized phone from validation result
-    const normalizedPhone = validation.normalizedPhone!;
 
-    const serviceRequired = (body.serviceRequired || body.helpWith || body.serviceChoice || '').toString().trim();
+    const normalizedPhone = normalizePhone(whatsappRaw);
+    if (!isValidE164(normalizedPhone)) {
+      const message = 'Invalid phone number. Please include country code, e.g. +97150xxxxxxx';
+      logRequest(origin, referer, false);
+      return jsonError(origin, 400, 'BAD_REQUEST', message);
+    }
 
-    // Generate lead reference
     const leadRef = generateLeadRef();
 
-    // Prepare notes with lead reference and bank-related fields
-    const notesParts = [];
-    if (body.notes) {
-      notesParts.push(body.notes);
+    const notesParts: string[] = [];
+    const rawNotes = toOptionalString(body.notes);
+    if (rawNotes) {
+      notesParts.push(rawNotes);
     }
-    
-    // Add bank-related fields to notes if provided
-    const bankFields = [];
-    if (body.companyJurisdiction) {
-      bankFields.push(`Company Jurisdiction: ${body.companyJurisdiction}`);
-    }
-    if (body.companyStatus) {
-      bankFields.push(`Company Status: ${body.companyStatus}`);
-    }
-    if (body.monthlyTurnover) {
-      bankFields.push(`Monthly Turnover: ${body.monthlyTurnover}`);
-    }
+
+    const bankFields: string[] = [];
+    const companyJurisdiction = toOptionalString(body.companyJurisdiction);
+    if (companyJurisdiction) bankFields.push(`Company Jurisdiction: ${companyJurisdiction}`);
+    const companyStatus = toOptionalString(body.companyStatus);
+    if (companyStatus) bankFields.push(`Company Status: ${companyStatus}`);
+    const monthlyTurnover = toOptionalString(body.monthlyTurnover || body.turnoverLater);
+    if (monthlyTurnover) bankFields.push(`Monthly Turnover: ${monthlyTurnover}`);
     if (body.existingUaeBankAccount !== undefined && body.existingUaeBankAccount !== null) {
-      bankFields.push(`Existing UAE Bank Account: ${body.existingUaeBankAccount === 'yes' || body.existingUaeBankAccount === true ? 'Yes' : 'No'}`);
+      const existingValue = body.existingUaeBankAccount === 'yes' || body.existingUaeBankAccount === true ? 'Yes' : 'No';
+      bankFields.push(`Existing UAE Bank Account: ${existingValue}`);
+    } else if (body.existingAccountLater !== undefined && body.existingAccountLater !== null) {
+      const existingValue = body.existingAccountLater === 'yes' || body.existingAccountLater === true ? 'Yes' : 'No';
+      bankFields.push(`Existing UAE Bank Account: ${existingValue}`);
     }
-    
+
     if (bankFields.length > 0) {
-      notesParts.push('Bank Account Details:\n' + bankFields.join('\n'));
+      notesParts.push(`Bank Account Details:\n${bankFields.join('\n')}`);
     }
-    
-    // All submissions are now leads (company setup services)
+
+    const extraFields = collectExtraFields(body);
+    if (extraFields.length > 0) {
+      notesParts.push(`Additional Fields:\n${extraFields.join('\n')}`);
+    }
+
     notesParts.push(`Lead Reference: ${leadRef}`);
     const notesWithRef = notesParts.join('\n\n');
 
-    // Map serviceRequired to base setupType (mainland/freezone/offshore)
-    // If needsBankAccount is true, we'll combine it later
-    const baseSetupType = serviceRequired; // Keep original: mainland/freezone/offshore
-
-    // Determine needsBankAccount
-    // Combined services are no longer supported - only standalone bank services
-    // Only set needsBankAccount = true if serviceRequired is "bank" or "existing-company"
-    // Ignore needsBankAccount field from company setup forms
-    let needsBankAccount = false;
-    if (baseSetupType === 'existing-company' || baseSetupType === 'bank') {
-      needsBankAccount = true;
-    }
-    // For company setup forms (mainland/freezone/offshore), always set to false
-    // even if the form sends needsBankAccount = true
-
-    // Handle serviceDetails for bank account prescreen
     let serviceDetailsString: string | null = null;
     if (body.serviceDetails) {
       try {
         serviceDetailsString = JSON.stringify(body.serviceDetails);
-      } catch (e) {
-        console.error('Error stringifying serviceDetails:', e);
+      } catch {
+        serviceDetailsString = null;
       }
     }
 
-    // Determine final setupType
-    // Combined services are no longer supported - preserve original service type only
     let setupType: string;
-    if (baseSetupType === 'existing-company' || baseSetupType === 'bank' || body.serviceDetails?.bankAccountPrescreen) {
+    if (serviceRequired === 'existing-company' || serviceRequired === 'bank' || body.serviceDetails?.bankAccountPrescreen) {
       setupType = 'bank';
-    } else if (baseSetupType === 'mainland' || baseSetupType === 'freezone' || baseSetupType === 'offshore') {
-      // Preserve the original service type (no bank account combination)
-      setupType = baseSetupType;
-    } else if (baseSetupType === 'not-sure' || baseSetupType === 'not_sure') {
+    } else if (serviceRequired === 'mainland' || serviceRequired === 'freezone' || serviceRequired === 'offshore') {
+      setupType = serviceRequired;
+    } else if (serviceRequired === 'not-sure' || serviceRequired === 'not_sure') {
       setupType = 'not_sure';
     } else {
-      // Fallback: preserve the original value if it's something else
-      setupType = baseSetupType;
+      setupType = serviceRequired;
     }
 
-    // Determine bankStage based on needsBankAccount
-    // If needsBankAccount=true -> "queued"
-    // Else -> "not_applicable"
+    const needsBankAccount = setupType === 'bank';
     const bankStage = needsBankAccount ? 'queued' : 'not_applicable';
 
-    // No auto-assignment - agents must be manually assigned
-    let assignedAgent = 'unassigned';
-
-    // Legacy field for backward compatibility
-    let companyAssignedTo = 'unassigned';
-
-    // Create lead in database
     const lead = await db.lead.create({
       data: {
-        fullName: body.fullName.trim(),
+        fullName,
         whatsapp: normalizedPhone,
-        email: body.email ? body.email.trim() : null,
-        nationality: body.nationality ? body.nationality.trim() : null,
-        residenceCountry: body.residenceCountry ? body.residenceCountry.trim() : null,
-        emirate: body.emirate ? body.emirate.trim() : null,
-        setupType: setupType,
-        activity: body.activity ? body.activity.trim() : null,
-        shareholdersCount: body.shareholdersCount ? parseInt(body.shareholdersCount) : null,
-        visasRequired: body.visasRequired === 'yes' || body.visasRequired === true ? true : body.visasRequired === 'no' || body.visasRequired === false ? false : null,
-        visasCount: body.visasCount ? parseInt(body.visasCount) : null,
-        timeline: body.timeline ? body.timeline.trim() : null,
+        email: toOptionalString(body.email),
+        nationality: toOptionalString(body.nationality),
+        residenceCountry: toOptionalString(body.residenceCountry || body.residence),
+        emirate: toOptionalString(body.emirate),
+        setupType,
+        activity: toOptionalString(body.activity),
+        shareholdersCount: toOptionalInt(body.shareholdersCount),
+        visasRequired: toOptionalBoolean(body.visasRequired),
+        visasCount: toOptionalInt(body.visasCount),
+        timeline: toOptionalString(body.timeline),
         notes: notesWithRef,
         serviceDetails: serviceDetailsString,
         stage: 'new',
         assignedTo: 'unassigned',
         invoiceStatus: 'not_sent',
-        // Deal Workflow - Company
-        assignedAgent: assignedAgent,
-        // Company Setup Tracking - defaults (legacy)
+        assignedAgent: 'unassigned',
         companyStage: 'new',
         companyFeasible: false,
-        companyAssignedTo: companyAssignedTo,
+        companyAssignedTo: 'unassigned',
         companyInvoiceStatus: 'not_sent',
-        // Bank Setup Tracking - defaults
-        needsBankAccount: needsBankAccount,
-        bankStage: bankStage,
+        needsBankAccount,
+        bankStage,
         bankInvoiceStatus: 'not_sent',
       },
     });
 
-    // Determine if this is an enquiry (contact form) or a lead (consultation form)
-    const isEnquiry = false; // All leads are now either company or bank
-    
-    // Check if this is a callback request (from callback modal)
-    const isCallbackRequest = body.notes && body.notes.includes('Callback Request');
-    
-    // Log lead/enquiry creation
-    if (isEnquiry) {
-      await logActivity(lead.id, 'lead_created', `New enquiry received: ${leadRef}`);
-    } else {
-      await logActivity(lead.id, 'lead_created', `New lead created: ${leadRef}`);
-    }
-    
-    // No auto-assignment notifications - agents must be manually assigned first
+    const isCallbackRequest = false;
+    const isEnquiry = serviceRequired === 'not-sure' || serviceRequired === 'not_sure';
+    const adminEmail = adminRecipient;
 
-    // No auto-assignment notifications - agents must be manually assigned first
-    // Agents will be notified when manually assigned through the admin portal
-
-    // Send notification email to admin
-    // ⚠️ ADMIN NEW LEAD NOTIFICATION EMAIL - FINALIZED & APPROVED ⚠️
-    // This admin notification email template has been reviewed and approved.
-    // All form details are included:
-    // - Client details (name, WhatsApp, email, nationality, residence country, preferred emirate)
-    // - Service details (service requested, assigned agent, business activity, shareholders, visas, timeline, bank account support, bank details)
-    // - Additional Notes (only user-entered notes from form, excluding bank details and lead reference)
-    // Please do not modify without careful review and approval.
-    const adminEmail = 'support@uaebusinessdesk.com';
-    
-    // Helper function to format timeline for display
-    const formatTimeline = (timeline: string | null): string => {
-      if (!timeline) return '';
-      const timelineMap: Record<string, string> = {
-        'immediately': 'Immediately',
-        'within-1-month': 'Within 1 month',
-        '1-3-months': '1–3 months',
-        'exploring': 'Exploring',
-      };
-      return timelineMap[timeline.toLowerCase()] || timeline;
-    };
-
-    // Determine subject line based on request type - Enhanced with service type and customer name
     let adminSubject: string;
     if (isCallbackRequest) {
       adminSubject = `📞 Callback Request – ${leadRef} | ${lead.fullName}`;
     } else {
-      // Check if this is a bank account setup (using setupType or serviceRequired)
       const isBankAccountSetup = setupType === 'bank' || serviceRequired === 'bank' || serviceRequired === 'existing-company';
       const serviceType = isBankAccountSetup ? 'Bank Account Setup' :
                           serviceRequired === 'mainland' ? 'Mainland' :
@@ -340,34 +252,30 @@ export async function POST(request: NextRequest) {
                           serviceRequired === 'offshore' ? 'Offshore' :
                           serviceRequired === 'not-sure' ? 'General Enquiry' :
                           'Company Setup';
-      adminSubject = isEnquiry 
-        ? `📧 New Enquiry – ${leadRef} | ${lead.fullName}` 
+      adminSubject = isEnquiry
+        ? `📧 New Enquiry – ${leadRef} | ${lead.fullName}`
         : `🎯 New Lead: ${serviceType} – ${leadRef} | ${lead.fullName}`;
     }
-    
-    // Format service name for display
+
     let serviceName: string;
     if (isCallbackRequest) {
       serviceName = 'Callback Request';
     } else {
       serviceName = serviceRequired === 'mainland' ? 'Mainland Company Setup' :
-                     serviceRequired === 'freezone' ? 'Free Zone Company Setup' :
-                     serviceRequired === 'offshore' ? 'Offshore Company Setup' :
-                     serviceRequired === 'existing-company' ? 'Bank Account Setup' :
-                     serviceRequired === 'not-sure' ? 'General Enquiry' :
-                     serviceRequired;
+                    serviceRequired === 'freezone' ? 'Free Zone Company Setup' :
+                    serviceRequired === 'offshore' ? 'Offshore Company Setup' :
+                    serviceRequired === 'existing-company' ? 'Bank Account Setup' :
+                    serviceRequired === 'not-sure' ? 'General Enquiry' :
+                    serviceRequired;
     }
-    
-    // Format assigned agent name
+
     const agentName = lead.assignedAgent === 'athar' ? 'Athar' :
                      lead.assignedAgent === 'anoop' ? 'Anoop' :
                      lead.assignedAgent === 'self' ? 'Self' :
                      'Unassigned';
-    
-    // Logo URL - using footer logo for emails
+
     const logoUrl = process.env.EMAIL_LOGO_URL || 'https://www.uaebusinessdesk.com/assets/footer-logo.png';
-    console.log('Email Logo URL:', logoUrl); // Debug log
-    
+
     const adminHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -667,90 +575,77 @@ export async function POST(request: NextRequest) {
         html: adminHtml,
       });
     } catch (emailError) {
-      console.error('Failed to send admin notification email:', emailError);
-      // Don't fail the request if email fails
+      console.error('[Public Lead Capture] Admin email failed:', emailError);
     }
 
-    // Send acknowledgement email to client if email exists
-    // ⚠️ WELCOME EMAIL - FINALIZED & APPROVED ⚠️
-    // This welcome email template has been reviewed and approved. 
-    // All fields are correctly displayed:
-    // - Client details (name, WhatsApp, email, nationality, residence country, preferred emirate)
-    // - Service details (service, agent, activity, shareholders, visas, timeline, bank account support, bank details)
-    // - Additional notes (only user-entered notes, excluding bank details and lead reference)
-    // Please do not modify without careful review and approval.
     if (lead.email) {
-      // Format service name for display using toSetupTypeLabel for consistent formatting
-      const { toSetupTypeLabel } = await import('@/lib/setupType');
-      const serviceName = toSetupTypeLabel(setupType);
-      
-      // Parse bank account prescreen data if available
-      let bankPrescreen: any = null;
-      if (setupType === 'bank' && body.serviceDetails?.bankAccountPrescreen) {
-        bankPrescreen = body.serviceDetails.bankAccountPrescreen;
-      }
-      
-      // Helper functions for formatting bank prescreen fields
-      const formatUaeSetupType = (type: string) => {
-        const map: Record<string, string> = {
-          'MAINLAND': 'Mainland',
-          'FREE_ZONE': 'Free Zone',
-          'OFFSHORE': 'Offshore'
+      try {
+        const { toSetupTypeLabel } = await import('@/lib/setupType');
+        const serviceName = toSetupTypeLabel(setupType);
+
+        let bankPrescreen: any = null;
+        if (setupType === 'bank' && body.serviceDetails?.bankAccountPrescreen) {
+          bankPrescreen = body.serviceDetails.bankAccountPrescreen;
+        }
+
+        const formatUaeSetupType = (type: string) => {
+          const map: Record<string, string> = {
+            'MAINLAND': 'Mainland',
+            'FREE_ZONE': 'Free Zone',
+            'OFFSHORE': 'Offshore'
+          };
+          return map[type] || type;
         };
-        return map[type] || type;
-      };
-      
-      const formatActivityCategory = (category: string) => {
-        const map: Record<string, string> = {
-          'GENERAL_TRADING': 'General Trading',
-          'TRADING_SPECIFIC_GOODS': 'Trading (specific goods)',
-          'SERVICES_CONSULTANCY': 'Services / Consultancy',
-          'IT_SOFTWARE': 'IT / Software',
-          'MARKETING_MEDIA': 'Marketing / Media',
-          'ECOMMERCE': 'E-commerce',
-          'LOGISTICS_SHIPPING': 'Logistics / Shipping',
-          'MANUFACTURING': 'Manufacturing',
-          'REAL_ESTATE_RELATED': 'Real Estate related',
-          'OTHER': 'Other'
+
+        const formatActivityCategory = (category: string) => {
+          const map: Record<string, string> = {
+            'GENERAL_TRADING': 'General Trading',
+            'TRADING_SPECIFIC_GOODS': 'Trading (specific goods)',
+            'SERVICES_CONSULTANCY': 'Services / Consultancy',
+            'IT_SOFTWARE': 'IT / Software',
+            'MARKETING_MEDIA': 'Marketing / Media',
+            'ECOMMERCE': 'E-commerce',
+            'LOGISTICS_SHIPPING': 'Logistics / Shipping',
+            'MANUFACTURING': 'Manufacturing',
+            'REAL_ESTATE_RELATED': 'Real Estate related',
+            'OTHER': 'Other'
+          };
+          return map[category] || category;
         };
-        return map[category] || category;
-      };
-      
-      const formatTurnover = (turnover: string) => {
-        const map: Record<string, string> = {
-          'UNDER_100K': 'Under 100,000 AED',
-          '100K_500K': '100,000 – 500,000 AED',
-          '500K_2M': '500,000 – 2,000,000 AED',
-          'OVER_2M': 'Over 2,000,000 AED'
+
+        const formatTurnover = (turnover: string) => {
+          const map: Record<string, string> = {
+            'UNDER_100K': 'Under 100,000 AED',
+            '100K_500K': '100,000 – 500,000 AED',
+            '500K_2M': '500,000 – 2,000,000 AED',
+            'OVER_2M': 'Over 2,000,000 AED'
+          };
+          return map[turnover] || turnover;
         };
-        return map[turnover] || turnover;
-      };
-      
-      const formatGeography = (geo: string) => {
-        const map: Record<string, string> = {
-          'UAE': 'UAE',
-          'GCC': 'GCC',
-          'UK': 'UK',
-          'EUROPE': 'Europe',
-          'USA_CANADA': 'USA / Canada',
-          'ASIA': 'Asia',
-          'AFRICA': 'Africa',
-          'OTHER': 'Other'
+
+        const formatGeography = (geo: string) => {
+          const map: Record<string, string> = {
+            'UAE': 'UAE',
+            'GCC': 'GCC',
+            'UK': 'UK',
+            'EUROPE': 'Europe',
+            'USA_CANADA': 'USA / Canada',
+            'ASIA': 'Asia',
+            'AFRICA': 'Africa',
+            'OTHER': 'Other'
+          };
+          return map[geo] || geo;
         };
-        return map[geo] || geo;
-      };
-      
-      const clientSubject = isEnquiry 
-        ? `Thank you for your enquiry – ${leadRef} | ${serviceName}` 
-        : `Thank you for your consultation request – ${leadRef} | ${serviceName}`;
-      
-      // Logo URL - using header logo for footer logo structure
-      const logoUrl = process.env.EMAIL_LOGO_URL || 'https://www.uaebusinessdesk.com/assets/header-logo.png';
-      const tagline = 'Clarity before commitment';
-      const brandName = process.env.BRAND_NAME || 'UAE Business Desk';
-      console.log('Email Logo URL (client):', logoUrl); // Debug log
-      
-      const clientHtml = `
+
+        const clientSubject = isEnquiry
+          ? `Thank you for your enquiry – ${leadRef} | ${serviceName}`
+          : `Thank you for your consultation request – ${leadRef} | ${serviceName}`;
+
+        const logoUrl = process.env.EMAIL_LOGO_URL || 'https://www.uaebusinessdesk.com/assets/header-logo.png';
+        const tagline = 'Clarity before commitment';
+        const brandName = process.env.BRAND_NAME || 'UAE Business Desk';
+
+        const clientHtml = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -1177,57 +1072,31 @@ export async function POST(request: NextRequest) {
         </html>
       `;
 
-      try {
-        const { sendCustomerEmail } = await import('@/lib/sendCustomerEmail');
         await sendCustomerEmail({
           to: lead.email,
           subject: clientSubject,
           html: clientHtml,
         }, 'acknowledgement');
       } catch (emailError) {
-        console.error('Failed to send client acknowledgement email:', emailError);
-        // Don't fail the request if email fails
+        console.error('[Public Lead Capture] Customer email failed:', emailError);
       }
     }
 
-    const response = NextResponse.json(
-      {
-        ok: true,
-        success: true,
-        leadId: lead.id,
-        leadRef: leadRef,
-        message: 'Lead captured successfully',
-      },
-      { status: 201 }
-    );
+    logRequest(origin, referer, true);
+
+    const response = NextResponse.json({
+      ok: true,
+      leadId: lead.id,
+      leadRef,
+    });
     return addCorsHeaders(response, origin);
-  } catch (err: any) {
-    // Log full error in DEV
-    const isDev = process.env.NODE_ENV !== 'production';
-    if (isDev) {
-      console.error("Lead capture failed:", err);
-    }
-    
-    const errorMessage = err instanceof Error ? err.message : String(err || 'Unknown error');
-    
-    // Check if it's a Prisma schema sync issue
-    if (errorMessage.includes('Unknown argument') || errorMessage.includes('Prisma')) {
-      if (isDev) {
-        console.error('⚠️  Prisma schema may be out of sync. Run: npx prisma generate && npx prisma db push');
-      }
-    }
-    
-    const responseData: any = {
-      ok: false,
-      error: 'Internal server error',
-    };
-    
-    if (isDev) {
-      responseData.debugMessage = errorMessage;
-    }
-    
-    const response = NextResponse.json(responseData, { status: 500 });
-    return addCorsHeaders(response, origin);
+  } catch (error: any) {
+    logRequest(request.headers.get('origin'), request.headers.get('referer'), false);
+    return jsonError(request.headers.get('origin'), 500, 'SERVER_ERROR', 'Server error. Please try again later.');
   }
 }
 
+export async function OPTIONS(request: NextRequest) {
+  const response = new NextResponse(null, { status: 200 });
+  return addCorsHeaders(response, request.headers.get('origin'));
+}

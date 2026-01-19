@@ -78,12 +78,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Use dedicated callback API endpoint
-                const callbackApiUrl = LEAD_API_URL.replace('/api/leads/capture', '/api/callback/request');
+                const callbackApiUrl = LEAD_API_URL.replace('/api/public/leads/capture', '/api/callback/request');
                 const response = await fetch(callbackApiUrl, {
                     method: 'POST',
                     headers: {
-                        "Content-Type": "application/json",
-                        "X-UBD-LEAD-KEY": LEAD_API_KEY
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         name: name || null,
@@ -121,33 +120,16 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Lead Capture API Configuration
-const LEAD_API_KEY = "cfd09a32e8a42dac3a34f8231f5e868d23f83c14408ed58ff918ef008eed9c03";
-// Use the same hostname as the current page for API calls (works on both desktop and mobile)
+// Use the correct API URL for local split ports and production same-domain routing
 const getApiUrl = () => {
     const hostname = window.location.hostname;
-    const protocol = window.location.protocol; // http: or https:
-    
-    // Check if opened as file:// (local file)
-    if (protocol === 'file:' || !hostname) {
-        console.warn('Website opened as local file. API calls will not work. Please serve via HTTP server.');
-        // Return a placeholder URL that will fail gracefully
-        return 'http://localhost:3001/api/leads/capture';
+    const port = window.location.port;
+
+    if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '3000') {
+        return 'http://localhost:3001/api/public/leads/capture';
     }
-    
-    // Always use localhost:3001 for local development
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.') || hostname.startsWith('10.')) {
-        return `http://localhost:3001/api/leads/capture`;
-    } 
-    // For production domains (uaebusinessdesk.com), use the same domain with API path
-    else if (hostname.includes('uaebusinessdesk.com')) {
-        // Use HTTPS for production
-        return `https://${hostname}/api/leads/capture`;
-    } 
-    // For other production domains, use the same domain
-    else {
-        const apiProtocol = protocol === 'https:' ? 'https:' : 'http:';
-        return `${apiProtocol}//${hostname}/api/leads/capture`;
-    }
+
+    return '/api/public/leads/capture';
 };
 const LEAD_API_URL = getApiUrl();
 
@@ -758,8 +740,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     response = await fetch(LEAD_API_URL, {
                         method: 'POST',
                         headers: {
-                            "Content-Type": "application/json",
-                            "X-UBD-LEAD-KEY": LEAD_API_KEY
+                            "Content-Type": "application/json"
                         },
                         body: JSON.stringify(payload),
                         signal: controller.signal
@@ -1176,8 +1157,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const response = await fetch(LEAD_API_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-UBD-LEAD-KEY': LEAD_API_KEY
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });

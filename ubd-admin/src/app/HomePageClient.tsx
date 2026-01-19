@@ -616,7 +616,6 @@ export default function HomePageClient() {
                     </div>
                   </div>
                 </form>
-                <p className="form-disclaimer">Approvals and timelines depend on third parties. We provide documentation and application facilitation only.</p>
               </div>
             </div>
           </div>

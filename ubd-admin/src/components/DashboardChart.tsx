@@ -31,7 +31,6 @@ interface BarChartData {
 interface PieChartData {
   name: string;
   value: number;
-  [key: string]: string | number;
 }
 
 interface DashboardChartProps {
@@ -138,12 +137,12 @@ export default function DashboardChart({
           <ResponsiveContainer width="100%" height={height}>
             <PieChart>
               <Pie
-                data={data as any}
+                data={data}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`
+                  `${name} ${(percent * 100).toFixed(0)}%`
                 }
                 outerRadius={80}
                 fill="#8884d8"

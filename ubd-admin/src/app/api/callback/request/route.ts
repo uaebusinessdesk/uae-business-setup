@@ -46,27 +46,6 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get('origin');
   
   try {
-    // Check API key
-    const apiKey = request.headers.get('X-UBD-LEAD-KEY');
-    const expectedKey = process.env.LEAD_API_KEY;
-    
-    if (!expectedKey) {
-      console.error('LEAD_API_KEY not configured');
-      const response = NextResponse.json(
-        { ok: false, error: 'Server configuration error' },
-        { status: 500 }
-      );
-      return addCorsHeaders(response, origin);
-    }
-    
-    if (!apiKey || apiKey !== expectedKey) {
-      const response = NextResponse.json(
-        { ok: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
-      return addCorsHeaders(response, origin);
-    }
-
     // Parse request body
     let body: any;
     try {
@@ -127,7 +106,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send simple email notification
-    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
+    const adminEmail = 'support@uaebusinessdesk.com';
     const adminSubject = `📞 Callback Request - ${callbackRequest.name || 'No name provided'}`;
     
     const adminHtml = `
