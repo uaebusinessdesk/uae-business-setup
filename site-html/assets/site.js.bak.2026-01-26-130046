@@ -126,7 +126,7 @@ const getApiUrl = () => {
     const port = window.location.port;
 
     if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '3000') {
-        return '/api/public/leads/capture';
+        return 'http://localhost:3001/api/public/leads/capture';
     }
 
     return '/api/public/leads/capture';

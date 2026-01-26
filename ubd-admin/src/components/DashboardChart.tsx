@@ -80,7 +80,7 @@ export default function DashboardChart({
       case 'line':
         return (
           <ResponsiveContainer width="100%" height={height}>
-            <LineChart data={data}>
+            <LineChart data={data as any}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
@@ -111,7 +111,7 @@ export default function DashboardChart({
       case 'bar':
         return (
           <ResponsiveContainer width="100%" height={height}>
-            <BarChart data={data}>
+            <BarChart data={data as any}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis
                 dataKey="name"
@@ -137,12 +137,12 @@ export default function DashboardChart({
           <ResponsiveContainer width="100%" height={height}>
             <PieChart>
               <Pie
-                data={data}
+                data={data as any}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
+                  `${name} ${(((percent ?? 0) * 100).toFixed(0))}%`
                 }
                 outerRadius={80}
                 fill="#8884d8"

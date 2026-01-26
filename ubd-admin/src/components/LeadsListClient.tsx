@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { computeCompanySla, type CompanySla } from '@/lib/sla';
 
-interface Lead {
+export interface Lead {
   id: string;
   fullName: string;
   whatsapp: string;
@@ -17,7 +17,6 @@ interface Lead {
   agentContactedAt?: Date | null;
   feasible?: boolean | null;
   quotedAmountAed?: number | null;
-  approvalRequestedAt?: Date | null;
   approved?: boolean | null;
   paymentReceivedAt?: Date | null;
   companyCompletedAt?: Date | null;
@@ -42,7 +41,7 @@ interface Lead {
   sla?: CompanySla;
 }
 
-interface LeadsListClientProps {
+export interface LeadsListClientProps {
   leads: Lead[];
   initialSearchParams: {
     q: string;

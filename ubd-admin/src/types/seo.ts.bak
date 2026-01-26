@@ -1,0 +1,19 @@
+export type PageInfo = {
+  url: string;
+  title?: string;
+};
+
+export type SEOIssue = {
+  level: 'info' | 'warning' | 'error';
+  message: string;
+};
+
+export type SEOAnalysis = {
+  generatedAt: string;
+  pages: Array<{
+    url: string;
+    title?: string;
+    score?: number;
+    issues?: SEOIssue[];
+  }>;
+};

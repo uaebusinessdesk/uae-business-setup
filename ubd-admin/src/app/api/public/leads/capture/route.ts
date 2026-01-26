@@ -237,6 +237,26 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    // FAST RESPONSE: do not block on email sending
+    const res = NextResponse.json({ ok: true, leadId: lead.id, leadRef });
+    if (origin) {
+      res.headers.set("Access-Control-Allow-Origin", origin);
+      res.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+      res.headers.set("Access-Control-Allow-Headers", "Content-Type");
+      res.headers.set("Access-Control-Max-Age", "86400");
+    }
+
+    // Fire-and-forget: continue processing (emails, etc.) in background
+    setImmediate(async () => {
+      try {
+        // NOTE: the code below still runs after response is sent
+      } catch (e) {
+        console.error("Post-response processing failed:", e);
+      }
+    });
+
+    return res;
+
     const isCallbackRequest = false;
     const isEnquiry = serviceRequired === 'not-sure' || serviceRequired === 'not_sure';
     const adminEmail = adminRecipient;
@@ -1072,11 +1092,12 @@ export async function POST(request: NextRequest) {
         </html>
       `;
 
+        if (lead.email) {
         await sendCustomerEmail({
-          to: lead.email,
-          subject: clientSubject,
+          to: lead.email!,          subject: clientSubject,
           html: clientHtml,
         }, 'acknowledgement');
+        }
       } catch (emailError) {
         console.error('[Public Lead Capture] Customer email failed:', emailError);
       }
