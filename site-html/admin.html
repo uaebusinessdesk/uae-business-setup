@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin | UAE Business Desk</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <style>
+        .simple-admin {
+            min-height: 100vh;
+            background: #0f1b2b;
+            color: #f6f1e7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 20px;
+        }
+        .simple-admin-card {
+            width: 100%;
+            max-width: 520px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+        }
+        .simple-admin-card h1 {
+            margin: 0 0 8px;
+        }
+        .simple-admin-card p {
+            margin: 0 0 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .simple-admin-card input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            margin-bottom: 12px;
+        }
+        .simple-admin-card button {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: none;
+            background: #c9a14a;
+            color: #111;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .simple-admin-error {
+            margin-top: 8px;
+            color: #ffb3b3;
+        }
+        .simple-admin-content {
+            margin-top: 24px;
+        }
+        .simple-admin-content h2 {
+            margin: 0 0 8px;
+        }
+        .simple-admin-table {
+            width: 100%;
+            margin-top: 12px;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .simple-admin-table th,
+        .simple-admin-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+        }
+        .simple-admin-note {
+            margin-top: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <main class="simple-admin">
+        <div class="simple-admin-card" id="admin-login-card">
+            <h1>Admin</h1>
+            <p>Enter the password to view the admin instructions.</p>
+            <form id="admin-login-form">
+                <input id="admin-password" type="password" placeholder="Password" autocomplete="current-password" required />
+                <button type="submit">Login</button>
+                <div class="simple-admin-error" id="admin-error" aria-live="polite"></div>
+            </form>
+
+            <div class="simple-admin-content" id="admin-content" style="display: none;">
+                <h2>Instructions</h2>
+                <p>Leads are received by email at support@uaebusinessdesk.com.</p>
+                <table class="simple-admin-table">
+                    <thead>
+                        <tr>
+                            <th>Lead Ref</th>
+                            <th>Name</th>
+                            <th>Service</th>
+                            <th>Received</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4">Leads are received by email at support@uaebusinessdesk.com.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="simple-admin-note">This page is static and does not store data.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const ADMIN_PASSWORD = "CHANGE_ME";
+
+        const form = document.getElementById("admin-login-form");
+        const passwordInput = document.getElementById("admin-password");
+        const error = document.getElementById("admin-error");
+        const content = document.getElementById("admin-content");
+        const card = document.getElementById("admin-login-card");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            if (passwordInput.value === ADMIN_PASSWORD) {
+                error.textContent = "";
+                content.style.display = "block";
+                form.style.display = "none";
+            } else {
+                error.textContent = "Incorrect password. Please try again.";
+            }
+        });
+    </script>
+</body>
+</html>

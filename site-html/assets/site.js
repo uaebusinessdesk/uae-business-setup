@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 // Use dedicated callback API endpoint
-                const callbackApiUrl = LEAD_API_URL.replace('/api/public/leads/capture', '/api/callback/request');
+                const callbackApiUrl = '/api/callback/request';
                 const response = await fetch(callbackApiUrl, {
                     method: 'POST',
                     headers: {
@@ -120,18 +120,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Lead Capture API Configuration
-// Use the correct API URL for local split ports and production same-domain routing
-const getApiUrl = () => {
-    const hostname = window.location.hostname;
-    const port = window.location.port;
-
-    if ((hostname === 'localhost' || hostname === '127.0.0.1') && port === '3000') {
-        return 'http://localhost:3001/api/public/leads/capture';
-    }
-
-    return '/api/public/leads/capture';
-};
-const LEAD_API_URL = getApiUrl();
+const LEAD_API_URL = '/api/send-email';
 
 // Log API configuration for debugging
 console.log('API Configuration:', {
@@ -626,97 +615,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 const payload = {
                     fullName: formData.get('fullName')?.trim() || '',
                     whatsapp: formData.get('whatsapp')?.trim() || '',
-                    serviceRequired: (serviceValue || '').toLowerCase(),
-                    nationality: formData.get('nationality')?.trim() || null,
-                    residenceCountry: formData.get('residence')?.trim() || null,
-                    emirate: formData.get('emirate')?.trim() || null,
-                    notes: formData.get('notes')?.trim() || null,
+                    service: (serviceValue || '').toLowerCase(),
+                    email: formData.get('email')?.trim() || '',
+                    message: formData.get('notes')?.trim() || formData.get('message')?.trim() || '',
                 };
 
-                // Add email only if provided
-                const emailValue = formData.get('email')?.trim();
-                if (emailValue) {
-                    payload.email = emailValue;
-                }
-
-                // Handle bank account prescreen data
-                if (serviceValue === 'bank' || serviceValue === 'existing-company') {
-                    // Collect prescreen fields
-                    const prescreenData = {
-                        uaeSetupType: formData.get('uaeSetupType') || null,
-                        primaryActivityCategory: formData.get('primaryActivityCategory') || null,
-                        ownerUaeResident: formData.get('ownerUaeResident') || null,
-                        uboNationality: formData.get('uboNationality') || null,
-                        expectedMonthlyTurnoverAed: formData.get('expectedMonthlyTurnoverAed') || null,
-                        involvesCrypto: formData.get('involvesCrypto') || null,
-                        cashIntensive: formData.get('cashIntensive') || null,
-                        sanctionedHighRiskCountries: formData.get('sanctionedHighRiskCountries') || null,
-                        kycDocsReady: formData.get('kycDocsReady') || null,
-                    };
-
-                    const primaryActivityCategory = prescreenData.primaryActivityCategory;
-                    if (primaryActivityCategory === 'TRADING_SPECIFIC_GOODS' || primaryActivityCategory === 'OTHER') {
-                        prescreenData.primaryActivityDetails = formData.get('primaryActivityDetails')?.trim() || null;
-                    }
-
-                    // Payment geographies (multi-select)
-                    const paymentGeographies = formData.getAll('paymentGeographies');
-                    if (paymentGeographies.length > 0) {
-                        prescreenData.paymentGeographies = paymentGeographies;
-                        if (paymentGeographies.includes('OTHER')) {
-                            prescreenData.paymentGeographiesOther = formData.get('paymentGeographiesOther')?.trim() || null;
-                        }
-                    }
-
-                    // Store in serviceDetails
-                    payload.serviceDetails = {
-                        bankAccountPrescreen: prescreenData
-                    };
-                } else {
-                    // Company setup fields (mainland/freezone/offshore)
-                    const activityValue = formData.get('activity')?.trim();
-                    if (activityValue) {
-                        payload.activity = activityValue;
-                    }
-
-                    const timelineValue = formData.get('timeline')?.trim();
-                    if (timelineValue) {
-                        payload.timeline = timelineValue;
-                    }
-
-                    // Add company setup fields if relevant
-                    if (serviceValue === 'mainland' || serviceValue === 'freezone' || serviceValue === 'offshore') {
-                        const shareholdersValue = formData.get('shareholders');
-                        if (shareholdersValue) {
-                            payload.shareholdersCount = shareholdersValue;
-                        }
-
-                        const visasRequiredValue = formData.get('visasRequired');
-                        if (visasRequiredValue) {
-                            payload.visasRequired = visasRequiredValue === 'yes' ? 'yes' : 'no';
-                        }
-
-                        const visasCountValue = formData.get('visasCount');
-                        if (visasCountValue && visasRequiredValue === 'yes') {
-                            payload.visasCount = visasCountValue;
-                        }
-                    }
-
-                    // Add bank fields if relevant (for bank account setup service only)
-                    if (serviceValue === 'bank' || serviceValue === 'existing-company') {
-                        const turnoverValue = formData.get('turnover') || formData.get('turnoverLater');
-                        if (turnoverValue) {
-                            payload.monthlyTurnover = turnoverValue;
-                        }
-
-                        const existingAccountValue = formData.get('existingAccount') || formData.get('existingAccountLater');
-                        if (existingAccountValue) {
-                            payload.existingUaeBankAccount = existingAccountValue === 'yes' ? 'yes' : 'no';
-                        }
-                    }
-                }
-
-                // Remove null/undefined values
+                // Remove empty values
                 Object.keys(payload).forEach(key => {
                     if (payload[key] === null || payload[key] === undefined || payload[key] === '') {
                         delete payload[key];
@@ -733,20 +637,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('Current hostname:', window.location.hostname);
                     console.log('Current protocol:', window.location.protocol);
                     
-                    // Add timeout to fetch request
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-                    
                     response = await fetch(LEAD_API_URL, {
                         method: 'POST',
                         headers: {
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify(payload),
-                        signal: controller.signal
+                        body: JSON.stringify(payload)
                     });
-                    
-                    clearTimeout(timeoutId);
                 } catch (networkError) {
                     // Network error - server unreachable
                     console.error('Network error:', networkError);
@@ -803,9 +700,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 }
 
-                if (response.ok && (data.ok === true || data.success === true)) {
+                if (response.ok && data.ok === true) {
                     // Success
-                    showFormMessage('success', `Thank you — we received your request. Reference: ${data.leadRef || 'N/A'}. We will contact you shortly.`);
+                    showFormMessage('success', 'Thank you — we received your request. We will contact you shortly.');
 
                     // Reset form
                     form.reset();
@@ -820,9 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     let errorMessage = data.error || 'Failed to submit request';
                     
                     // Handle specific error codes
-                    if (response.status === 401) {
-                        errorMessage = 'Authentication failed. Please refresh the page and try again.';
-                    } else if (response.status === 403) {
+                    if (response.status === 403) {
                         errorMessage = 'Access denied. Please contact support.';
                     } else if (response.status === 404) {
                         errorMessage = 'API endpoint not found. Please contact support.';

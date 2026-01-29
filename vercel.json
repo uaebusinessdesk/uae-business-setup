@@ -1,6 +1,15 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "installCommand": "npm install"
+  "version": 2,
+  "functions": {
+    "api/public/leads/capture.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/assets/(.*)", "destination": "/site-html/assets/$1" },
+    { "source": "/", "destination": "/site-html/index.html" },
+    { "source": "/(.*)\\.html", "destination": "/site-html/$1.html" },
+    { "source": "/([^./]+)", "destination": "/site-html/$1.html" }
+  ]
 }
