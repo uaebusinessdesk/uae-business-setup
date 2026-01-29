@@ -32,7 +32,6 @@ export interface Lead {
   // Invoice fields
   companyInvoiceNumber?: string | null;
   companyInvoiceSentAt?: Date | null;
-  approvalRequestedAt?: Date | null;
   activities?: Array<{
     id: string;
     action: string;

@@ -33,6 +33,24 @@ function logRequest(origin: string | null, referer: string | null, ok: boolean):
   console.log(`[PUBLIC_LEAD_CAPTURE] origin=${origin || 'unknown'} referer=${referer || 'unknown'} ok=${ok}`);
 }
 
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      console.error('[public-leads-capture] email timeout', { label, ms });
+      reject(new Error(`Timeout after ${ms}ms (${label})`));
+    }, ms);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((err) => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
 const knownFields = new Set([
   'fullName',
   'whatsapp',
@@ -123,6 +141,8 @@ export async function POST(request: NextRequest) {
   try {
     const origin = request.headers.get('origin');
     const referer = request.headers.get('referer');
+    const t0 = Date.now();
+    console.info('[public-leads-capture] start', { origin, referer });
     let body: any;
     try {
       body = await request.json();
@@ -236,6 +256,7 @@ export async function POST(request: NextRequest) {
         bankInvoiceStatus: 'not_sent',
       },
     });
+    console.info('[public-leads-capture] created lead', { id: lead.id, ms: Date.now() - t0 });
 
     // FAST RESPONSE: do not block on email sending
     const res = NextResponse.json({ ok: true, leadId: lead.id, leadRef });
@@ -588,15 +609,19 @@ export async function POST(request: NextRequest) {
       </html>
     `;
 
-    try {
-      await sendEmail({
+    const adminEmailPromise = withTimeout(
+      sendEmail({
         to: adminEmail,
         subject: adminSubject,
         html: adminHtml,
-      });
-    } catch (emailError) {
-      console.error('[Public Lead Capture] Admin email failed:', emailError);
-    }
+      }),
+      15000,
+      'admin-email'
+    );
+    console.info('[public-leads-capture] email dispatch queued', { leadId: lead.id });
+    void adminEmailPromise.catch((err) => {
+      console.error('[public-leads-capture] email failed', err);
+    });
 
     if (lead.email) {
       try {
@@ -1092,12 +1117,19 @@ export async function POST(request: NextRequest) {
         </html>
       `;
 
-        if (lead.email) {
-        await sendCustomerEmail({
-          to: lead.email!,          subject: clientSubject,
-          html: clientHtml,
-        }, 'acknowledgement');
-        }
+        const customerEmailPromise = withTimeout(
+          sendCustomerEmail({
+            to: lead.email,
+            subject: clientSubject,
+            html: clientHtml,
+          }, 'acknowledgement'),
+          15000,
+          'customer-email'
+        );
+        console.info('[public-leads-capture] email dispatch queued', { leadId: lead.id });
+        void customerEmailPromise.catch((err) => {
+          console.error('[public-leads-capture] email failed', err);
+        });
       } catch (emailError) {
         console.error('[Public Lead Capture] Customer email failed:', emailError);
       }
@@ -1110,6 +1142,7 @@ export async function POST(request: NextRequest) {
       leadId: lead.id,
       leadRef,
     });
+    console.info('[public-leads-capture] response', { ms: Date.now() - t0 });
     return addCorsHeaders(response, origin);
   } catch (error: any) {
     logRequest(request.headers.get('origin'), request.headers.get('referer'), false);

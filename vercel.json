@@ -2,5 +2,8 @@
   "framework": null,
   "installCommand": "",
   "buildCommand": "",
-  "outputDirectory": "site-html"
+  "outputDirectory": "site-html",
+  "routes": [
+    { "src": "/admin-lite", "dest": "/admin-lite.html" }
+  ]
 }
