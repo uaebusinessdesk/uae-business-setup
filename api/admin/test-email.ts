@@ -1,5 +1,5 @@
-import { sendMail } from '../../lib/mailer';
-import { handleAdminCors, sendJson } from '../../lib/adminApi';
+import { sendMail } from '../_lib/mailer';
+import { handleAdminCors, sendJson } from '../_lib/adminApi';
 
 function toStringOrNull(value: unknown): string | null {
   if (value === undefined || value === null) return null;

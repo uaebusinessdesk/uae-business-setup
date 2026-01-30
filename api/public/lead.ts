@@ -1,4 +1,4 @@
-import { sendMail } from '../../lib/mailer';
+import { sendMail } from '../_lib/mailer';
 
 type LeadPayload = {
   fullName: string | null;
