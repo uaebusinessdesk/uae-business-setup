@@ -25,7 +25,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const password = toStringOrNull(body.password);
-  const expected = process.env.ADMIN_LITE_PASSWORD;
+  const expected = process.env.ADMIN_LITE_PASSWORD || process.env.admin_lite_password;
 
   if (!expected || !password) {
     sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });

@@ -34,7 +34,11 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
-  const expectedKey = process.env.ADMIN_LITE_KEY || process.env.ADMIN_LITE_PASSWORD;
+  const expectedKey =
+    process.env.ADMIN_LITE_KEY ||
+    process.env.admin_lite_key ||
+    process.env.ADMIN_LITE_PASSWORD ||
+    process.env.admin_lite_password;
   const headerKey =
     (req.headers && (req.headers['x-admin-lite-key'] || req.headers['X-Admin-Lite-Key'])) || '';
   if (!expectedKey || String(headerKey).trim() !== expectedKey) {
