@@ -1,6 +1,6 @@
 import { sendMail } from '../../lib/mailer';
 import { buildCompanyInvoiceEmail } from '../../lib/adminEmailTemplates';
-import { handleAdminCors, sendJson } from '../../lib/adminApi';
+import { handleAdminCors, sendJson } from '../_lib/adminApi';
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 30;
@@ -25,89 +25,89 @@ function shouldRateLimit(key: string): boolean {
 }
 
 export default async function handler(req: any, res: any) {
-  if (!handleAdminCors(req, res)) {
-    return;
-  }
-
-  if (req.method !== 'POST') {
-    sendJson(res, 405, { ok: false, error: 'Method Not Allowed' });
-    return;
-  }
-
-  const expectedKey =
-    process.env.ADMIN_LITE_KEY ||
-    process.env.admin_lite_key ||
-    process.env.ADMIN_LITE_PASSWORD ||
-    process.env.admin_lite_password;
-  const headerKey =
-    (req.headers && (req.headers['x-admin-lite-key'] || req.headers['X-Admin-Lite-Key'])) || '';
-  if (!expectedKey || String(headerKey).trim() !== expectedKey) {
-    sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
-    return;
-  }
-
-  if (typeof req.body === 'string' && Buffer.byteLength(req.body, 'utf8') > MAX_BODY_BYTES) {
-    sendJson(res, 413, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
-
-  let body: Record<string, unknown> = {};
   try {
-    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
-  } catch (err) {
-    sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
+    if (!handleAdminCors(req, res)) {
+      return;
+    }
 
-  try {
-    if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_BODY_BYTES) {
+    if (req.method !== 'POST') {
+      sendJson(res, 405, { ok: false, error: 'Method Not Allowed' });
+      return;
+    }
+
+    const expectedKey = process.env.ADMIN_LITE_PASSWORD;
+    if (!expectedKey) {
+      sendJson(res, 500, { ok: false, error: 'MISCONFIG', message: 'ADMIN_LITE_PASSWORD missing' });
+      return;
+    }
+    const headerKey =
+      (req.headers && (req.headers['x-admin-lite-key'] || req.headers['X-Admin-Lite-Key'])) || '';
+    if (String(headerKey).trim() !== expectedKey) {
+      sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
+      return;
+    }
+
+    if (typeof req.body === 'string' && Buffer.byteLength(req.body, 'utf8') > MAX_BODY_BYTES) {
       sendJson(res, 413, { ok: false, error: 'SEND_FAILED' });
       return;
     }
-  } catch (err) {
-    sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
 
-  const forwardedFor = req.headers?.['x-forwarded-for'];
-  const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : String(forwardedFor || ''))
-    .split(',')[0]
-    .trim() || req.socket?.remoteAddress || 'unknown';
-  const rateKey = `${ip}:admin-send-invoice`;
-  if (shouldRateLimit(rateKey)) {
-    sendJson(res, 429, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
+    let body: Record<string, unknown> = {};
+    try {
+      body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+    } catch (err) {
+      sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
+      return;
+    }
 
-  const toEmail = toStringOrNull(body.toEmail);
-  const customerName = toStringOrNull(body.customerName);
-  const invoiceNumber = toStringOrNull(body.invoiceNumber);
-  const amountRaw = body.amount;
-  const amount = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw || 0);
-  const currency = toStringOrNull(body.currency) || 'AED';
-  const dueDate = toStringOrNull(body.dueDate);
-  const notes = toStringOrNull(body.notes);
-  const leadRef = toStringOrNull(body.leadRef);
+    try {
+      if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_BODY_BYTES) {
+        sendJson(res, 413, { ok: false, error: 'SEND_FAILED' });
+        return;
+      }
+    } catch (err) {
+      sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
+      return;
+    }
 
-  if (!toEmail) {
-    sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
+    const forwardedFor = req.headers?.['x-forwarded-for'];
+    const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : String(forwardedFor || ''))
+      .split(',')[0]
+      .trim() || req.socket?.remoteAddress || 'unknown';
+    const rateKey = `${ip}:admin-send-invoice`;
+    if (shouldRateLimit(rateKey)) {
+      sendJson(res, 429, { ok: false, error: 'SEND_FAILED' });
+      return;
+    }
 
-  if (!customerName || !invoiceNumber || !currency || !dueDate || !Number.isFinite(amount)) {
-    sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
-    return;
-  }
+    const toEmail = toStringOrNull(body.toEmail);
+    const customerName = toStringOrNull(body.customerName);
+    const invoiceNumber = toStringOrNull(body.invoiceNumber);
+    const amountRaw = body.amount;
+    const amount = typeof amountRaw === 'number' ? amountRaw : Number(amountRaw || 0);
+    const currency = toStringOrNull(body.currency) || 'AED';
+    const dueDate = toStringOrNull(body.dueDate);
+    const notes = toStringOrNull(body.notes);
+    const leadRef = toStringOrNull(body.leadRef);
 
-  const leadNotes = [
-    leadRef ? `Lead Reference: ${leadRef}` : null,
-    notes ? `Notes: ${notes}` : null,
-    dueDate ? `Due Date: ${dueDate}` : null,
-  ]
-    .filter(Boolean)
-    .join('\n');
+    if (!toEmail) {
+      sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
+      return;
+    }
 
-  try {
+    if (!customerName || !invoiceNumber || !currency || !dueDate || !Number.isFinite(amount)) {
+      sendJson(res, 400, { ok: false, error: 'SEND_FAILED' });
+      return;
+    }
+
+    const leadNotes = [
+      leadRef ? `Lead Reference: ${leadRef}` : null,
+      notes ? `Notes: ${notes}` : null,
+      dueDate ? `Due Date: ${dueDate}` : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
     const lead = {
       fullName: customerName,
       setupType: 'mainland',
@@ -125,14 +125,7 @@ export default async function handler(req: any, res: any) {
 
     sendJson(res, 200, { ok: true });
   } catch (err) {
-    console.error('[admin-send-invoice] send failed', {
-      toEmail,
-      customerName,
-      currency,
-      amount,
-      invoiceNumber,
-      error: err instanceof Error ? err.message : String(err),
-    });
-    sendJson(res, 500, { ok: false, error: 'SEND_FAILED' });
+    console.error('ADMIN_SEND_INVOICE_ERROR', err);
+    sendJson(res, 500, { ok: false, error: 'INTERNAL', message: 'Server error' });
   }
 }

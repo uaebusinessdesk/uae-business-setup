@@ -45,14 +45,10 @@ function generateLeadRef() {
   return `UBD-${year}${month}${day}-${hours}${minutes}-${random}`;
 }
 
-function withTimeout(promise, ms, label) {
-  let timeoutId;
-  const timeoutPromise = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(`Timeout after ${ms}ms (${label})`)), ms);
-  });
-  return Promise.race([promise, timeoutPromise]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId);
-  });
+function toStringOrNull(value) {
+  if (value === undefined || value === null) return null;
+  const str = String(value).trim();
+  return str ? str : null;
 }
 
 function shouldRateLimit(key) {
@@ -87,12 +83,6 @@ function normalizeWhatsapp(raw) {
     return `+971${digits}`;
   }
   return `+971${digits}`;
-}
-
-function toStringOrNull(value) {
-  if (value === undefined || value === null) return null;
-  const str = String(value).trim();
-  return str ? str : null;
 }
 
 function buildAdminHtml(leadRef, data) {
@@ -270,10 +260,11 @@ module.exports = async (req, res) => {
   }
 
   const leadRef = generateLeadRef();
+  const normalizedWhatsapp = normalizeWhatsapp(whatsapp);
 
   const payload = {
     'Full Name': fullName,
-    WhatsApp: whatsapp,
+    WhatsApp: normalizedWhatsapp || whatsapp,
     'Service Required': serviceRequired,
     Email: email,
     Notes: toStringOrNull(body.notes),
