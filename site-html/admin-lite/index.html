@@ -1,3 +1,10 @@
+<!--
+  Admin Lite (static)
+  Required env vars:
+  - ADMIN_LITE_PASSWORD (or ADMIN_LITE_KEY)
+  - REDIS_URL
+  - SMTP_* only if email sending is enabled
+-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -135,14 +142,19 @@
             color: rgba(255, 255, 255, 0.65);
             background: rgba(255, 255, 255, 0.04);
         }
-        .admin-lite-table td a {
-            color: #c9a14a;
-            text-decoration: none;
+        .admin-lite-table-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        .admin-lite-table td small {
-            display: block;
-            color: rgba(255, 255, 255, 0.6);
-            margin-top: 4px;
+        .admin-lite-table-actions button {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
         }
         .admin-lite-toast {
             position: fixed;
@@ -222,31 +234,31 @@
 
                 <div class="admin-lite-actions">
                     <button id="btn-send-lead">Send Lead Acknowledgement + Notify Admin</button>
-                    <button id="btn-whatsapp" class="secondary">Open WhatsApp</button>
                     <button id="admin-lite-logout" class="secondary">Logout</button>
                 </div>
             </div>
 
             <div class="admin-lite-card hidden" id="admin-lite-leads">
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-                    <h2>Recent Leads</h2>
-                    <button id="btn-refresh-leads" class="secondary">Refresh</button>
+                    <h2>Leads</h2>
+                    <button id="btn-refresh-leads" class="secondary">Refresh Leads</button>
                 </div>
                 <p class="admin-lite-banner hidden" id="leads-banner"></p>
                 <div class="admin-lite-table-wrap">
                     <table class="admin-lite-table">
                         <thead>
                             <tr>
-                                <th>Created</th>
                                 <th>Name</th>
-                                <th>Contact</th>
+                                <th>Email</th>
+                                <th>WhatsApp</th>
                                 <th>Service</th>
-                                <th>Notes</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="leads-table-body">
                             <tr>
-                                <td colspan="5" style="padding:16px;">No leads loaded yet.</td>
+                                <td colspan="6" style="padding:16px;">No leads loaded yet.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -348,10 +360,9 @@
         const testBanner = document.getElementById('test-banner');
         const leadsBanner = document.getElementById('leads-banner');
         const leadsTableBody = document.getElementById('leads-table-body');
-        const whatsappButton = document.getElementById('btn-whatsapp');
-        let currentLead = null;
-        const STORAGE_KEY = 'adminLiteKey';
+        const refreshLeadsButton = document.getElementById('btn-refresh-leads');
         window.__adminLiteKey = '';
+        let leadCache = [];
 
         const leadFields = {
             fullName: document.getElementById('lead-full-name'),
@@ -415,13 +426,13 @@
         }
 
         function setLeadDetails(lead) {
-            currentLead = lead;
-            leadFields.fullName.value = lead.name || '';
+            if (!lead) return;
+            leadFields.fullName.value = lead.name || lead.fullName || '';
             leadFields.email.value = lead.email || '';
             leadFields.whatsapp.value = lead.whatsapp || '';
-            leadFields.serviceRequired.value = lead.service || 'not-sure';
-            leadFields.notes.value = lead.message || '';
-            leadFields.ref.value = lead.leadId || '';
+            leadFields.serviceRequired.value = lead.service || lead.serviceRequired || 'not-sure';
+            leadFields.notes.value = lead.message || lead.notes || '';
+            leadFields.ref.value = lead.leadId || lead.leadRef || '';
         }
 
         function setMode(toggleEl, activeMode) {
@@ -451,7 +462,6 @@
             const data = await response.json().catch(() => ({}));
             if (response.ok && data.ok === true) {
                 window.__adminLiteKey = password;
-                localStorage.setItem(STORAGE_KEY, password);
                 return { ok: true };
             }
             return { ok: false, error: data.error || 'UNAUTHORIZED' };
@@ -483,12 +493,10 @@
 
         document.getElementById('admin-lite-logout').addEventListener('click', () => {
             window.__adminLiteKey = '';
-            localStorage.removeItem(STORAGE_KEY);
             clearBanner(leadBanner);
             clearBanner(quoteBanner);
             clearBanner(invoiceBanner);
             clearBanner(testBanner);
-            clearBanner(leadsBanner);
             panel.classList.add('hidden');
             leadsCard.classList.add('hidden');
             quoteCard.classList.add('hidden');
@@ -516,7 +524,6 @@
                 showBanner(leadBanner, 'Lead email sent successfully.', 'success');
                 showToast('Lead email sent.', 'success');
                 appendLog('Lead notification', payload.email, true);
-                fetchLeads();
             } catch (err) {
                 showBanner(leadBanner, `Failed to send lead email. ${err?.message || ''}`.trim(), 'error');
                 showToast('Failed to send lead email.', 'error');
@@ -526,76 +533,60 @@
             }
         });
 
-        whatsappButton.addEventListener('click', () => {
-            const number = (leadFields.whatsapp.value || '').replace(/\s+/g, '');
-            if (!number) {
-                showToast('Add a WhatsApp number first.', 'error');
-                return;
-            }
-            const url = `https://wa.me/${encodeURIComponent(number)}`;
-            window.open(url, '_blank');
-        });
-
         function renderLeads(leads) {
             if (!Array.isArray(leads) || leads.length === 0) {
-                leadsTableBody.innerHTML = '<tr><td colspan="5" style="padding:16px;">No leads found.</td></tr>';
+                leadsTableBody.innerHTML = '<tr><td colspan="6" style="padding:16px;">No leads found.</td></tr>';
                 return;
             }
-            leadsTableBody.innerHTML = leads.map((lead, index) => {
-                const created = lead.createdAt || '';
-                const name = lead.name || '';
-                const ref = lead.leadId || '';
+            leadsTableBody.innerHTML = leads.map((lead) => {
+                const id = lead.leadId || lead.id || '';
+                const name = lead.name || lead.fullName || '';
                 const email = lead.email || '';
                 const whatsapp = lead.whatsapp || '';
-                const service = lead.service || '';
-                const notes = lead.message || '';
-                const pageUrl = lead.pageUrl || '';
+                const service = lead.service || lead.serviceRequired || '';
+                const createdAt = lead.createdAt || '';
                 return `
-                    <tr data-index="${index}">
-                        <td>${created}<small>${ref}</small></td>
+                    <tr>
                         <td>${name}</td>
-                        <td>${email ? `<div>${email}</div>` : ''}${whatsapp ? `<div>${whatsapp}</div>` : ''}${pageUrl ? `<small><a href="${pageUrl}" target="_blank" rel="noopener">Source</a></small>` : ''}</td>
+                        <td>${email}</td>
+                        <td>${whatsapp}</td>
                         <td>${service}</td>
-                        <td>${notes}</td>
+                        <td>${createdAt}</td>
+                        <td>
+                            <div class="admin-lite-table-actions">
+                                <button data-action="quote" data-id="${id}">Send Quote</button>
+                                <button data-action="invoice" data-id="${id}">Send Invoice</button>
+                                <button data-action="whatsapp" data-id="${id}">WhatsApp</button>
+                            </div>
+                        </td>
                     </tr>
                 `;
             }).join('');
-
-            Array.from(leadsTableBody.querySelectorAll('tr[data-index]')).forEach((row) => {
-                row.addEventListener('click', () => {
-                    const idx = Number(row.dataset.index);
-                    const lead = leads[idx];
-                    if (lead) {
-                        setLeadDetails(lead);
-                        showToast('Lead loaded into form.', 'success');
-                    }
-                });
-            });
         }
 
         async function fetchLeads() {
             clearBanner(leadsBanner);
             try {
-                const response = await fetch('/api/admin/leads', {
+                const response = await fetch('/api/admin/list-leads', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Admin-Lite-Key': window.__adminLiteKey
-                    },
-                    body: JSON.stringify({ limit: 50 })
+                    }
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok || data.ok === false) {
                     throw new Error(data.error || `HTTP ${response.status}`);
                 }
-                renderLeads(data.leads || []);
+                leadCache = Array.isArray(data.leads) ? data.leads : [];
+                renderLeads(leadCache);
             } catch (err) {
                 showBanner(leadsBanner, `Unable to load leads. ${err?.message || ''}`.trim(), 'error');
-                leadsTableBody.innerHTML = '<tr><td colspan="5" style="padding:16px;">Unable to load leads.</td></tr>';
+                leadsTableBody.innerHTML = '<tr><td colspan="6" style="padding:16px;">Unable to load leads.</td></tr>';
             }
         }
 
-        document.getElementById('btn-refresh-leads').addEventListener('click', fetchLeads);
+        refreshLeadsButton.addEventListener('click', fetchLeads);
 
         setMode(document.getElementById('quote-mode'), 'html');
         setMode(document.getElementById('invoice-mode'), 'html');
@@ -612,7 +603,7 @@
             }
         });
 
-        document.getElementById('btn-send-quote').addEventListener('click', async () => {
+        async function sendQuoteRequest() {
             const mode = document.getElementById('quote-mode').dataset.mode || 'html';
             const button = document.getElementById('btn-send-quote');
             clearBanner(quoteBanner);
@@ -652,9 +643,11 @@
             } finally {
                 setButtonBusy(button, false);
             }
-        });
+        }
 
-        document.getElementById('btn-send-invoice').addEventListener('click', async () => {
+        document.getElementById('btn-send-quote').addEventListener('click', sendQuoteRequest);
+
+        async function sendInvoiceRequest() {
             const mode = document.getElementById('invoice-mode').dataset.mode || 'html';
             const button = document.getElementById('btn-send-invoice');
             clearBanner(invoiceBanner);
@@ -691,6 +684,33 @@
                 appendLog('Invoice sent', payload.toEmail, false);
             } finally {
                 setButtonBusy(button, false);
+            }
+        }
+
+        document.getElementById('btn-send-invoice').addEventListener('click', sendInvoiceRequest);
+
+        leadsTableBody.addEventListener('click', (event) => {
+            const target = event.target.closest('button[data-action]');
+            if (!target) return;
+            const leadId = target.dataset.id;
+            const lead = leadCache.find(item => (item.leadId || item.id) === leadId);
+            if (!lead) return;
+            setLeadDetails(lead);
+            if (target.dataset.action === 'quote') {
+                sendQuoteRequest();
+                return;
+            }
+            if (target.dataset.action === 'invoice') {
+                sendInvoiceRequest();
+                return;
+            }
+            if (target.dataset.action === 'whatsapp') {
+                const number = String(lead.whatsapp || '').replace(/\s+/g, '');
+                if (!number) {
+                    showToast('No WhatsApp number available.', 'error');
+                    return;
+                }
+                window.open(`https://wa.me/${encodeURIComponent(number)}`, '_blank');
             }
         });
 
@@ -730,21 +750,6 @@
             }
         });
 
-        (function bootstrapSession() {
-            const storedKey = localStorage.getItem(STORAGE_KEY);
-            if (!storedKey) return;
-            verifyAndStoreKey(storedKey).then((result) => {
-                if (result.ok) {
-                    clearBanner(leadBanner);
-                    clearBanner(quoteBanner);
-                    clearBanner(invoiceBanner);
-                    clearBanner(testBanner);
-                    unlockUI();
-                } else {
-                    localStorage.removeItem(STORAGE_KEY);
-                }
-            });
-        })();
     </script>
 </body>
 </html>

@@ -2,7 +2,7 @@ import Redis from 'ioredis';
 
 const redisUrl = process.env.REDIS_URL;
 if (!redisUrl) {
-  throw new Error('Missing REDIS_URL');
+  throw new Error('REDIS_URL is not set (Vercel Environment Variable missing).');
 }
 
 const useTls = redisUrl.startsWith('rediss://');
@@ -15,7 +15,7 @@ export const redis = new Redis(redisUrl, {
 
 export function assertRedisConfigured() {
   if (!redisUrl) {
-    throw new Error('Missing REDIS_URL');
+    throw new Error('REDIS_URL is not set (Vercel Environment Variable missing).');
   }
   return redis;
 }

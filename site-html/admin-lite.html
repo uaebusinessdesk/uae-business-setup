@@ -1,3 +1,10 @@
+<!--
+  Admin Lite (static)
+  Required env vars:
+  - ADMIN_LITE_PASSWORD (or ADMIN_LITE_KEY)
+  - REDIS_URL
+  - SMTP_* only if email sending is enabled
+-->
 <!doctype html>
 <html lang="en">
 <head>
@@ -109,6 +116,46 @@
             font-size: 13px;
             color: rgba(255, 255, 255, 0.85);
         }
+        .admin-lite-table-wrap {
+            margin-top: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            overflow: auto;
+        }
+        .admin-lite-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 720px;
+        }
+        .admin-lite-table th,
+        .admin-lite-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            vertical-align: top;
+        }
+        .admin-lite-table th {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .admin-lite-table-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .admin-lite-table-actions button {
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+        }
         .admin-lite-toast {
             position: fixed;
             right: 16px;
@@ -188,6 +235,33 @@
                 <div class="admin-lite-actions">
                     <button id="btn-send-lead">Send Lead Acknowledgement + Notify Admin</button>
                     <button id="admin-lite-logout" class="secondary">Logout</button>
+                </div>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-leads">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <h2>Leads</h2>
+                    <button id="btn-refresh-leads" class="secondary">Refresh Leads</button>
+                </div>
+                <p class="admin-lite-banner hidden" id="leads-banner"></p>
+                <div class="admin-lite-table-wrap">
+                    <table class="admin-lite-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>WhatsApp</th>
+                                <th>Service</th>
+                                <th>Created At</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-table-body">
+                            <tr>
+                                <td colspan="6" style="padding:16px;">No leads loaded yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -273,6 +347,7 @@
     <script>
         const gate = document.getElementById('admin-lite-gate');
         const panel = document.getElementById('admin-lite-panel');
+        const leadsCard = document.getElementById('admin-lite-leads');
         const quoteCard = document.getElementById('admin-lite-quote');
         const invoiceCard = document.getElementById('admin-lite-invoice');
         const activityCard = document.getElementById('admin-lite-activity');
@@ -283,8 +358,11 @@
         const quoteBanner = document.getElementById('quote-banner');
         const invoiceBanner = document.getElementById('invoice-banner');
         const testBanner = document.getElementById('test-banner');
-        const STORAGE_KEY = 'adminLiteKey';
+        const leadsBanner = document.getElementById('leads-banner');
+        const leadsTableBody = document.getElementById('leads-table-body');
+        const refreshLeadsButton = document.getElementById('btn-refresh-leads');
         window.__adminLiteKey = '';
+        let leadCache = [];
 
         const leadFields = {
             fullName: document.getElementById('lead-full-name'),
@@ -347,6 +425,16 @@
             };
         }
 
+        function setLeadDetails(lead) {
+            if (!lead) return;
+            leadFields.fullName.value = lead.name || lead.fullName || '';
+            leadFields.email.value = lead.email || '';
+            leadFields.whatsapp.value = lead.whatsapp || '';
+            leadFields.serviceRequired.value = lead.service || lead.serviceRequired || 'not-sure';
+            leadFields.notes.value = lead.message || lead.notes || '';
+            leadFields.ref.value = lead.leadId || lead.leadRef || '';
+        }
+
         function setMode(toggleEl, activeMode) {
             const buttons = toggleEl.querySelectorAll('button');
             buttons.forEach(btn => {
@@ -358,9 +446,11 @@
         function unlockUI() {
             gate.classList.add('hidden');
             panel.classList.remove('hidden');
+            leadsCard.classList.remove('hidden');
             quoteCard.classList.remove('hidden');
             invoiceCard.classList.remove('hidden');
             activityCard.classList.remove('hidden');
+            fetchLeads();
         }
 
         async function verifyAndStoreKey(password) {
@@ -372,7 +462,6 @@
             const data = await response.json().catch(() => ({}));
             if (response.ok && data.ok === true) {
                 window.__adminLiteKey = password;
-                localStorage.setItem(STORAGE_KEY, password);
                 return { ok: true };
             }
             return { ok: false, error: data.error || 'UNAUTHORIZED' };
@@ -404,12 +493,12 @@
 
         document.getElementById('admin-lite-logout').addEventListener('click', () => {
             window.__adminLiteKey = '';
-            localStorage.removeItem(STORAGE_KEY);
             clearBanner(leadBanner);
             clearBanner(quoteBanner);
             clearBanner(invoiceBanner);
             clearBanner(testBanner);
             panel.classList.add('hidden');
+            leadsCard.classList.add('hidden');
             quoteCard.classList.add('hidden');
             invoiceCard.classList.add('hidden');
             activityCard.classList.add('hidden');
@@ -444,6 +533,61 @@
             }
         });
 
+        function renderLeads(leads) {
+            if (!Array.isArray(leads) || leads.length === 0) {
+                leadsTableBody.innerHTML = '<tr><td colspan="6" style="padding:16px;">No leads found.</td></tr>';
+                return;
+            }
+            leadsTableBody.innerHTML = leads.map((lead) => {
+                const id = lead.leadId || lead.id || '';
+                const name = lead.name || lead.fullName || '';
+                const email = lead.email || '';
+                const whatsapp = lead.whatsapp || '';
+                const service = lead.service || lead.serviceRequired || '';
+                const createdAt = lead.createdAt || '';
+                return `
+                    <tr>
+                        <td>${name}</td>
+                        <td>${email}</td>
+                        <td>${whatsapp}</td>
+                        <td>${service}</td>
+                        <td>${createdAt}</td>
+                        <td>
+                            <div class="admin-lite-table-actions">
+                                <button data-action="quote" data-id="${id}">Send Quote</button>
+                                <button data-action="invoice" data-id="${id}">Send Invoice</button>
+                                <button data-action="whatsapp" data-id="${id}">WhatsApp</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function fetchLeads() {
+            clearBanner(leadsBanner);
+            try {
+                const response = await fetch('/api/admin/list-leads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Lite-Key': window.__adminLiteKey
+                    }
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                leadCache = Array.isArray(data.leads) ? data.leads : [];
+                renderLeads(leadCache);
+            } catch (err) {
+                showBanner(leadsBanner, `Unable to load leads. ${err?.message || ''}`.trim(), 'error');
+                leadsTableBody.innerHTML = '<tr><td colspan="6" style="padding:16px;">Unable to load leads.</td></tr>';
+            }
+        }
+
+        refreshLeadsButton.addEventListener('click', fetchLeads);
+
         setMode(document.getElementById('quote-mode'), 'html');
         setMode(document.getElementById('invoice-mode'), 'html');
 
@@ -459,7 +603,7 @@
             }
         });
 
-        document.getElementById('btn-send-quote').addEventListener('click', async () => {
+        async function sendQuoteRequest() {
             const mode = document.getElementById('quote-mode').dataset.mode || 'html';
             const button = document.getElementById('btn-send-quote');
             clearBanner(quoteBanner);
@@ -499,9 +643,11 @@
             } finally {
                 setButtonBusy(button, false);
             }
-        });
+        }
 
-        document.getElementById('btn-send-invoice').addEventListener('click', async () => {
+        document.getElementById('btn-send-quote').addEventListener('click', sendQuoteRequest);
+
+        async function sendInvoiceRequest() {
             const mode = document.getElementById('invoice-mode').dataset.mode || 'html';
             const button = document.getElementById('btn-send-invoice');
             clearBanner(invoiceBanner);
@@ -538,6 +684,33 @@
                 appendLog('Invoice sent', payload.toEmail, false);
             } finally {
                 setButtonBusy(button, false);
+            }
+        }
+
+        document.getElementById('btn-send-invoice').addEventListener('click', sendInvoiceRequest);
+
+        leadsTableBody.addEventListener('click', (event) => {
+            const target = event.target.closest('button[data-action]');
+            if (!target) return;
+            const leadId = target.dataset.id;
+            const lead = leadCache.find(item => (item.leadId || item.id) === leadId);
+            if (!lead) return;
+            setLeadDetails(lead);
+            if (target.dataset.action === 'quote') {
+                sendQuoteRequest();
+                return;
+            }
+            if (target.dataset.action === 'invoice') {
+                sendInvoiceRequest();
+                return;
+            }
+            if (target.dataset.action === 'whatsapp') {
+                const number = String(lead.whatsapp || '').replace(/\s+/g, '');
+                if (!number) {
+                    showToast('No WhatsApp number available.', 'error');
+                    return;
+                }
+                window.open(`https://wa.me/${encodeURIComponent(number)}`, '_blank');
             }
         });
 
@@ -577,21 +750,6 @@
             }
         });
 
-        (function bootstrapSession() {
-            const storedKey = localStorage.getItem(STORAGE_KEY);
-            if (!storedKey) return;
-            verifyAndStoreKey(storedKey).then((result) => {
-                if (result.ok) {
-                    clearBanner(leadBanner);
-                    clearBanner(quoteBanner);
-                    clearBanner(invoiceBanner);
-                    clearBanner(testBanner);
-                    unlockUI();
-                } else {
-                    localStorage.removeItem(STORAGE_KEY);
-                }
-            });
-        })();
     </script>
 </body>
 </html>

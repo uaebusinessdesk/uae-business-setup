@@ -114,7 +114,11 @@ export default async function handler(req: any, res: any) {
 
     sendJson(res, 200, { ok: true });
   } catch (err) {
-    console.error('ADMIN_SEND_QUOTE_ERROR', err);
-    sendJson(res, 500, { ok: false, error: 'INTERNAL', message: 'Server error' });
+    console.error('ADMIN_SEND_QUOTE_HANDLER_ERROR', err);
+    sendJson(res, 500, {
+      ok: false,
+      error: 'INTERNAL_ERROR',
+      message: 'Unable to send quote right now.',
+    });
   }
 }
