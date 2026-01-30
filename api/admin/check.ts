@@ -1,4 +1,4 @@
-import { handleAdminCors, sendJson } from '../_lib/adminApi';
+import { handleAdminCors, sendJson, validateAdminPassword } from '../_lib/adminApi';
 
 function toStringOrNull(value: unknown): string | null {
   if (value === undefined || value === null) return null;
@@ -25,20 +25,8 @@ export default async function handler(req: any, res: any) {
       return;
     }
 
-    const expected = process.env.ADMIN_LITE_PASSWORD;
-    if (!expected) {
-      sendJson(res, 500, { ok: false, error: 'MISCONFIG', message: 'ADMIN_LITE_PASSWORD missing' });
-      return;
-    }
-
     const password = toStringOrNull(body.password);
-    if (!password) {
-      sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
-      return;
-    }
-
-    if (password !== expected) {
-      sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
+    if (!validateAdminPassword(password, res)) {
       return;
     }
 

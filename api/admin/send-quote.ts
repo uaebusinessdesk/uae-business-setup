@@ -1,6 +1,6 @@
 import { sendMail } from '../_lib/mailer';
 import { buildCompanyQuoteEmail } from '../_lib/adminEmailTemplates';
-import { getAdminLiteKey, handleAdminCors, sendJson } from '../_lib/adminApi';
+import { handleAdminCors, requireAdminKey, sendJson } from '../_lib/adminApi';
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 30;
@@ -35,14 +35,7 @@ export default async function handler(req: any, res: any) {
       return;
     }
 
-    const expectedKey = process.env.ADMIN_LITE_KEY || process.env.ADMIN_LITE_PASSWORD;
-    if (!expectedKey) {
-      sendJson(res, 500, { ok: false, error: 'MISCONFIG', message: 'ADMIN_LITE_PASSWORD missing' });
-      return;
-    }
-    const headerKey = getAdminLiteKey(req);
-    if (headerKey !== expectedKey) {
-      sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
+    if (!requireAdminKey(req, res)) {
       return;
     }
 

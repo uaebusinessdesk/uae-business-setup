@@ -33,6 +33,43 @@ export function sendJson(res: any, statusCode: number, payload: JsonPayload) {
   res.end(JSON.stringify(payload));
 }
 
+export function getAdminLiteKey(req: any): string {
+  const headerValue =
+    (req.headers && (req.headers['x-admin-lite-key'] || req.headers['X-Admin-Lite-Key'])) || '';
+  return String(headerValue).trim();
+}
+
+export function getExpectedAdminKey(): string | null {
+  return process.env.ADMIN_LITE_KEY || process.env.ADMIN_LITE_PASSWORD || null;
+}
+
+export function requireAdminKey(req: any, res: any): boolean {
+  const expectedKey = getExpectedAdminKey();
+  if (!expectedKey) {
+    sendJson(res, 500, { ok: false, error: 'MISCONFIG', message: 'ADMIN_LITE_PASSWORD missing' });
+    return false;
+  }
+  const headerKey = getAdminLiteKey(req);
+  if (headerKey !== expectedKey) {
+    sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
+    return false;
+  }
+  return true;
+}
+
+export function validateAdminPassword(password: string | null, res: any): boolean {
+  const expected = process.env.ADMIN_LITE_PASSWORD;
+  if (!expected) {
+    sendJson(res, 500, { ok: false, error: 'MISCONFIG', message: 'ADMIN_LITE_PASSWORD missing' });
+    return false;
+  }
+  if (!password || password !== expected) {
+    sendJson(res, 401, { ok: false, error: 'UNAUTHORIZED' });
+    return false;
+  }
+  return true;
+}
+
 export function handleAdminCors(req: any, res: any): boolean {
   const origin = req.headers?.origin;
 
