@@ -30,9 +30,7 @@ export default async function handler(req: any, res: any) {
 
     assertRedisConfigured();
 
-    const ids = await redis.zrange<string[]>('leads:zset', 0, safeLimit - 1, {
-      rev: true,
-    });
+    const ids = await redis.lrange('leads:inbox', 0, safeLimit - 1);
 
     if (!ids.length) {
       sendJson(res, 200, { ok: true, leads: [] });
@@ -40,8 +38,17 @@ export default async function handler(req: any, res: any) {
     }
 
     const keys = ids.map((id) => `lead:${id}`);
-    const rows = await redis.mget<(Record<string, unknown> | null)[]>(...keys);
-    const leads = rows.filter(Boolean);
+    const rows = await redis.mget<string[]>(...keys);
+    const leads = rows
+      .map((value) => {
+        if (!value) return null;
+        try {
+          return JSON.parse(value);
+        } catch (err) {
+          return null;
+        }
+      })
+      .filter(Boolean);
 
     sendJson(res, 200, { ok: true, leads });
   } catch (err) {

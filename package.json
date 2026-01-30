@@ -7,7 +7,7 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "@upstash/redis": "^1.36.1",
+    "ioredis": "^5.9.2",
     "nodemailer": "^6.9.11",
     "resend": "^4.0.0"
   },

@@ -416,12 +416,12 @@
 
         function setLeadDetails(lead) {
             currentLead = lead;
-            leadFields.fullName.value = lead.fullName || '';
+            leadFields.fullName.value = lead.name || '';
             leadFields.email.value = lead.email || '';
             leadFields.whatsapp.value = lead.whatsapp || '';
-            leadFields.serviceRequired.value = lead.serviceRequired || 'not-sure';
-            leadFields.notes.value = lead.notes || '';
-            leadFields.ref.value = lead.leadRef || '';
+            leadFields.serviceRequired.value = lead.service || 'not-sure';
+            leadFields.notes.value = lead.message || '';
+            leadFields.ref.value = lead.leadId || '';
         }
 
         function setMode(toggleEl, activeMode) {
@@ -543,12 +543,12 @@
             }
             leadsTableBody.innerHTML = leads.map((lead, index) => {
                 const created = lead.createdAt || '';
-                const name = lead.fullName || '';
-                const ref = lead.leadRef || '';
+                const name = lead.name || '';
+                const ref = lead.leadId || '';
                 const email = lead.email || '';
                 const whatsapp = lead.whatsapp || '';
-                const service = lead.serviceRequired || '';
-                const notes = lead.notes || '';
+                const service = lead.service || '';
+                const notes = lead.message || '';
                 const pageUrl = lead.pageUrl || '';
                 return `
                     <tr data-index="${index}">
