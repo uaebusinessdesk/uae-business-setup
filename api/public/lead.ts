@@ -1,4 +1,5 @@
 import { sendMail } from '../_lib/mailer';
+import { appendLeadRow } from '../_lib/sheets';
 
 type LeadPayload = {
   fullName: string | null;
@@ -256,6 +257,27 @@ export default async function handler(req: any, res: any) {
   const adminHtml = buildAdminHtml(leadRef, payload);
 
   json(res, 200, { ok: true });
+
+  const createdAt = new Date().toISOString();
+  const sheetPromise = withTimeout(
+    appendLeadRow({
+      createdAt,
+      leadRef,
+      fullName,
+      email,
+      whatsapp,
+      serviceRequired,
+      notes,
+      pageUrl,
+      source: pageUrl || 'website',
+    }),
+    6000,
+    'sheets-append'
+  );
+
+  void sheetPromise.catch((err) => {
+    console.error('[api/public/lead] sheets append failed', err);
+  });
 
   const adminSubject = `NEW LEAD – ${serviceRequired} | ${leadRef}`;
   const adminPromise = withTimeout(

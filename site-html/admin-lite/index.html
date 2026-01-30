@@ -109,6 +109,41 @@
             font-size: 13px;
             color: rgba(255, 255, 255, 0.85);
         }
+        .admin-lite-table-wrap {
+            margin-top: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            overflow: auto;
+        }
+        .admin-lite-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 720px;
+        }
+        .admin-lite-table th,
+        .admin-lite-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            vertical-align: top;
+        }
+        .admin-lite-table th {
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.65);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .admin-lite-table td a {
+            color: #c9a14a;
+            text-decoration: none;
+        }
+        .admin-lite-table td small {
+            display: block;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 4px;
+        }
         .admin-lite-toast {
             position: fixed;
             right: 16px;
@@ -188,6 +223,32 @@
                 <div class="admin-lite-actions">
                     <button id="btn-send-lead">Send Lead Acknowledgement + Notify Admin</button>
                     <button id="admin-lite-logout" class="secondary">Logout</button>
+                </div>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-leads">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <h2>Recent Leads</h2>
+                    <button id="btn-refresh-leads" class="secondary">Refresh</button>
+                </div>
+                <p class="admin-lite-banner hidden" id="leads-banner"></p>
+                <div class="admin-lite-table-wrap">
+                    <table class="admin-lite-table">
+                        <thead>
+                            <tr>
+                                <th>Created</th>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Service</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-table-body">
+                            <tr>
+                                <td colspan="5" style="padding:16px;">No leads loaded yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -273,6 +334,7 @@
     <script>
         const gate = document.getElementById('admin-lite-gate');
         const panel = document.getElementById('admin-lite-panel');
+        const leadsCard = document.getElementById('admin-lite-leads');
         const quoteCard = document.getElementById('admin-lite-quote');
         const invoiceCard = document.getElementById('admin-lite-invoice');
         const activityCard = document.getElementById('admin-lite-activity');
@@ -283,6 +345,8 @@
         const quoteBanner = document.getElementById('quote-banner');
         const invoiceBanner = document.getElementById('invoice-banner');
         const testBanner = document.getElementById('test-banner');
+        const leadsBanner = document.getElementById('leads-banner');
+        const leadsTableBody = document.getElementById('leads-table-body');
         const STORAGE_KEY = 'adminLiteKey';
         window.__adminLiteKey = '';
 
@@ -358,9 +422,11 @@
         function unlockUI() {
             gate.classList.add('hidden');
             panel.classList.remove('hidden');
+            leadsCard.classList.remove('hidden');
             quoteCard.classList.remove('hidden');
             invoiceCard.classList.remove('hidden');
             activityCard.classList.remove('hidden');
+            fetchLeads();
         }
 
         async function verifyAndStoreKey(password) {
@@ -409,7 +475,9 @@
             clearBanner(quoteBanner);
             clearBanner(invoiceBanner);
             clearBanner(testBanner);
+            clearBanner(leadsBanner);
             panel.classList.add('hidden');
+            leadsCard.classList.add('hidden');
             quoteCard.classList.add('hidden');
             invoiceCard.classList.add('hidden');
             activityCard.classList.add('hidden');
@@ -435,6 +503,7 @@
                 showBanner(leadBanner, 'Lead email sent successfully.', 'success');
                 showToast('Lead email sent.', 'success');
                 appendLog('Lead notification', payload.email, true);
+                fetchLeads();
             } catch (err) {
                 showBanner(leadBanner, `Failed to send lead email. ${err?.message || ''}`.trim(), 'error');
                 showToast('Failed to send lead email.', 'error');
@@ -443,6 +512,56 @@
                 setButtonBusy(button, false);
             }
         });
+
+        function renderLeads(leads) {
+            if (!Array.isArray(leads) || leads.length === 0) {
+                leadsTableBody.innerHTML = '<tr><td colspan="5" style="padding:16px;">No leads found.</td></tr>';
+                return;
+            }
+            leadsTableBody.innerHTML = leads.map((lead) => {
+                const created = lead.createdAt || '';
+                const name = lead.fullName || '';
+                const ref = lead.leadRef || '';
+                const email = lead.email || '';
+                const whatsapp = lead.whatsapp || '';
+                const service = lead.serviceRequired || '';
+                const notes = lead.notes || '';
+                const pageUrl = lead.pageUrl || '';
+                return `
+                    <tr>
+                        <td>${created}<small>${ref}</small></td>
+                        <td>${name}</td>
+                        <td>${email ? `<div>${email}</div>` : ''}${whatsapp ? `<div>${whatsapp}</div>` : ''}${pageUrl ? `<small><a href="${pageUrl}" target="_blank" rel="noopener">Source</a></small>` : ''}</td>
+                        <td>${service}</td>
+                        <td>${notes}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function fetchLeads() {
+            clearBanner(leadsBanner);
+            try {
+                const response = await fetch('/api/admin/leads', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Lite-Key': window.__adminLiteKey
+                    },
+                    body: JSON.stringify({ limit: 50 })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                renderLeads(data.leads || []);
+            } catch (err) {
+                showBanner(leadsBanner, `Unable to load leads. ${err?.message || ''}`.trim(), 'error');
+                leadsTableBody.innerHTML = '<tr><td colspan="5" style="padding:16px;">Unable to load leads.</td></tr>';
+            }
+        }
+
+        document.getElementById('btn-refresh-leads').addEventListener('click', fetchLeads);
 
         setMode(document.getElementById('quote-mode'), 'html');
         setMode(document.getElementById('invoice-mode'), 'html');
