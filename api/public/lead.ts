@@ -1,40 +1,46 @@
-const nodemailer = require('nodemailer');
+import { sendMail } from '../../lib/mailer';
 
-const DEFAULT_ALLOWED_ORIGINS = [
+type LeadPayload = {
+  fullName: string | null;
+  email: string | null;
+  whatsapp: string | null;
+  serviceRequired: string | null;
+  pageUrl: string | null;
+  notes?: string | null;
+};
+
+const ALLOWED_ORIGINS = new Set([
   'https://uaebusinessdesk.com',
   'https://www.uaebusinessdesk.com',
-];
+]);
 
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
+type RateEntry = { count: number; startMs: number };
+
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 10;
-const MAX_BODY_BYTES = 50 * 1024;
-const rateStore = new Map();
+const rateStore = new Map<string, RateEntry>();
 
-function json(res, statusCode, payload) {
+function json(res: any, statusCode: number, payload: Record<string, unknown>) {
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.end(JSON.stringify(payload));
 }
 
-function getAllowedOrigins() {
-  const raw = process.env.ALLOWED_ORIGINS;
-  if (!raw) return new Set(DEFAULT_ALLOWED_ORIGINS);
-  const parsed = raw
-    .split(',')
-    .map((value) => value.trim())
-    .filter(Boolean);
-  return new Set(parsed.length ? parsed : DEFAULT_ALLOWED_ORIGINS);
-}
-
-function setCorsHeaders(res, origin) {
-  if (!origin) return;
-  res.setHeader('Access-Control-Allow-Origin', origin);
+function setCorsHeaders(res: any, origin: string | undefined) {
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Vary', 'Origin');
 }
 
-function generateLeadRef() {
+function toStringOrNull(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  const str = String(value).trim();
+  return str ? str : null;
+}
+
+function generateLeadRef(): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -45,59 +51,18 @@ function generateLeadRef() {
   return `UBD-${year}${month}${day}-${hours}${minutes}-${random}`;
 }
 
-function withTimeout(promise, ms, label) {
-  let timeoutId;
-  const timeoutPromise = new Promise((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error(`Timeout after ${ms}ms (${label})`)), ms);
-  });
-  return Promise.race([promise, timeoutPromise]).finally(() => {
-    if (timeoutId) clearTimeout(timeoutId);
-  });
-}
+function buildAdminHtml(leadRef: string, data: LeadPayload): string {
+  const rows = [
+    ['Lead Reference', leadRef],
+    ['Full Name', data.fullName],
+    ['WhatsApp', data.whatsapp],
+    ['Service Required', data.serviceRequired],
+    ['Email', data.email],
+    ['Page URL', data.pageUrl],
+    ['Notes', data.notes || null],
+  ].filter(([, value]) => value !== null && value !== undefined && value !== '');
 
-function shouldRateLimit(key) {
-  const now = Date.now();
-  const entry = rateStore.get(key);
-  if (!entry || now - entry.startMs > RATE_LIMIT_WINDOW_MS) {
-    rateStore.set(key, { count: 1, startMs: now });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > RATE_LIMIT_MAX;
-}
-
-function normalizeWhatsapp(raw) {
-  if (!raw) return null;
-  const trimmed = String(raw).trim();
-  if (!trimmed) return null;
-  if (trimmed.startsWith('+')) {
-    return `+${trimmed.replace(/[^\d]/g, '')}`;
-  }
-  if (trimmed.startsWith('00')) {
-    return `+${trimmed.slice(2).replace(/[^\d]/g, '')}`;
-  }
-  const digits = trimmed.replace(/[^\d]/g, '');
-  if (digits.startsWith('971')) {
-    return `+${digits}`;
-  }
-  if (digits.startsWith('0')) {
-    return `+971${digits.slice(1)}`;
-  }
-  if (digits.startsWith('5')) {
-    return `+971${digits}`;
-  }
-  return `+971${digits}`;
-}
-
-function toStringOrNull(value) {
-  if (value === undefined || value === null) return null;
-  const str = String(value).trim();
-  return str ? str : null;
-}
-
-function buildAdminHtml(leadRef, data) {
-  const rows = Object.entries(data)
-    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+  const rowsHtml = rows
     .map(
       ([label, value]) => `
         <tr>
@@ -130,7 +95,7 @@ function buildAdminHtml(leadRef, data) {
                     <p style="margin:0 0 12px;color:#0b2a4a;font-size:14px;font-weight:600;">Lead Reference</p>
                     <p style="margin:0 0 20px;font-family:'Courier New',monospace;font-size:18px;font-weight:700;color:#333333;">${leadRef}</p>
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-                      ${rows}
+                      ${rowsHtml}
                     </table>
                   </td>
                 </tr>
@@ -148,7 +113,7 @@ function buildAdminHtml(leadRef, data) {
   `;
 }
 
-function buildCustomerHtml(leadRef, data) {
+function buildCustomerHtml(leadRef: string, data: LeadPayload): string {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -193,26 +158,41 @@ function buildCustomerHtml(leadRef, data) {
   `;
 }
 
-module.exports = async (req, res) => {
-  const origin = req.headers.origin || '';
-  const allowedOrigins = getAllowedOrigins();
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(`Timeout after ${ms}ms (${label})`)), ms);
+  });
 
-  if (origin && !allowedOrigins.has(origin)) {
-    json(res, 403, { ok: false, error: 'FORBIDDEN' });
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) clearTimeout(timeoutId);
+  });
+}
+
+function shouldRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateStore.get(ip);
+  if (!entry || now - entry.startMs > RATE_LIMIT_WINDOW_MS) {
+    rateStore.set(ip, { count: 1, startMs: now });
+    return false;
+  }
+  entry.count += 1;
+  return entry.count > RATE_LIMIT_MAX;
+}
+
+export default async function handler(req: any, res: any) {
+  const origin = req.headers?.origin;
+  if (origin && !ALLOWED_ORIGINS.has(origin)) {
+    json(res, 403, { ok: false, error: 'Forbidden' });
     return;
   }
+
+  setCorsHeaders(res, origin);
 
   if (req.method === 'OPTIONS') {
-    if (origin) {
-      setCorsHeaders(res, origin);
-    }
-    res.statusCode = 204;
+    res.statusCode = 200;
     res.end();
     return;
-  }
-
-  if (origin) {
-    setCorsHeaders(res, origin);
   }
 
   if (req.method !== 'POST') {
@@ -220,12 +200,7 @@ module.exports = async (req, res) => {
     return;
   }
 
-  if (typeof req.body === 'string' && Buffer.byteLength(req.body, 'utf8') > MAX_BODY_BYTES) {
-    json(res, 413, { ok: false, error: 'PAYLOAD_TOO_LARGE' });
-    return;
-  }
-
-  let body = {};
+  let body: Record<string, unknown> = {};
   try {
     body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
   } catch (err) {
@@ -233,29 +208,19 @@ module.exports = async (req, res) => {
     return;
   }
 
-  try {
-    if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_BODY_BYTES) {
-      json(res, 413, { ok: false, error: 'PAYLOAD_TOO_LARGE' });
-      return;
-    }
-  } catch (err) {
-    json(res, 400, { ok: false, error: 'Invalid JSON' });
-    return;
-  }
-
-  const honeypot = toStringOrNull(body.companyWebsite);
+  const honeypot = toStringOrNull((body as any).website || (body as any).companyWebsite);
   if (honeypot) {
     json(res, 200, { ok: true });
     return;
   }
 
-  const forwardedFor = req.headers['x-forwarded-for'];
+  const forwardedFor = req.headers?.['x-forwarded-for'];
   const ip = (Array.isArray(forwardedFor) ? forwardedFor[0] : String(forwardedFor || ''))
     .split(',')[0]
-    .trim() || req.socket?.remoteAddress || 'unknown';
-  const rateKey = `${ip}:public-leads-capture`;
+    .trim() || 'unknown';
+  const rateKey = `${ip}:public-lead`;
   if (shouldRateLimit(rateKey)) {
-    json(res, 429, { ok: false, error: 'TOO_MANY_REQUESTS' });
+    json(res, 429, { ok: false, error: 'Too Many Requests' });
     return;
   }
 
@@ -263,65 +228,63 @@ module.exports = async (req, res) => {
   const whatsapp = toStringOrNull(body.whatsapp);
   const serviceRequired = toStringOrNull(body.serviceRequired);
   const email = toStringOrNull(body.email);
+  const pageUrl = toStringOrNull(body.pageUrl);
+  const notes = toStringOrNull(body.notes);
 
   if (!fullName || !whatsapp || !serviceRequired) {
     json(res, 400, { ok: false, error: 'Missing required fields' });
     return;
   }
 
-  const leadRef = generateLeadRef();
+  if (fullName.length > 80 || whatsapp.length > 25 || (notes && notes.length > 1200)) {
+    json(res, 400, { ok: false, error: 'Invalid field length' });
+    return;
+  }
 
-  const payload = {
-    'Full Name': fullName,
-    WhatsApp: whatsapp,
-    'Service Required': serviceRequired,
-    Email: email,
-    Notes: toStringOrNull(body.notes),
-    ...Object.keys(body || {}).reduce((acc, key) => {
-      if (['fullName', 'whatsapp', 'serviceRequired', 'email', 'notes'].includes(key)) {
-        return acc;
-      }
-      const value = toStringOrNull(body[key]);
-      if (value) acc[key] = value;
-      return acc;
-    }, {}),
+  const leadRef = generateLeadRef();
+  const adminRecipient = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
+
+  const payload: LeadPayload = {
+    fullName,
+    whatsapp,
+    serviceRequired,
+    email,
+    pageUrl,
+    notes,
   };
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    secure: Number(process.env.SMTP_PORT || 587) === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
-  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
-  const adminTo = process.env.ADMIN_NOTIFY_EMAIL || process.env.SMTP_USER;
   const adminHtml = buildAdminHtml(leadRef, payload);
 
-  try {
-    await transporter.sendMail({
-      from,
-      to: adminTo,
-      subject: `New Lead – ${serviceRequired} | ${fullName}`,
-      html: adminHtml,
-    });
+  json(res, 200, { ok: true });
 
-    if (email) {
-      const customerHtml = buildCustomerHtml(leadRef, { fullName });
-      await transporter.sendMail({
-        from,
+  const adminSubject = `NEW LEAD – ${serviceRequired} | ${leadRef}`;
+  const adminPromise = withTimeout(
+    sendMail({
+      to: adminRecipient,
+      subject: adminSubject,
+      html: adminHtml,
+    }),
+    8000,
+    'admin-email'
+  );
+
+  void adminPromise.catch((err) => {
+    console.error('[api/public/lead] admin email failed', err);
+  });
+
+  if (email) {
+    const customerHtml = buildCustomerHtml(leadRef, payload);
+    const customerPromise = withTimeout(
+      sendMail({
         to: email,
         subject: `Thank you – ${leadRef}`,
         html: customerHtml,
-      });
-    }
-
-    json(res, 200, { ok: true });
-  } catch (err) {
-    console.error('[EMAIL_SEND_FAIL] public-leads-capture', err);
-    json(res, 500, { ok: false, error: 'SMTP_SEND_FAILED' });
+      }),
+      8000,
+      'customer-email'
+    );
+    void customerPromise.catch((err) => {
+      console.error('[api/public/lead] customer email failed', err);
+    });
   }
-};
+}

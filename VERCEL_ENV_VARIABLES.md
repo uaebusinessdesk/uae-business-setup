@@ -1,3 +1,14 @@
+# Vercel Environment Variables (Email Only)
+
+Set these in Vercel Project Settings → Environment Variables:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+- `ADMIN_NOTIFY_EMAIL`
+- `ALLOWED_ORIGINS`
 # Vercel Environment Variables - Ready to Copy
 
 **IMPORTANT**: Copy these values to Vercel → Settings → Environment Variables

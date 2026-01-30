@@ -121,6 +121,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Lead Capture API Configuration
 const LEAD_API_URL = '/api/public/lead';
+const LEAD_API_TIMEOUT_MS = 12000;
+const ALLOWED_SERVICE_VALUES = new Set([
+    'bank',
+    'mainland',
+    'freezone',
+    'offshore',
+    'not-sure',
+    'existing-company'
+]);
 
 // Log API configuration for debugging
 console.log('API Configuration:', {
@@ -131,6 +140,15 @@ console.log('API Configuration:', {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    function normalizeService(value) {
+        if (!value) return 'not-sure';
+        const normalized = String(value).trim().toLowerCase();
+        if (ALLOWED_SERVICE_VALUES.has(normalized)) return normalized;
+        if (normalized === 'free-zone' || normalized === 'free zone') return 'freezone';
+        if (normalized === 'bank-account' || normalized === 'bank account') return 'bank';
+        if (normalized === 'existing' || normalized === 'existing company') return 'existing-company';
+        return 'not-sure';
+    }
     const navToggle = document.getElementById('navToggle');
     const navLinks = document.getElementById('navLinks');
     const body = document.body;
@@ -615,9 +633,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const payload = {
                     fullName: formData.get('fullName')?.trim() || '',
                     whatsapp: formData.get('whatsapp')?.trim() || '',
-                    service: (serviceValue || '').toLowerCase(),
+                    serviceRequired: normalizeService(serviceValue),
                     email: formData.get('email')?.trim() || '',
-                    message: formData.get('notes')?.trim() || formData.get('message')?.trim() || '',
+                    notes: formData.get('notes')?.trim() || formData.get('message')?.trim() || '',
+                    pageUrl: window.location.href
                 };
 
                 // Remove empty values
@@ -637,13 +656,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log('Current hostname:', window.location.hostname);
                     console.log('Current protocol:', window.location.protocol);
                     
-                    response = await fetch(LEAD_API_URL, {
+                    const fetchPromise = fetch(LEAD_API_URL, {
                         method: 'POST',
                         headers: {
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify(payload)
                     });
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('TIMEOUT')), LEAD_API_TIMEOUT_MS);
+                    });
+                    response = await Promise.race([fetchPromise, timeoutPromise]);
                 } catch (networkError) {
                     // Network error - server unreachable
                     console.error('Network error:', networkError);
@@ -654,7 +677,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Provide more helpful error message
                     let errorMsg = 'Unable to connect to server. ';
                     
-                    if (networkError.name === 'AbortError') {
+                    if (networkError.message === 'TIMEOUT') {
+                        errorMsg += 'The request timed out. Please try again in a moment. ';
+                    } else if (networkError.name === 'AbortError') {
                         errorMsg += 'The request timed out. ';
                     } else if (networkError.name === 'TypeError' && networkError.message.includes('Failed to fetch')) {
                         // Check if it's a CORS error
@@ -1044,22 +1069,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     fullName: formData.get('name')?.trim() || '',
                     email: formData.get('email')?.trim() || '',
                     whatsapp: formData.get('whatsapp')?.trim() || '',
-                    serviceRequired: 'not-sure', // Contact form is general enquiry
+                    serviceRequired: normalizeService(formType === 'quote' ? 'not-sure' : 'not-sure'),
                     notes: formData.get('message')?.trim() || '',
+                    pageUrl: window.location.href
                 };
 
                 // Send to API
-                const response = await fetch(LEAD_API_URL, {
+                const fetchPromise = fetch(LEAD_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });
+                const timeoutPromise = new Promise((_, reject) => {
+                    setTimeout(() => reject(new Error('TIMEOUT')), LEAD_API_TIMEOUT_MS);
+                });
+                const response = await Promise.race([fetchPromise, timeoutPromise]);
 
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                    throw new Error(errorData.error || `Server error: ${response.status}`);
+                const responseData = await response.json().catch(() => ({}));
+                if (!response.ok || responseData.ok === false) {
+                    throw new Error(responseData.error || `Server error: ${response.status}`);
                 }
 
                 // Success - show success message
@@ -1082,7 +1112,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Show error message
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'form-error-message';
-                errorMsg.textContent = 'Sorry, there was an error submitting your enquiry. Please try again or contact us directly.';
+                if (error && error.message === 'TIMEOUT') {
+                    errorMsg.textContent = 'This is taking longer than expected. Please try again in a moment.';
+                } else {
+                    errorMsg.textContent = 'Sorry, there was an error submitting your enquiry. Please try again or contact us directly.';
+                }
                 errorMsg.style.cssText = 'background-color: #ef4444; color: white; padding: 0.75rem 1rem; border-radius: 8px; margin-top: 1rem; text-align: center; font-size: 0.9rem;';
 
                 // Insert error message after form

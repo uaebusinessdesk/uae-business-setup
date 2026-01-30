@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Lite | UAE Business Desk</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <style>
+        .admin-lite {
+            min-height: 100vh;
+            background: #0f1b2b;
+            color: #f6f1e7;
+            padding: 32px 16px 64px;
+        }
+        .admin-lite-container {
+            max-width: 980px;
+            margin: 0 auto;
+        }
+        .admin-lite-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            margin-bottom: 20px;
+        }
+        .admin-lite-card h1,
+        .admin-lite-card h2 {
+            margin: 0 0 12px;
+        }
+        .admin-lite-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .admin-lite-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .admin-lite-field label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .admin-lite-field input,
+        .admin-lite-field select,
+        .admin-lite-field textarea {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+        .admin-lite-field textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .admin-lite-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .admin-lite-actions button {
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: none;
+            background: #c9a14a;
+            color: #111;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .admin-lite-actions button.secondary {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+        }
+        .admin-lite-toggle {
+            display: inline-flex;
+            gap: 8px;
+            padding: 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .admin-lite-toggle button {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: none;
+            background: transparent;
+            color: #fff;
+            cursor: pointer;
+        }
+        .admin-lite-toggle button.active {
+            background: #c9a14a;
+            color: #111;
+            font-weight: 600;
+        }
+        .admin-lite-log {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .admin-lite-log li {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .admin-lite-toast {
+            position: fixed;
+            right: 16px;
+            bottom: 16px;
+            background: rgba(12, 20, 32, 0.95);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 12px 14px;
+            min-width: 220px;
+            display: none;
+            z-index: 50;
+        }
+        .admin-lite-toast.success {
+            border-color: rgba(16, 185, 129, 0.8);
+        }
+        .admin-lite-toast.error {
+            border-color: rgba(239, 68, 68, 0.8);
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <main class="admin-lite">
+        <div class="admin-lite-container">
+            <div class="admin-lite-card" id="admin-lite-gate">
+                <h1>Admin Lite</h1>
+                <p>Enter the password to access the admin-lite tools.</p>
+                <div class="admin-lite-field">
+                    <label for="admin-lite-password">Password</label>
+                    <input id="admin-lite-password" type="password" autocomplete="current-password" />
+                </div>
+                <div class="admin-lite-actions">
+                    <button id="admin-lite-login">Unlock</button>
+                </div>
+                <p id="admin-lite-error" style="margin-top:12px;color:#ffb3b3;"></p>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-panel">
+                <h2>Lead Details</h2>
+                <p class="admin-lite-banner hidden" id="lead-banner"></p>
+                <div class="admin-lite-grid">
+                    <div class="admin-lite-field">
+                        <label for="lead-full-name">Full Name</label>
+                        <input id="lead-full-name" type="text" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="lead-email">Email</label>
+                        <input id="lead-email" type="email" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="lead-whatsapp">WhatsApp</label>
+                        <input id="lead-whatsapp" type="text" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="lead-service">Service Required</label>
+                        <select id="lead-service">
+                            <option value="bank">Bank</option>
+                            <option value="mainland">Mainland</option>
+                            <option value="freezone">Freezone</option>
+                            <option value="offshore">Offshore</option>
+                            <option value="not-sure">Not Sure</option>
+                        </select>
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="lead-ref">Optional Ref/Subject</label>
+                        <input id="lead-ref" type="text" />
+                    </div>
+                    <div class="admin-lite-field" style="grid-column: 1 / -1;">
+                        <label for="lead-notes">Notes</label>
+                        <textarea id="lead-notes"></textarea>
+                    </div>
+                </div>
+
+                <div class="admin-lite-actions">
+                    <button id="btn-send-lead">Send Lead Acknowledgement + Notify Admin</button>
+                    <button id="admin-lite-logout" class="secondary">Logout</button>
+                </div>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-quote">
+                <h2>Send Quote</h2>
+                <p class="admin-lite-banner hidden" id="quote-banner"></p>
+                <div class="admin-lite-grid">
+                    <div class="admin-lite-field">
+                        <label for="quote-currency">Currency</label>
+                        <input id="quote-currency" type="text" value="AED" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="quote-total">Total Amount</label>
+                        <input id="quote-total" type="number" min="0" step="0.01" />
+                    </div>
+                </div>
+                <div class="admin-lite-field">
+                    <label>Mode</label>
+                    <div class="admin-lite-toggle" id="quote-mode">
+                        <button type="button" data-mode="html" class="active">HTML</button>
+                        <button type="button" data-mode="text">Plain</button>
+                    </div>
+                </div>
+                <div class="admin-lite-field">
+                    <label for="quote-content">Quote Items (one per line)</label>
+                    <textarea id="quote-content"></textarea>
+                </div>
+                <div class="admin-lite-actions">
+                    <button id="btn-send-quote">Send Quote</button>
+                </div>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-invoice">
+                <h2>Send Invoice</h2>
+                <p class="admin-lite-banner hidden" id="invoice-banner"></p>
+                <div class="admin-lite-grid">
+                    <div class="admin-lite-field">
+                        <label for="invoice-number">Invoice Number</label>
+                        <input id="invoice-number" type="text" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="invoice-amount">Amount</label>
+                        <input id="invoice-amount" type="number" min="0" step="0.01" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="invoice-currency">Currency</label>
+                        <input id="invoice-currency" type="text" value="AED" />
+                    </div>
+                    <div class="admin-lite-field">
+                        <label for="invoice-due-date">Due Date</label>
+                        <input id="invoice-due-date" type="date" />
+                    </div>
+                </div>
+                <div class="admin-lite-field">
+                    <label>Mode</label>
+                    <div class="admin-lite-toggle" id="invoice-mode">
+                        <button type="button" data-mode="html" class="active">HTML</button>
+                        <button type="button" data-mode="text">Plain</button>
+                    </div>
+                </div>
+                <div class="admin-lite-field">
+                    <label for="invoice-content">Invoice Notes</label>
+                    <textarea id="invoice-content"></textarea>
+                </div>
+                <div class="admin-lite-actions">
+                    <button id="btn-send-invoice">Send Invoice</button>
+                </div>
+            </div>
+
+            <div class="admin-lite-card hidden" id="admin-lite-activity">
+                <h2>Activity Log</h2>
+                <p class="admin-lite-banner hidden" id="test-banner"></p>
+                <div class="admin-lite-actions" style="margin-bottom: 12px;">
+                    <button id="btn-test-email" class="secondary">Test Email</button>
+                </div>
+                <ul class="admin-lite-log" id="admin-lite-log"></ul>
+            </div>
+        </div>
+    </main>
+
+    <div class="admin-lite-toast" id="admin-lite-toast"></div>
+
+    <script>
+        const gate = document.getElementById('admin-lite-gate');
+        const panel = document.getElementById('admin-lite-panel');
+        const quoteCard = document.getElementById('admin-lite-quote');
+        const invoiceCard = document.getElementById('admin-lite-invoice');
+        const activityCard = document.getElementById('admin-lite-activity');
+        const errorMsg = document.getElementById('admin-lite-error');
+        const logList = document.getElementById('admin-lite-log');
+        const toast = document.getElementById('admin-lite-toast');
+        const leadBanner = document.getElementById('lead-banner');
+        const quoteBanner = document.getElementById('quote-banner');
+        const invoiceBanner = document.getElementById('invoice-banner');
+        const testBanner = document.getElementById('test-banner');
+        const STORAGE_KEY = 'adminLiteKey';
+        window.__adminLiteKey = '';
+
+        const leadFields = {
+            fullName: document.getElementById('lead-full-name'),
+            email: document.getElementById('lead-email'),
+            whatsapp: document.getElementById('lead-whatsapp'),
+            serviceRequired: document.getElementById('lead-service'),
+            notes: document.getElementById('lead-notes'),
+            ref: document.getElementById('lead-ref'),
+        };
+
+        function showToast(message, type) {
+            toast.textContent = message;
+            toast.className = `admin-lite-toast ${type}`;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function appendLog(action, email, ok) {
+            const entry = document.createElement('li');
+            const time = new Date().toLocaleString();
+            entry.textContent = `${time} | ${action} | ${email || 'n/a'} | ${ok ? 'ok' : 'error'}`;
+            logList.prepend(entry);
+        }
+
+        function showBanner(element, message, type) {
+            if (!element) return;
+            element.textContent = message;
+            element.classList.remove('hidden');
+            element.style.color = type === 'success' ? '#34d399' : '#fca5a5';
+        }
+
+        function clearBanner(element) {
+            if (!element) return;
+            element.textContent = '';
+            element.classList.add('hidden');
+        }
+
+        function setButtonBusy(button, busy) {
+            if (!button) return;
+            button.disabled = busy;
+            if (busy) {
+                button.dataset.originalText = button.textContent;
+                button.textContent = 'Sending...';
+            } else if (button.dataset.originalText) {
+                button.textContent = button.dataset.originalText;
+                delete button.dataset.originalText;
+            }
+        }
+
+        function getLeadPayload() {
+            return {
+                fullName: leadFields.fullName.value.trim(),
+                email: leadFields.email.value.trim(),
+                whatsapp: leadFields.whatsapp.value.trim(),
+                serviceRequired: leadFields.serviceRequired.value,
+                notes: leadFields.notes.value.trim(),
+                pageUrl: 'admin-lite'
+            };
+        }
+
+        function setMode(toggleEl, activeMode) {
+            const buttons = toggleEl.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === activeMode);
+            });
+            toggleEl.dataset.mode = activeMode;
+        }
+
+        function unlockUI() {
+            gate.classList.add('hidden');
+            panel.classList.remove('hidden');
+            quoteCard.classList.remove('hidden');
+            invoiceCard.classList.remove('hidden');
+            activityCard.classList.remove('hidden');
+        }
+
+        async function verifyAndStoreKey(password) {
+            const response = await fetch('/api/admin/check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await response.json().catch(() => ({}));
+            if (response.ok && data.ok === true) {
+                window.__adminLiteKey = password;
+                localStorage.setItem(STORAGE_KEY, password);
+                return { ok: true };
+            }
+            return { ok: false, error: data.error || 'UNAUTHORIZED' };
+        }
+
+        document.getElementById('admin-lite-login').addEventListener('click', async () => {
+            const password = document.getElementById('admin-lite-password').value;
+            errorMsg.textContent = '';
+            if (!password) {
+                errorMsg.textContent = 'Please enter the password.';
+                return;
+            }
+            try {
+                const result = await verifyAndStoreKey(password);
+                if (result.ok) {
+                    clearBanner(leadBanner);
+                    clearBanner(quoteBanner);
+                    clearBanner(invoiceBanner);
+                    clearBanner(testBanner);
+                    unlockUI();
+                    errorMsg.textContent = '';
+                } else {
+                    errorMsg.textContent = 'Incorrect password. Please try again.';
+                }
+            } catch (err) {
+                errorMsg.textContent = 'Unable to verify password. Please try again.';
+            }
+        });
+
+        document.getElementById('admin-lite-logout').addEventListener('click', () => {
+            window.__adminLiteKey = '';
+            localStorage.removeItem(STORAGE_KEY);
+            clearBanner(leadBanner);
+            clearBanner(quoteBanner);
+            clearBanner(invoiceBanner);
+            clearBanner(testBanner);
+            panel.classList.add('hidden');
+            quoteCard.classList.add('hidden');
+            invoiceCard.classList.add('hidden');
+            activityCard.classList.add('hidden');
+            gate.classList.remove('hidden');
+            document.getElementById('admin-lite-password').value = '';
+        });
+
+        document.getElementById('btn-send-lead').addEventListener('click', async () => {
+            const payload = getLeadPayload();
+            const button = document.getElementById('btn-send-lead');
+            clearBanner(leadBanner);
+            try {
+                setButtonBusy(button, true);
+                const response = await fetch('/api/public/lead', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                showBanner(leadBanner, 'Lead email sent successfully.', 'success');
+                showToast('Lead email sent.', 'success');
+                appendLog('Lead notification', payload.email, true);
+            } catch (err) {
+                showBanner(leadBanner, `Failed to send lead email. ${err?.message || ''}`.trim(), 'error');
+                showToast('Failed to send lead email.', 'error');
+                appendLog('Lead notification', payload.email, false);
+            } finally {
+                setButtonBusy(button, false);
+            }
+        });
+
+        setMode(document.getElementById('quote-mode'), 'html');
+        setMode(document.getElementById('invoice-mode'), 'html');
+
+        document.getElementById('quote-mode').addEventListener('click', (event) => {
+            if (event.target.dataset.mode) {
+                setMode(event.currentTarget, event.target.dataset.mode);
+            }
+        });
+
+        document.getElementById('invoice-mode').addEventListener('click', (event) => {
+            if (event.target.dataset.mode) {
+                setMode(event.currentTarget, event.target.dataset.mode);
+            }
+        });
+
+        document.getElementById('btn-send-quote').addEventListener('click', async () => {
+            const mode = document.getElementById('quote-mode').dataset.mode || 'html';
+            const button = document.getElementById('btn-send-quote');
+            clearBanner(quoteBanner);
+            const payload = {
+                toEmail: leadFields.email.value.trim(),
+                customerName: leadFields.fullName.value.trim(),
+                quoteItems: document.getElementById('quote-content').value
+                    .split('\n')
+                    .map(item => item.trim())
+                    .filter(Boolean),
+                currency: document.getElementById('quote-currency').value.trim() || 'AED',
+                total: Number(document.getElementById('quote-total').value || 0),
+                notes: mode === 'text' ? document.getElementById('quote-content').value.trim() : '',
+                leadRef: leadFields.ref.value.trim() || ''
+            };
+            try {
+                setButtonBusy(button, true);
+                const response = await fetch('/api/admin/send-quote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Lite-Key': window.__adminLiteKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                showBanner(quoteBanner, 'Quote sent successfully.', 'success');
+                showToast('Quote sent.', 'success');
+                appendLog('Quote sent', payload.toEmail, true);
+            } catch (err) {
+                showBanner(quoteBanner, `Failed to send quote. ${err?.message || ''}`.trim(), 'error');
+                showToast('Failed to send quote.', 'error');
+                appendLog('Quote sent', payload.toEmail, false);
+            } finally {
+                setButtonBusy(button, false);
+            }
+        });
+
+        document.getElementById('btn-send-invoice').addEventListener('click', async () => {
+            const mode = document.getElementById('invoice-mode').dataset.mode || 'html';
+            const button = document.getElementById('btn-send-invoice');
+            clearBanner(invoiceBanner);
+            const payload = {
+                toEmail: leadFields.email.value.trim(),
+                customerName: leadFields.fullName.value.trim(),
+                invoiceNumber: document.getElementById('invoice-number').value.trim(),
+                amount: Number(document.getElementById('invoice-amount').value || 0),
+                currency: document.getElementById('invoice-currency').value.trim() || 'AED',
+                dueDate: document.getElementById('invoice-due-date').value,
+                notes: mode === 'text' ? document.getElementById('invoice-content').value.trim() : '',
+                leadRef: leadFields.ref.value.trim() || ''
+            };
+            try {
+                setButtonBusy(button, true);
+                const response = await fetch('/api/admin/send-invoice', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Lite-Key': window.__adminLiteKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                showBanner(invoiceBanner, 'Invoice sent successfully.', 'success');
+                showToast('Invoice sent.', 'success');
+                appendLog('Invoice sent', payload.toEmail, true);
+            } catch (err) {
+                showBanner(invoiceBanner, `Failed to send invoice. ${err?.message || ''}`.trim(), 'error');
+                showToast('Failed to send invoice.', 'error');
+                appendLog('Invoice sent', payload.toEmail, false);
+            } finally {
+                setButtonBusy(button, false);
+            }
+        });
+
+        document.getElementById('btn-test-email').addEventListener('click', async () => {
+            const button = document.getElementById('btn-test-email');
+            clearBanner(testBanner);
+            const payload = {
+                toEmail: leadFields.email.value.trim() || 'support@uaebusinessdesk.com',
+                customerName: leadFields.fullName.value.trim() || 'Test User',
+                quoteItems: ['Test line item'],
+                currency: 'AED',
+                total: 1,
+                notes: 'Admin-lite smoke test',
+                leadRef: leadFields.ref.value.trim() || 'TEST-REF'
+            };
+            try {
+                setButtonBusy(button, true);
+                const response = await fetch('/api/admin/send-quote', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Lite-Key': window.__adminLiteKey
+                    },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok || data.ok === false) {
+                    throw new Error(data.error || `HTTP ${response.status}`);
+                }
+                showBanner(testBanner, 'Test email sent successfully.', 'success');
+                appendLog('Test email', payload.toEmail, true);
+            } catch (err) {
+                showBanner(testBanner, `Test email failed. ${err?.message || ''}`.trim(), 'error');
+                appendLog('Test email', payload.toEmail, false);
+            } finally {
+                setButtonBusy(button, false);
+            }
+        });
+
+        (function bootstrapSession() {
+            const storedKey = localStorage.getItem(STORAGE_KEY);
+            if (!storedKey) return;
+            verifyAndStoreKey(storedKey).then((result) => {
+                if (result.ok) {
+                    clearBanner(leadBanner);
+                    clearBanner(quoteBanner);
+                    clearBanner(invoiceBanner);
+                    clearBanner(testBanner);
+                    unlockUI();
+                } else {
+                    localStorage.removeItem(STORAGE_KEY);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
