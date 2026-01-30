@@ -1,6 +1,6 @@
-import { sendMail } from '../../lib/mailer';
-import { buildCompanyInvoiceEmail } from '../../lib/adminEmailTemplates';
-import { handleAdminCors, sendJson } from '../../lib/adminApi';
+import { sendMail } from '../../../api/_lib/mailer';
+import { buildCompanyInvoiceEmail } from '../../../api/_lib/adminEmailTemplates';
+import { handleAdminCors, sendJson } from '../../../api/_lib/adminApi';
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX = 30;

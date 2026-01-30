@@ -1,4 +1,4 @@
-import { handleAdminCors, sendJson } from '../../lib/adminApi';
+import { handleAdminCors, sendJson } from '../../../api/_lib/adminApi';
 
 function toStringOrNull(value: unknown): string | null {
   if (value === undefined || value === null) return null;
