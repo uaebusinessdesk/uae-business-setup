@@ -1,5 +1,6 @@
+import crypto from 'crypto';
 import { sendMail } from '../_lib/mailer';
-import { appendLeadRow } from '../_lib/sheets';
+import { assertRedisConfigured, redis } from '../_lib/redis';
 
 type LeadPayload = {
   fullName: string | null;
@@ -242,6 +243,7 @@ export default async function handler(req: any, res: any) {
     return;
   }
 
+  const leadId = crypto.randomUUID();
   const leadRef = generateLeadRef();
   const adminRecipient = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
 
@@ -256,27 +258,36 @@ export default async function handler(req: any, res: any) {
 
   const adminHtml = buildAdminHtml(leadRef, payload);
 
-  json(res, 200, { ok: true });
+  json(res, 200, { ok: true, leadId, createdAt: new Date().toISOString() });
 
   const createdAt = new Date().toISOString();
-  const sheetPromise = withTimeout(
-    appendLeadRow({
-      createdAt,
-      leadRef,
-      fullName,
-      email,
-      whatsapp,
-      serviceRequired,
-      notes,
-      pageUrl,
-      source: pageUrl || 'website',
-    }),
+  const timestampMs = Date.now();
+
+  const leadRecord = {
+    id: leadId,
+    leadRef,
+    createdAt,
+    fullName,
+    whatsapp,
+    email,
+    serviceRequired,
+    pageUrl,
+    notes,
+    status: 'new',
+  };
+
+  const storagePromise = withTimeout(
+    (async () => {
+      assertRedisConfigured();
+      await redis.set(`lead:${leadId}`, leadRecord);
+      await redis.zadd('leads:zset', { score: timestampMs, member: leadId });
+    })(),
     6000,
-    'sheets-append'
+    'redis-store'
   );
 
-  void sheetPromise.catch((err) => {
-    console.error('[api/public/lead] sheets append failed', err);
+  void storagePromise.catch((err) => {
+    console.error('[api/public/lead] redis store failed', err);
   });
 
   const adminSubject = `NEW LEAD – ${serviceRequired} | ${leadRef}`;

@@ -1,5 +1,5 @@
 import { handleAdminCors, requireAdminKey, sendJson } from '../_lib/adminApi';
-import { listLeads } from '../_lib/sheets';
+import { assertRedisConfigured, redis } from '../_lib/redis';
 
 export default async function handler(req: any, res: any) {
   try {
@@ -28,7 +28,21 @@ export default async function handler(req: any, res: any) {
     const limit = Number(limitRaw || 50);
     const safeLimit = Number.isFinite(limit) ? Math.min(Math.max(limit, 1), 200) : 50;
 
-    const leads = await listLeads(safeLimit);
+    assertRedisConfigured();
+
+    const ids = await redis.zrange<string[]>('leads:zset', 0, safeLimit - 1, {
+      rev: true,
+    });
+
+    if (!ids.length) {
+      sendJson(res, 200, { ok: true, leads: [] });
+      return;
+    }
+
+    const keys = ids.map((id) => `lead:${id}`);
+    const rows = await redis.mget<(Record<string, unknown> | null)[]>(...keys);
+    const leads = rows.filter(Boolean);
+
     sendJson(res, 200, { ok: true, leads });
   } catch (err) {
     console.error('ADMIN_LEADS_ERROR', err);

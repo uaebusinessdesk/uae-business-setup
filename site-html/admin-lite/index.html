@@ -222,6 +222,7 @@
 
                 <div class="admin-lite-actions">
                     <button id="btn-send-lead">Send Lead Acknowledgement + Notify Admin</button>
+                    <button id="btn-whatsapp" class="secondary">Open WhatsApp</button>
                     <button id="admin-lite-logout" class="secondary">Logout</button>
                 </div>
             </div>
@@ -347,6 +348,8 @@
         const testBanner = document.getElementById('test-banner');
         const leadsBanner = document.getElementById('leads-banner');
         const leadsTableBody = document.getElementById('leads-table-body');
+        const whatsappButton = document.getElementById('btn-whatsapp');
+        let currentLead = null;
         const STORAGE_KEY = 'adminLiteKey';
         window.__adminLiteKey = '';
 
@@ -409,6 +412,16 @@
                 notes: leadFields.notes.value.trim(),
                 pageUrl: 'admin-lite'
             };
+        }
+
+        function setLeadDetails(lead) {
+            currentLead = lead;
+            leadFields.fullName.value = lead.fullName || '';
+            leadFields.email.value = lead.email || '';
+            leadFields.whatsapp.value = lead.whatsapp || '';
+            leadFields.serviceRequired.value = lead.serviceRequired || 'not-sure';
+            leadFields.notes.value = lead.notes || '';
+            leadFields.ref.value = lead.leadRef || '';
         }
 
         function setMode(toggleEl, activeMode) {
@@ -513,12 +526,22 @@
             }
         });
 
+        whatsappButton.addEventListener('click', () => {
+            const number = (leadFields.whatsapp.value || '').replace(/\s+/g, '');
+            if (!number) {
+                showToast('Add a WhatsApp number first.', 'error');
+                return;
+            }
+            const url = `https://wa.me/${encodeURIComponent(number)}`;
+            window.open(url, '_blank');
+        });
+
         function renderLeads(leads) {
             if (!Array.isArray(leads) || leads.length === 0) {
                 leadsTableBody.innerHTML = '<tr><td colspan="5" style="padding:16px;">No leads found.</td></tr>';
                 return;
             }
-            leadsTableBody.innerHTML = leads.map((lead) => {
+            leadsTableBody.innerHTML = leads.map((lead, index) => {
                 const created = lead.createdAt || '';
                 const name = lead.fullName || '';
                 const ref = lead.leadRef || '';
@@ -528,7 +551,7 @@
                 const notes = lead.notes || '';
                 const pageUrl = lead.pageUrl || '';
                 return `
-                    <tr>
+                    <tr data-index="${index}">
                         <td>${created}<small>${ref}</small></td>
                         <td>${name}</td>
                         <td>${email ? `<div>${email}</div>` : ''}${whatsapp ? `<div>${whatsapp}</div>` : ''}${pageUrl ? `<small><a href="${pageUrl}" target="_blank" rel="noopener">Source</a></small>` : ''}</td>
@@ -537,6 +560,17 @@
                     </tr>
                 `;
             }).join('');
+
+            Array.from(leadsTableBody.querySelectorAll('tr[data-index]')).forEach((row) => {
+                row.addEventListener('click', () => {
+                    const idx = Number(row.dataset.index);
+                    const lead = leads[idx];
+                    if (lead) {
+                        setLeadDetails(lead);
+                        showToast('Lead loaded into form.', 'success');
+                    }
+                });
+            });
         }
 
         async function fetchLeads() {
