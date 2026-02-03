@@ -33,6 +33,10 @@ export default async function handler(req: any, res: any) {
     sendJson(res, 200, { ok: true });
   } catch (err) {
     console.error('ADMIN_CHECK_HANDLER_ERROR', err);
-    sendJson(res, 500, { ok: false, error: 'INTERNAL_ERROR', message: 'Admin check failed.' });
+    sendJson(res, 500, {
+      ok: false,
+      error: 'INTERNAL_ERROR',
+      message: 'Unable to verify admin credentials.',
+    });
   }
 }
