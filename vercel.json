@@ -4,6 +4,7 @@
   "buildCommand": "",
   "outputDirectory": "site-html",
   "routes": [
-    { "src": "/admin-lite", "dest": "/admin-lite.html" }
+    { "src": "/admin-lite", "dest": "/admin-lite.html" },
+    { "src": "/api/(.*)", "dest": "/api/$1" }
   ]
 }
