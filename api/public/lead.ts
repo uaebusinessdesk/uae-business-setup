@@ -41,6 +41,18 @@ function toStringOrNull(value: unknown): string | null {
   return str ? str : null;
 }
 
+function toLabel(key: string): string {
+  const withSpaces = key
+    .replace(/[_-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .trim();
+  return withSpaces
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
 function generateLeadId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -243,6 +255,7 @@ export default async function handler(req: any, res: any) {
     const serviceRequired = toStringOrNull(body.serviceRequired);
     const email = toStringOrNull(body.email);
     const message = toStringOrNull(body.message) || toStringOrNull(body.notes);
+    const pageUrl = toStringOrNull(body.pageUrl);
 
     if (!fullName || !whatsapp || !serviceRequired) {
       json(res, 400, { ok: false, error: 'Missing required fields' });
@@ -275,13 +288,33 @@ export default async function handler(req: any, res: any) {
     const leadRef = generateLeadRef();
     const adminRecipient = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
 
-  const detailRows = {
+    const detailRows: Record<string, string | null | undefined> = {
       'Full Name': fullName,
       WhatsApp: whatsapp,
       'Service Required': serviceRequired,
       Email: email || '',
       Message: message || '',
+      'Page URL': pageUrl || '',
   };
+
+    const excludedKeys = new Set([
+      'website',
+      'companyWebsite',
+      'fullName',
+      'whatsapp',
+      'serviceRequired',
+      'email',
+      'message',
+      'notes',
+      'pageUrl',
+    ]);
+
+    Object.entries(body).forEach(([key, value]) => {
+      if (excludedKeys.has(key)) return;
+      const stringValue = toStringOrNull(value);
+      if (!stringValue) return;
+      detailRows[toLabel(key)] = stringValue;
+    });
 
   const adminHtml = buildAdminHtml(leadRef, detailRows);
 
