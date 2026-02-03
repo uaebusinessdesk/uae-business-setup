@@ -109,7 +109,21 @@ function buildAdminHtml(leadRef: string, data: Record<string, string | null | un
   `;
 }
 
-function buildCustomerHtml(leadRef: string, fullName: string): string {
+function buildCustomerHtml(leadRef: string, data: Record<string, string | null | undefined>): string {
+  const rows = Object.entries(data)
+    .filter(([, value]) => value !== null && value !== undefined && value !== '')
+    .map(
+      ([label, value]) => `
+        <tr>
+          <td style="padding: 8px 0; color: #64748b; font-size: 13px; width: 35%; vertical-align: top;">${label}</td>
+          <td style="padding: 8px 0; color: #0b2a4a; font-size: 14px; font-weight: 600;">${value}</td>
+        </tr>
+      `
+    )
+    .join('');
+
+  const name = data['Full Name'] || 'there';
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -130,7 +144,7 @@ function buildCustomerHtml(leadRef: string, fullName: string): string {
                 </tr>
                 <tr>
                   <td style="padding:28px 32px;">
-                    <p style="margin:0 0 12px;font-size:16px;color:#0b2a4a;">Dear ${fullName},</p>
+                    <p style="margin:0 0 12px;font-size:16px;color:#0b2a4a;">Dear ${name},</p>
                     <p style="margin:0 0 18px;font-size:15px;line-height:1.7;color:#334155;">
                       We have received your request and our team will contact you shortly.
                     </p>
@@ -138,6 +152,9 @@ function buildCustomerHtml(leadRef: string, fullName: string): string {
                       <p style="margin:0 0 6px;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:0.4px;">Your Reference</p>
                       <p style="margin:0;font-family:'Courier New',monospace;font-size:16px;font-weight:700;color:#0b2a4a;">${leadRef}</p>
                     </div>
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;">
+                      ${rows}
+                    </table>
                   </td>
                 </tr>
                 <tr>
@@ -258,13 +275,15 @@ export default async function handler(req: any, res: any) {
     const leadRef = generateLeadRef();
     const adminRecipient = process.env.ADMIN_NOTIFY_EMAIL || 'support@uaebusinessdesk.com';
 
-    const adminHtml = buildAdminHtml(leadRef, {
+  const detailRows = {
       'Full Name': fullName,
       WhatsApp: whatsapp,
       'Service Required': serviceRequired,
       Email: email || '',
       Message: message || '',
-    });
+  };
+
+  const adminHtml = buildAdminHtml(leadRef, detailRows);
 
     const sendTasks = [
       withTimeout(
@@ -283,10 +302,10 @@ export default async function handler(req: any, res: any) {
     if (email) {
       sendTasks.push(
         withTimeout(
-          sendMail({
+        sendMail({
             to: email,
             subject: `Thank you – ${leadRef}`,
-            html: buildCustomerHtml(leadRef, fullName),
+          html: buildCustomerHtml(leadRef, detailRows),
           }),
           8000,
           'customer-email'
