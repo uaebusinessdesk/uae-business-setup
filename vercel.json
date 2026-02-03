@@ -3,8 +3,8 @@
   "installCommand": "",
   "buildCommand": "",
   "outputDirectory": "site-html",
-  "routes": [
-    { "src": "/admin-lite", "dest": "/admin-lite.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
+  "rewrites": [
+    { "source": "/admin-lite", "destination": "/admin-lite.html" },
+    { "source": "/api/(.*)", "destination": "/api/$1" }
   ]
 }
