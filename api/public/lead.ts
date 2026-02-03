@@ -307,6 +307,8 @@ export default async function handler(req: any, res: any) {
       'message',
       'notes',
       'pageUrl',
+      'helpWith',
+      'help_with',
     ]);
 
     Object.entries(body).forEach(([key, value]) => {
