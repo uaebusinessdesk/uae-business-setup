@@ -636,8 +636,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     serviceRequired: normalizeService(serviceValue),
                     email: formData.get('email')?.trim() || '',
                     notes: formData.get('notes')?.trim() || formData.get('message')?.trim() || '',
+                    message: formData.get('message')?.trim() || formData.get('notes')?.trim() || '',
                     pageUrl: window.location.href
                 };
+
+                // Include all other filled form fields
+                for (const [key, value] of formData.entries()) {
+                    if (typeof value !== 'string') continue;
+                    const trimmed = value.trim();
+                    if (!trimmed) continue;
+                    if (payload[key] === undefined || payload[key] === '') {
+                        payload[key] = trimmed;
+                    }
+                }
 
                 // Remove empty values
                 Object.keys(payload).forEach(key => {
@@ -1071,8 +1082,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     whatsapp: formData.get('whatsapp')?.trim() || '',
                     serviceRequired: normalizeService(formType === 'quote' ? 'not-sure' : 'not-sure'),
                     notes: formData.get('message')?.trim() || '',
+                    message: formData.get('message')?.trim() || '',
                     pageUrl: window.location.href
                 };
+
+                // Include all other filled form fields
+                for (const [key, value] of formData.entries()) {
+                    if (typeof value !== 'string') continue;
+                    const trimmed = value.trim();
+                    if (!trimmed) continue;
+                    if (payload[key] === undefined || payload[key] === '') {
+                        payload[key] = trimmed;
+                    }
+                }
 
                 // Send to API
                 const fetchPromise = fetch(LEAD_API_URL, {
