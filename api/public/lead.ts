@@ -309,6 +309,8 @@ export default async function handler(req: any, res: any) {
       'pageUrl',
       'helpWith',
       'help_with',
+      'privacyAccepted',
+      'privacy_accepted',
     ]);
 
     Object.entries(body).forEach(([key, value]) => {
